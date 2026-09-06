@@ -2,9 +2,7 @@ import axios from 'axios';
 
 // Configuration de base pour toutes les requêtes HTTP vers le backend
 const api = axios.create({
-  // Comme nous avons configuré le proxy dans vite.config.ts, toutes les requêtes 
-  // commençant par /api seront redirigées vers localhost:8080 (backend Spring Boot).
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },
