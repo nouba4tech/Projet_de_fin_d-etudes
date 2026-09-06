@@ -55,7 +55,7 @@ public class DemoSeedService {
         return response;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Map<String, Object> status() {
         ensureFinanceTable();
         Map<String, Object> response = new LinkedHashMap<>();
