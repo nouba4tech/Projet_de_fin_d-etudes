@@ -1,0 +1,987 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 15px;
+}
+
+:root {
+    color-scheme: dark;
+
+    --app-bg: #050714;
+    --app-text: #ffffff;
+    --app-overlay: linear-gradient(140deg, rgba(5, 7, 20, 0.92) 0%, rgba(10, 13, 29, 0.92) 100%);
+    --app-pattern-dot: rgba(255, 255, 255, 0.05);
+    --app-pattern-glow: rgba(59, 130, 246, 0.03);
+
+    --scroll-thumb: rgba(255, 255, 255, 0.12);
+    --scroll-thumb-hover: rgba(255, 255, 255, 0.22);
+    --surface-solid: #0b1020;
+
+    --frame-surface: rgba(5, 10, 20, 0.98);
+    --frame-surface-soft: #10182b;
+    --frame-border: rgba(148, 163, 184, 0.18);
+    --frame-text: #ffffff;
+    --frame-text-soft: rgba(255, 255, 255, 0.7);
+    --frame-text-muted: rgba(255, 255, 255, 0.55);
+    --chart-accent-1: #38bdf8;
+    --chart-accent-2: #a78bfa;
+}
+
+:root[data-theme='light'] {
+    color-scheme: light;
+
+    --app-bg: #f5f7fa;
+    --app-text: #1b2638;
+    --app-overlay: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 247, 250, 0.98) 100%);
+    --app-pattern-dot: rgba(71, 85, 105, 0.045);
+    --app-pattern-glow: rgba(15, 118, 110, 0.035);
+
+    --scroll-thumb: rgba(71, 85, 105, 0.24);
+    --scroll-thumb-hover: rgba(15, 118, 110, 0.4);
+
+    /* Frame palette: a calm hotel-office canvas with teal structure and warm amber highlights. */
+    --frame-canvas: #f5f7fa;
+    --frame-surface: #ffffff;
+    --frame-surface-soft: #f7f9fb;
+    --frame-border: #d8e0e9;
+    --frame-text: #1b2638;
+    --frame-text-soft: #475569;
+    --frame-text-muted: #64748b;
+    --surface-solid: var(--frame-surface);
+    --chart-accent-1: #0f766e;
+    --chart-accent-2: #b7791f;
+}
+
+body {
+    background-color: var(--app-bg);
+    color: var(--app-text);
+    font-family: 'Aptos', 'Segoe UI', 'Helvetica Neue', sans-serif;
+    overflow-x: hidden;
+    background-image:
+        var(--app-overlay),
+        radial-gradient(circle at 2px 2px, var(--app-pattern-dot) 1px, transparent 0),
+        radial-gradient(circle at 80% 20%, var(--app-pattern-glow) 0%, transparent 52%);
+    background-size: 100% 100%, 40px 40px, 100% 100%;
+    background-attachment: fixed;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    letter-spacing: 0.01em;
+}
+
+input,
+button,
+select,
+textarea {
+    font-family: 'Aptos', 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
+
+button,
+input,
+select,
+textarea,
+[role='dialog'],
+.card,
+[role='region'],
+[class*='card'],
+[class*='panel'],
+.glass,
+.glass-card {
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+
+/* Kill any remaining smoky, blurred, or gradient glow effects globally */
+[class*='bg-gradient-to-'],
+[class*='from-'],
+[class*='via-'],
+[class*='to-'],
+[class*='blur-'],
+[class*='backdrop-blur-'],
+[class*='shadow-'],
+[class*='shadow\['],
+[class*='hover:shadow-'],
+[class*='group-hover:blur-'],
+[class*='group-hover:shadow-'],
+button[class*='bg-gradient'],
+button[class*='shadow'],
+button[class*='blur'],
+button[class*='hover:shadow'] {
+    background: var(--surface-solid) !important;
+    background-image: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+
+button:hover,
+button:focus-visible {
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+}
+
+.auth-submit-button {
+    background: #1687d8 !important;
+    border: 1px solid rgba(125, 211, 252, 0.5);
+    box-shadow: 0 7px 16px rgba(14, 116, 204, 0.24) !important;
+    min-height: 42px;
+    border-radius: 999px !important;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease !important;
+}
+
+.auth-submit-icon {
+    display: inline-flex;
+    width: 25px;
+    height: 25px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #1687d8;
+    flex: 0 0 auto;
+}
+
+.auth-submit-label {
+    line-height: 1;
+}
+
+.auth-mode-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 32px;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 999px;
+    color: #7dd3fc;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease !important;
+}
+
+.auth-mode-button:hover {
+    background: rgba(14, 165, 233, 0.12) !important;
+    border-color: rgba(125, 211, 252, 0.55);
+    color: #bae6fd;
+}
+
+.auth-mode-button:focus-visible {
+    outline: 2px solid #7dd3fc;
+    outline-offset: 2px;
+}
+
+.auth-submit-button:hover:not(:disabled) {
+    background: #2799e7 !important;
+    box-shadow: 0 9px 20px rgba(14, 116, 204, 0.32) !important;
+    transform: translateY(-1px) !important;
+}
+
+.auth-submit-button:focus-visible {
+    background: #1687d8 !important;
+    box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.24), 0 7px 16px rgba(14, 116, 204, 0.24) !important;
+    outline: 2px solid #7dd3fc;
+    outline-offset: 2px;
+}
+
+.auth-submit-button:active:not(:disabled) {
+    background: #0f70b9 !important;
+    transform: translateY(0) !important;
+}
+
+[class*='hover:scale'],
+[class*='hover:-translate'],
+[class*='hover:shadow'],
+[class*='transition-all'],
+[class*='duration-300'],
+[class*='group-hover:blur'],
+[class*='group-hover:scale'] {
+    transition: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+button[data-button-icon]:not(.no-auto-icon):not(:has(svg)) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+}
+
+button[data-button-icon]:not(.no-auto-icon):not(:has(svg))::before {
+    content: '';
+    flex: 0 0 auto;
+    width: 1.2rem;
+    height: 1.2rem;
+    background: var(--button-action-icon) center / contain no-repeat;
+}
+
+button[data-button-icon='delete'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='6' fill='%23375aa8'/%3E%3Crect x='5.2' y='5.2' width='21.6' height='21.6' rx='3.5' fill='none' stroke='%23ffffff' stroke-width='1.6'/%3E%3Cpath fill='%23ffffff' d='M12.5 13.2h7l-.7 10.2a1.8 1.8 0 0 1-1.8 1.7h-2.1a1.8 1.8 0 0 1-1.8-1.7l-.6-10.2Z'/%3E%3Cpath fill='%23ffffff' d='m11.2 11.2 7.9-2.5c.7-.2 1.5.2 1.7.9l.2.7-9.5 3-.3-2.1Z'/%3E%3Cpath stroke='%23375aa8' stroke-width='1.1' stroke-linecap='round' d='M15 15.2v7.2M17.8 15.2v7.2'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='edit'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2360a5fa' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m16.8 4.6 2.6 2.6'/%3E%3Cpath d='M4 20h4.2L19 9.2 14.8 5 4 15.8V20Z'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='save'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M5 3.75h11.35L20.25 7.7V19A1.25 1.25 0 0 1 19 20.25H5A1.25 1.25 0 0 1 3.75 19V5A1.25 1.25 0 0 1 5 3.75Z' fill='%230ea5e9' stroke='%237dd3fc' stroke-width='1.5'/%3E%3Cpath d='M7.25 3.75h8.35v5.8H7.25v-5.8Z' fill='%23eff6ff'/%3E%3Cpath d='M14.1 4.8h1.5v3.7h-1.5z' fill='%230284c7'/%3E%3Cpath d='M7.2 13.15h9.6a1 1 0 0 1 1 1v6.1H6.2v-6.1a1 1 0 0 1 1-1Z' fill='%23f8fafc'/%3E%3Cpath d='M8.6 15.6h6.8M8.6 17.75h5.1' stroke='%2394a3b8' stroke-width='1.1' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='validate'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2322c55e' stroke-width='2.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 13 4 4L19 7'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='close'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ef4444' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='add'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2360a5fa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='view'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2338bdf8' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z'/%3E%3Ccircle cx='12' cy='12' r='2.6'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='print'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 8V3h10v5'/%3E%3Cpath d='M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2'/%3E%3Cpath d='M7 14h10v7H7z'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='email'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2360a5fa' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h16v12H4z'/%3E%3Cpath d='m4 7 8 6 8-6'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='search'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2360a5fa' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='10.8' cy='10.8' r='6.2'/%3E%3Cpath d='m16 16 4 4'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='pay'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2322c55e' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='6' width='18' height='12' rx='2'/%3E%3Cpath d='M3 10h18M7 15h4'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='transfer'],
+button[data-button-icon='export'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b5cf6' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 7h11l-3-3M17 17H6l3 3'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='previous'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2360a5fa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15 6-6 6 6 6'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='next'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2360a5fa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6 6 6-6 6'/%3E%3C/svg%3E");
+}
+
+button[data-button-icon='status'],
+button[data-button-icon='read'],
+button[data-button-icon='default'] {
+    --button-action-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2360a5fa' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5 5.5 6v5.25c0 4.1 2.75 7.85 6.5 9.25 3.75-1.4 6.5-5.15 6.5-9.25V6L12 3.5Z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E");
+}
+
+/* Ensure dropdown options are always readable when opening selects */
+select {
+    color-scheme: dark;
+}
+
+select option,
+select optgroup {
+    background-color: #0a0d1d;
+    color: #e5e7eb;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--scroll-thumb);
+    border-radius: 999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--scroll-thumb-hover);
+}
+
+/* Glassmorphism Classes */
+.glass {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 24px;
+    box-shadow: 0 4px 12px rgba(2, 6, 23, 0.12);
+}
+
+/* Theme overrides for existing Tailwind utility classes */
+/* Light mode = clean white/light-gray surfaces, dark slate text, brand blue kept as the accent */
+[data-theme='light'] [data-app-shell='true'] .bg-\[\#0d1b3e\] {
+    background-color: #eff6ff !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] .bg-black\/50,
+[data-theme='light'] [data-app-shell='true'] .bg-black\/60 {
+    background-color: rgba(15, 23, 42, 0.4) !important;
+}
+
+/* Page-level / section-level wrappers recede into the soft gray canvas so the white cards
+   nested inside them actually stand out, instead of white-on-white. */
+[data-theme='light'] [data-app-shell='true'] :is(
+    .bg-\[\#050714\], .bg-\[\#050b17\], .bg-\[\#070d1a\], .bg-\[\#0b1321\]
+) {
+    background-color: var(--frame-canvas) !important;
+    color: var(--frame-text) !important;
+    border-color: var(--frame-border) !important;
+}
+
+/* Card/tile-level dark hex backgrounds become white cards that pop off that canvas.
+   Wildcard-matched by prefix so every opacity variant (bg-slate-900/40, /60, /80...) is
+   caught in one place, not just the bare class -- but excluding hover:-prefixed tokens,
+   which are handled separately further down so they only apply on actual hover. */
+[data-theme='light'] [data-app-shell='true'] :is(
+    [class*="bg-gray-800"]:not([class*="hover:bg-gray-800"]),
+    [class*="bg-gray-900"]:not([class*="hover:bg-gray-900"]),
+    [class*="bg-gray-950"]:not([class*="hover:bg-gray-950"]),
+    [class*="bg-slate-800"]:not([class*="hover:bg-slate-800"]),
+    [class*="bg-slate-900"]:not([class*="hover:bg-slate-900"]),
+    [class*="bg-slate-950"]:not([class*="hover:bg-slate-950"]),
+    [class*="bg-zinc-800"]:not([class*="hover:bg-zinc-800"]),
+    [class*="bg-zinc-900"]:not([class*="hover:bg-zinc-900"]),
+    [class*="bg-zinc-950"]:not([class*="hover:bg-zinc-950"]),
+    [class*="bg-neutral-800"]:not([class*="hover:bg-neutral-800"]),
+    [class*="bg-neutral-900"]:not([class*="hover:bg-neutral-900"]),
+    [class*="bg-neutral-950"]:not([class*="hover:bg-neutral-950"]),
+    .bg-\[\#06101d\],
+    .bg-\[\#0a1220\], .bg-\[\#0b1020\], .bg-\[\#0b1220\],
+    .bg-\[\#0d0d0d\], .bg-\[\#0d1327\], .bg-\[\#0d1729\], .bg-\[\#0d172a\],
+    .bg-\[\#0f1328\], .bg-\[\#0f172a\],
+    .bg-\[\#10182b\], .bg-\[\#101b2d\], .bg-\[\#16213a\], .bg-\[\#171717\],
+    .bg-\[\#1a2233\], .bg-\[\#212121\], .bg-\[\#2f2f2f\], .bg-\[\#3f3f3f\]
+) {
+    background-color: var(--frame-surface) !important;
+    color: var(--frame-text) !important;
+    border-color: var(--frame-border) !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+[data-theme='light'] [data-app-shell='true'] .text-\[\#ececec\] {
+    color: var(--frame-text) !important;
+}
+
+/* Hover states: same idea, applied only while actually hovered. Table rows are excluded --
+   they keep their own dedicated dark hover styling instead (see table tbody tr:hover below),
+   which would otherwise lose to this rule's higher specificity. */
+[data-theme='light'] [data-app-shell='true'] :is(
+    .hover\:bg-\[\#050714\]:hover, .hover\:bg-\[\#06101d\]:hover, .hover\:bg-\[\#0a1220\]:hover,
+    .hover\:bg-\[\#0d1729\]:hover, .hover\:bg-\[\#0d1b3e\]:hover, .hover\:bg-\[\#101b2d\]:hover,
+    .hover\:bg-\[\#16213a\]:hover, .hover\:bg-\[\#212121\]:hover, .hover\:bg-\[\#2f2f2f\]:hover,
+    .hover\:bg-\[\#3f3f3f\]:hover,
+    [class*="hover:bg-gray-800"]:hover, [class*="hover:bg-gray-900"]:hover, [class*="hover:bg-gray-950"]:hover,
+    [class*="hover:bg-slate-800"]:hover, [class*="hover:bg-slate-900"]:hover, [class*="hover:bg-slate-950"]:hover
+):not(tr) {
+    background-color: var(--frame-surface-soft) !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] [class*="bg-gray-6"]:not([class*="hover:bg-gray-6"]),
+[data-theme='light'] [data-app-shell='true'] [class*="bg-gray-7"]:not([class*="hover:bg-gray-7"]),
+[data-theme='light'] [data-app-shell='true'] [class*="bg-slate-6"]:not([class*="hover:bg-slate-6"]),
+[data-theme='light'] [data-app-shell='true'] [class*="bg-slate-7"]:not([class*="hover:bg-slate-7"]) {
+    background-color: var(--frame-surface-soft) !important;
+    color: var(--frame-text) !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] [class*="hover:bg-gray-6"]:not(tr):hover,
+[data-theme='light'] [data-app-shell='true'] [class*="hover:bg-gray-7"]:not(tr):hover,
+[data-theme='light'] [data-app-shell='true'] [class*="hover:bg-slate-6"]:not(tr):hover,
+[data-theme='light'] [data-app-shell='true'] [class*="hover:bg-slate-7"]:not(tr):hover {
+    background-color: var(--frame-surface-soft) !important;
+    color: var(--frame-text) !important;
+}
+
+/* Translucent white overlays (built for a dark canvas) become a soft gray tint instead --
+   wildcard-matched so any opacity fraction (bg-white/5, /8, /10, /[0.07]...) is caught.
+   Table rows are excluded here: they keep their own dedicated dark hover styling below,
+   which must win instead of being outranked by this broader, higher-specificity rule. */
+[data-theme='light'] [data-app-shell='true'] [class*="bg-white/"]:not([class*="hover:bg-white/"]):not(tr) {
+    background-color: var(--frame-surface-soft) !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] :is([class*="hover:bg-white/"], [class*="hover:bg-white"]):not(tr):hover {
+    background-color: #eef2f7 !important;
+}
+
+/* Base text: dark slate instead of white, now that surfaces are light. Wildcard-matched so
+   opacity variants (text-white/95, text-white/70, text-slate-300/80...) are caught too --
+   but excluding hover:/focus: prefixed tokens (only apply on interaction) and excluding
+   table cells AND anything nested inside them, which keep their own dedicated dark-surface/
+   white-text styling below (a <span> inside a <td> must not be darkened either). */
+[data-theme='light'] [data-app-shell='true'] :is(
+    [class*="text-white"]:not([class*="hover:text-white"]):not([class*="focus:text-white"]):not([class*="group-hover:text-white"]),
+    [class*="text-slate-100"]:not([class*="hover:text-slate-100"]),
+    [class*="text-slate-200"]:not([class*="hover:text-slate-200"]),
+    [class*="text-gray-100"]:not([class*="hover:text-gray-100"]),
+    [class*="text-gray-200"]:not([class*="hover:text-gray-200"])
+):not(th):not(td):not(td *):not(th *) {
+    color: var(--frame-text) !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] :is(
+    [class*="text-slate-300"]:not([class*="hover:text-slate-300"]),
+    [class*="text-gray-300"]:not([class*="hover:text-gray-300"])
+):not(th):not(td):not(td *):not(th *) {
+    color: var(--frame-text-soft) !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] :is(
+    [class*="text-slate-400"]:not([class*="hover:text-slate-400"]),
+    [class*="text-gray-400"]:not([class*="hover:text-gray-400"])
+):not(th):not(td):not(td *):not(th *) {
+    color: var(--frame-text-muted) !important;
+}
+
+/* Data tables keep a dedicated dark, high-contrast surface with white text in both themes --
+   dense tabular data reads best this way regardless of the surrounding page's theme. Every
+   level (table, row, cell) gets its own explicit !important background so nothing can leave
+   a gap of unstyled transparency for stray light-mode text to go invisible against. */
+[data-theme='light'] [data-app-shell='true'] table {
+    background-color: #0f172a !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] table thead tr {
+    background-color: #1e293b !important;
+    border-bottom-color: rgba(148, 163, 184, 0.25) !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] table thead th {
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] table tbody tr {
+    background-color: #0f172a !important;
+    border-bottom-color: rgba(148, 163, 184, 0.15) !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] table tbody tr:hover {
+    background-color: #1e293b !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] table tbody td {
+    background-color: transparent !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] [class*="hover:text-white"]:hover {
+    color: var(--frame-text) !important;
+}
+
+/* Pastel tone text (badges, stat trends, icons) was picked for a dark canvas -- darken each
+   family so it stays readable on the new white/light-gray surfaces. Table cells are excluded:
+   they keep their own dark surface, where these pastel tones are already correctly readable. */
+[data-theme='light'] [data-app-shell='true'] :is(.text-sky-200, .text-sky-300, .text-sky-400, .text-blue-200, .text-blue-300, .text-blue-400, .text-cyan-200, .text-cyan-300, .text-cyan-400, .text-indigo-200, .text-indigo-300, .text-indigo-400):not(th):not(td):not(td *):not(th *) {
+    color: #0369a1 !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] :is(.text-emerald-200, .text-emerald-300, .text-emerald-400, .text-green-200, .text-green-300, .text-green-400, .text-teal-200, .text-teal-300, .text-teal-400):not(th):not(td):not(td *):not(th *) {
+    color: #15803d !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] :is(.text-violet-200, .text-violet-300, .text-violet-400, .text-purple-200, .text-purple-300, .text-purple-400, .text-fuchsia-200, .text-fuchsia-300, .text-fuchsia-400):not(th):not(td):not(td *):not(th *) {
+    color: #6d28d9 !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] :is(.text-amber-200, .text-amber-300, .text-amber-400, .text-yellow-200, .text-yellow-300, .text-yellow-400, .text-orange-200, .text-orange-300, .text-orange-400):not(th):not(td):not(td *):not(th *) {
+    color: #b45309 !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] :is(.text-rose-200, .text-rose-300, .text-rose-400, .text-red-200, .text-red-300, .text-red-400, .text-pink-200, .text-pink-300, .text-pink-400):not(th):not(td):not(td *):not(th *) {
+    color: #be123c !important;
+}
+
+/* Keep white text where it sits on a solid colored button/badge, not on the light canvas */
+[data-theme='light'] [data-app-shell='true'] :is(
+    button, [class*='bg-blue-'], [class*='bg-indigo-'], [class*='bg-sky-'],
+    [class*='bg-emerald-'], [class*='bg-green-'], [class*='bg-red-'], [class*='bg-rose-'],
+    [class*='bg-amber-'], [class*='bg-purple-'], [class*='bg-violet-']
+) .text-white {
+    color: #ffffff !important;
+}
+
+/* Borders read as soft slate lines against the white/light-gray surfaces */
+[data-theme='light'] [data-app-shell='true'] :is(
+    [class*="border-white/"],
+    [class*="border-gray-6"], [class*="border-gray-7"], [class*="border-gray-8"], [class*="border-gray-9"],
+    [class*="border-slate-6"], [class*="border-slate-7"], [class*="border-slate-8"], [class*="border-slate-9"]
+) {
+    border-color: var(--frame-border) !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] .divide-white\/5 > :not([hidden]) ~ :not([hidden]),
+[data-theme='light'] [data-app-shell='true'] .divide-gray-700 > :not([hidden]) ~ :not([hidden]),
+[data-theme='light'] [data-app-shell='true'] .divide-gray-800 > :not([hidden]) ~ :not([hidden]) {
+    border-color: var(--frame-border) !important;
+}
+
+/* Form fields: white background, dark text, blue focus ring */
+[data-theme='light'] [data-app-shell='true'] :is(input, select, textarea) {
+    background-color: var(--frame-surface) !important;
+    color: var(--frame-text) !important;
+    border-color: var(--frame-border) !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] :is(input, select, textarea)::placeholder {
+    color: var(--frame-text-muted) !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] :is(input, select, textarea):focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18) !important;
+    outline: none;
+}
+
+[data-theme='light'] [data-app-shell='true'] select option,
+[data-theme='light'] [data-app-shell='true'] select optgroup {
+    background-color: #ffffff !important;
+    color: var(--frame-text) !important;
+}
+
+/* Recharts stay legible on the light canvas */
+[data-theme='light'] .recharts-cartesian-grid line {
+    stroke: #e2e8f0 !important;
+}
+
+[data-theme='light'] .recharts-cartesian-axis-tick-value {
+    fill: #64748b !important;
+}
+
+[data-theme='light'] .recharts-legend-item-text {
+    color: #334155 !important;
+}
+
+[data-theme='light'] .recharts-default-tooltip {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+}
+
+[data-theme='light'] .recharts-tooltip-label,
+[data-theme='light'] .recharts-tooltip-item {
+    color: #0f172a !important;
+}
+
+/* Dark theme harmonization for the main app shell */
+:root[data-theme='dark'] [data-app-shell='true'] {
+    --dashboard-surface: #0b1020;
+    --dashboard-surface-strong: #10182b;
+    --dashboard-surface-soft: #16213a;
+    --dashboard-border: rgba(148, 163, 184, 0.18);
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] :is(
+    .bg-white\/5,
+    .bg-white\/10,
+    .bg-white\/20,
+    .bg-white\/\[0\.05\],
+    .bg-white\/\[0\.07\],
+    .bg-white\/\[0\.08\],
+    .bg-gray-50,
+    .bg-gray-100,
+    .bg-gray-200
+) {
+    background-color: var(--dashboard-surface) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] :is(
+    .bg-gray-800,
+    .bg-gray-800\/30,
+    .bg-gray-800\/50,
+    .bg-gray-800\/80,
+    .bg-gray-900,
+    .bg-slate-800,
+    .bg-slate-900
+) {
+    background-color: var(--dashboard-surface-strong) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] .bg-\[\#171717\] {
+    background-color: #050714 !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] .bg-\[\#0d0d0d\],
+:root[data-theme='dark'] [data-app-shell='true'] .bg-\[\#212121\] {
+    background-color: var(--dashboard-surface-strong) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] .bg-\[\#2f2f2f\],
+:root[data-theme='dark'] [data-app-shell='true'] .bg-\[\#3f3f3f\] {
+    background-color: var(--dashboard-surface-soft) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] .text-\[\#ececec\] {
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] .hover\:bg-\[\#212121\]:hover {
+    background-color: var(--dashboard-surface-strong) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] .hover\:bg-\[\#2f2f2f\]:hover,
+:root[data-theme='dark'] [data-app-shell='true'] .hover\:bg-\[\#3f3f3f\]:hover {
+    background-color: var(--dashboard-surface-soft) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] :is(
+    .hover\:bg-white\/5:hover,
+    .hover\:bg-white\/10:hover,
+    .hover\:bg-white\/20:hover,
+    .hover\:bg-white\/\[0\.07\]:hover,
+    .hover\:bg-white\/\[0\.08\]:hover,
+    .hover\:bg-gray-50:hover,
+    .hover\:bg-gray-100:hover,
+    .hover\:bg-gray-200:hover,
+    .hover\:bg-gray-800\/50:hover
+) {
+    background-color: var(--dashboard-surface-soft) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] :is(
+    .border-white\/5,
+    .border-white\/10,
+    .border-white\/20,
+    .border-gray-200,
+    .border-gray-300,
+    .border-gray-400,
+    .border-gray-500,
+    .border-gray-600,
+    .border-gray-600\/50,
+    .border-gray-700,
+    .border-gray-700\/50,
+    .border-gray-800
+) {
+    border-color: var(--dashboard-border) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] .divide-white\/5 > :not([hidden]) ~ :not([hidden]),
+:root[data-theme='dark'] [data-app-shell='true'] .divide-gray-700 > :not([hidden]) ~ :not([hidden]),
+:root[data-theme='dark'] [data-app-shell='true'] .divide-gray-700\/50 > :not([hidden]) ~ :not([hidden]),
+:root[data-theme='dark'] [data-app-shell='true'] .divide-gray-800 > :not([hidden]) ~ :not([hidden]) {
+    border-color: var(--dashboard-border) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] .text-gray-100,
+:root[data-theme='dark'] [data-app-shell='true'] .text-gray-200,
+:root[data-theme='dark'] [data-app-shell='true'] .text-gray-300,
+:root[data-theme='dark'] [data-app-shell='true'] .text-gray-700,
+:root[data-theme='dark'] [data-app-shell='true'] .text-gray-800,
+:root[data-theme='dark'] [data-app-shell='true'] .text-gray-900 {
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] .text-gray-400 {
+    color: rgba(255, 255, 255, 0.82) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] .text-gray-500 {
+    color: rgba(255, 255, 255, 0.68) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] .text-gray-600 {
+    color: rgba(255, 255, 255, 0.56) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] .placeholder-gray-400::placeholder,
+:root[data-theme='dark'] [data-app-shell='true'] .placeholder-gray-500::placeholder,
+:root[data-theme='dark'] [data-app-shell='true'] .placeholder-gray-600::placeholder {
+    color: rgba(255, 255, 255, 0.42) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] :is(
+    .from-gray-800,
+    .from-gray-800\/30,
+    .from-gray-800\/50,
+    .from-gray-800\/80,
+    .from-gray-900
+) {
+    --tw-gradient-from: #0b1020 var(--tw-gradient-from-position) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] :is(
+    .via-gray-800,
+    .via-gray-900
+) {
+    --tw-gradient-stops: var(--tw-gradient-from), #10182b var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+:root[data-theme='dark'] [data-app-shell='true'] :is(
+    .to-gray-800,
+    .to-gray-800\/30,
+    .to-gray-800\/50,
+    .to-gray-800\/80,
+    .to-gray-900,
+    .to-gray-900\/30,
+    .to-gray-900\/50,
+    .to-gray-900\/80
+) {
+    --tw-gradient-to: #10182b var(--tw-gradient-to-position) !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Transitions */
+.transition-glass {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-glass:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Enhanced Card & Panel Styling */
+.card,
+[role='region'],
+[class*='card'],
+[class*='panel'] {
+    background-color: rgba(15, 23, 42, 0.92) !important;
+    border: 1px solid rgba(148, 163, 184, 0.18) !important;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(2, 6, 23, 0.12) !important;
+}
+
+.card:hover,
+[role='region']:hover {
+    border-color: rgba(148, 163, 184, 0.3) !important;
+    box-shadow: 0 6px 16px rgba(2, 6, 23, 0.18) !important;
+    transition: all 0.3s ease;
+}
+
+/* Table Standardization */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: transparent;
+}
+
+table thead tr {
+    background-color: rgba(15, 23, 42, 0.6);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+table thead th {
+    padding: 1rem 0.75rem;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+table tbody tr {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    transition: background-color 0.2s ease;
+}
+
+table tbody tr:hover {
+    background-color: rgba(148, 163, 184, 0.05);
+}
+
+table tbody td {
+    padding: 0.875rem 0.75rem;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.9375rem;
+}
+
+/* Badge & Tag Enhancement */
+[class*='badge'],
+[class*='tag'],
+[class*='label'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.375rem 0.75rem;
+    white-space: nowrap;
+}
+
+/* Status Badges */
+[class*='badge'][class*='success'],
+[class*='badge'][class*='green'],
+[class*='status'][class*='active'] {
+    background-color: rgba(34, 197, 94, 0.12);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+[class*='badge'][class*='danger'],
+[class*='badge'][class*='red'],
+[class*='status'][class*='inactive'] {
+    background-color: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+[class*='badge'][class*='warning'],
+[class*='badge'][class*='yellow'],
+[class*='status'][class*='pending'] {
+    background-color: rgba(217, 119, 6, 0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(217, 119, 6, 0.3);
+}
+
+[class*='badge'][class*='info'],
+[class*='badge'][class*='blue'],
+[class*='status'][class*='processing'] {
+    background-color: rgba(59, 130, 246, 0.12);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* Form Group & Fieldset Enhancement */
+fieldset,
+[role='group'] {
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    background-color: rgba(15, 23, 42, 0.6);
+}
+
+legend {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0 0.5rem;
+}
+
+/* Label Styling */
+label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.88);
+    margin-bottom: 0.5rem;
+    text-transform: capitalize;
+    letter-spacing: 0.02em;
+}
+
+/* Input & Textarea Enhancement */
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='date'],
+input[type='time'],
+input[type='datetime-local'],
+textarea,
+select {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    transition: all 0.2s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: rgba(255, 255, 255, 0.38) !important;
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+    background-color: rgba(148, 163, 184, 0.08) !important;
+    color: rgba(255, 255, 255, 0.45) !important;
+    cursor: not-allowed;
+}
+
+/* Modal / Overlay Enhancement */
+[role='dialog'],
+[class*='modal'],
+[class*='overlay'] {
+    background: rgba(5, 7, 20, 0.92);
+}
+
+[role='dialog'] {
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 1rem;
+    box-shadow: 0 12px 28px rgba(2, 6, 23, 0.2);
+}
+
+/* Alert & Notification Enhancement */
+[role='alert'],
+[class*='alert'],
+[class*='notification'] {
+    border-radius: 0.75rem;
+    padding: 1rem;
+    border-left: 4px solid;
+    background-color: rgba(15, 23, 42, 0.8);
+}
+
+[role='alert'][class*='error'],
+[class*='alert'][class*='error'] {
+    border-left-color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.08);
+    color: #fca5a5;
+}
+
+[role='alert'][class*='success'],
+[class*='alert'][class*='success'] {
+    border-left-color: #22c55e;
+    background-color: rgba(34, 197, 94, 0.08);
+    color: #86efac;
+}
+
+[role='alert'][class*='warning'],
+[class*='alert'][class*='warning'] {
+    border-left-color: #f59e0b;
+    background-color: rgba(245, 158, 11, 0.08);
+    color: #fcd34d;
+}
+
+[role='alert'][class*='info'],
+[class*='alert'][class*='info'] {
+    border-left-color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.08);
+    color: #93c5fd;
+}
+

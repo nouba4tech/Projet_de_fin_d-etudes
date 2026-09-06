@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MIRADOR - Gestion hôtelière</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      (() => {
+        const themeKey = 'mirador-theme';
+        const savedTheme = localStorage.getItem(themeKey);
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        const initialTheme = savedTheme === 'light' || savedTheme === 'dark'
+          ? savedTheme
+          : (prefersLight ? 'light' : 'dark');
+
+        document.documentElement.setAttribute('data-theme', initialTheme);
+      })();
+    </script>
+    <style>
+      body {
+        font-family: 'Aptos', 'Segoe UI', 'Helvetica Neue', sans-serif;
+        background-color: #050714;
+        color: #ffffff;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #050714;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1e293b;
+        border-radius: 10px;
+      }
+    </style>
+    <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.41.0",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0",
+    "recharts": "https://esm.sh/recharts@^3.7.0"
+  }
+}
+    </script>
+    <link rel="stylesheet" href="/index.css" />
+  </head>
+  <body class="overflow-hidden">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

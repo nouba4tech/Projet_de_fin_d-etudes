@@ -1,0 +1,8 @@
+
+{
+  "name": "Mirador Hotel Management",
+  "description": "Système de gestion hôtelière de luxe Mirador avec analytique en temps réel et assistant IA prédictif.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

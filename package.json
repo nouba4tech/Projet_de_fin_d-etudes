@@ -1,0 +1,13 @@
+{
+  "name": "mirador-hotel-root",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "npm run dev:all",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "cd backend && mvnw.cmd spring-boot:run",
+    "dev:all": "start \"Mirador Backend\" cmd /k \"cd backend && mvnw.cmd spring-boot:run\" && npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "preview": "npm --prefix frontend run preview"
+  }
+}
