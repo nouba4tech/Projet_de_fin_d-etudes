@@ -138,10 +138,10 @@ const SidebarItem: React.FC<{ to: string; label: string; icon: React.FC; allowed
 
   const activeClasses = theme === 'dark'
     ? 'bg-[#0d1b3e] text-blue-400 border-r-4 border-blue-500'
-    : 'bg-blue-50 text-blue-700 border-r-4 border-blue-600';
+    : 'bg-[#e8f0f3] text-[#154a63] border-r-4 border-[#154a63] font-semibold';
   const inactiveClasses = theme === 'dark'
     ? 'text-gray-400 hover:text-white hover:bg-white/5'
-    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50';
+    : 'text-[#525a68] hover:text-[#14181f] hover:bg-[#f5f6f8]';
 
   return (
     <Link
@@ -165,8 +165,14 @@ const PageLoader: React.FC<{ fullScreen?: boolean }> = ({ fullScreen = false }) 
   );
 };
 
-const MiradorSidebar: React.FC<{ theme: Theme }> = ({ theme }) => {
+const MiradorSidebar: React.FC<{ theme: Theme; isOpen: boolean; onClose: () => void }> = ({ theme, isOpen, onClose }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    onClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     try {
       const saved = sessionStorage.getItem('currentUser');
@@ -195,11 +201,33 @@ const MiradorSidebar: React.FC<{ theme: Theme }> = ({ theme }) => {
   const isDark = theme === 'dark';
 
   return (
-    <aside className={`w-[280px] flex flex-col fixed h-full z-20 overflow-y-auto ${
-      isDark ? 'bg-[#050714] border-r border-white/5' : 'bg-white border-r border-gray-200'
-    }`}>
-      <div className="p-8 pb-10 flex flex-col items-center">
-        <div className="w-36 h-36 flex items-center justify-center overflow-hidden">
+    <>
+      {isOpen ? (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      ) : null}
+      <aside className={`w-[280px] flex flex-col fixed h-full z-40 overflow-y-auto transition-transform duration-200 ease-in-out md:translate-x-0 ${
+        isOpen ? 'translate-x-0' : '-translate-x-full'
+      } ${
+        isDark ? 'bg-[#050714] border-r border-white/5' : 'bg-white border-r border-gray-200'
+      }`}>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Fermer le menu"
+          className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full md:hidden ${
+            isDark ? 'text-gray-400 hover:bg-white/5' : 'text-gray-500 hover:bg-gray-100'
+          }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 6l12 12M18 6 6 18" />
+          </svg>
+        </button>
+        <div className="p-8 pb-10 flex flex-col items-center">
+          <div className="w-36 h-36 flex items-center justify-center overflow-hidden">
           <img src="/assets/logo_mirador_transparent_cropped.png" alt="Mirador Hotel" className="w-full h-full object-contain" />
         </div>
       </div>
@@ -245,16 +273,23 @@ const MiradorSidebar: React.FC<{ theme: Theme }> = ({ theme }) => {
           Deconnexion
         </button>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 };
 
 
 const AccessDenied: React.FC = () => (
-  <div className="flex min-h-[calc(100vh-160px)] items-center justify-center">
-    <div className="max-w-md rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
-      <h3 className="text-lg font-bold text-white">Acces limite</h3>
-      <p className="mt-2 text-sm leading-6 text-white/65">
+  <div
+    className="flex min-h-screen items-center justify-center"
+    style={{ background: 'var(--app-bg)' }}
+  >
+    <div
+      className="max-w-md rounded-2xl p-6 text-center"
+      style={{ border: '1px solid var(--frame-border)', background: 'var(--frame-surface)' }}
+    >
+      <h3 className="text-lg font-bold" style={{ color: 'var(--frame-text)' }}>Acces limite</h3>
+      <p className="mt-2 text-sm leading-6" style={{ color: 'var(--frame-text-muted)' }}>
         Votre groupe utilisateur ne dispose pas des droits pour utiliser cette fonctionnalite.
       </p>
     </div>
@@ -288,6 +323,7 @@ const MainLayout: React.FC<{
   const notificationPanelRef = useRef<HTMLDivElement | null>(null);
   const [quickSearch, setQuickSearch] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [notifications, setNotifications] = useState<HeaderNotification[]>(INITIAL_HEADER_NOTIFICATIONS);
 
   const unreadCount = useMemo(
@@ -351,14 +387,28 @@ const MainLayout: React.FC<{
     <ProtectedRoute feature={feature}>
       <div
         data-app-shell="true"
-        className={`flex h-screen overflow-hidden ${theme === 'dark' ? 'bg-[#050714] text-white' : 'bg-slate-100 text-gray-900'}`}
+        className={`flex h-screen overflow-hidden ${theme === 'dark' ? 'bg-[#050714] text-white' : 'bg-[#f5f6f8] text-[#14181f]'}`}
       >
-        <MiradorSidebar theme={theme} />
-        <main className={`flex-1 ml-[280px] h-full overflow-hidden flex flex-col ${theme === 'dark' ? 'bg-[#050714]' : 'bg-slate-100'}`}>
-          <header className={`h-20 border-b flex items-center justify-between px-10 shrink-0 ${theme === 'dark' ? 'bg-[#06101d] border-slate-700/60' : 'bg-white border-gray-200'}`}>
-            <h2 className={`text-xl font-bold tracking-tight ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{title}</h2>
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col">
+        <MiradorSidebar theme={theme} isOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+        <main className={`flex-1 md:ml-[280px] h-full overflow-hidden flex flex-col ${theme === 'dark' ? 'bg-[#050714]' : 'bg-[#f5f6f8]'}`}>
+          <header className={`h-16 md:h-20 border-b flex items-center justify-between gap-2 px-3 md:px-10 shrink-0 ${theme === 'dark' ? 'bg-[#06101d] border-slate-700/60' : 'bg-white border-[#e2e5eb]'}`}>
+            <div className="flex min-w-0 items-center gap-2 md:gap-4">
+              <button
+                type="button"
+                onClick={() => setMobileNavOpen(true)}
+                aria-label="Ouvrir le menu"
+                className={`flex h-9 w-9 flex-none items-center justify-center rounded-lg md:hidden ${
+                  theme === 'dark' ? 'text-white/80 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+              <h2 className={`truncate text-base md:text-xl font-bold tracking-tight ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{title}</h2>
+            </div>
+            <div className="flex flex-none items-center gap-2 md:gap-6">
+              <div className="hidden md:flex md:flex-col">
                 <form onSubmit={handleQuickSearch} className="relative">
                   <input
                     type="text"
@@ -368,10 +418,10 @@ const MainLayout: React.FC<{
                     }}
                     placeholder="Recherche rapide..."
                     list="quick-search-options"
-                    className={`rounded-full pl-5 pr-12 py-2 text-sm w-64 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all ${
+                    className={`rounded-full pl-5 pr-12 py-2 text-sm w-64 focus:outline-none transition-all ${
                       theme === 'dark'
-                        ? 'bg-gray-800 border border-gray-600 text-white placeholder-gray-400'
-                        : 'bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-400'
+                        ? 'bg-gray-800 border border-gray-600 text-white placeholder-gray-400 focus:ring-1 focus:ring-blue-500'
+                        : 'bg-[#f5f6f8] border border-[#e2e5eb] text-[#14181f] placeholder-[#8891a0] focus:ring-2 focus:ring-[#154a63]/30 focus:border-[#154a63]'
                     }`}
                   />
                   <datalist id="quick-search-options">
@@ -381,7 +431,9 @@ const MainLayout: React.FC<{
                   </datalist>
                   <button
                     type="submit"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors"
+                    className={`absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full text-white flex items-center justify-center transition-colors ${
+                      theme === 'dark' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-[#154a63] hover:bg-[#103c50]'
+                    }`}
                     aria-label="Lancer la recherche rapide"
                     title="Lancer la recherche rapide"
                   >
@@ -434,7 +486,7 @@ const MainLayout: React.FC<{
                 </button>
 
                 {showNotifications ? (
-                  <div className={`absolute right-0 mt-3 w-80 rounded-2xl border p-4 z-50 ${
+                  <div className={`fixed inset-x-3 top-16 rounded-2xl border p-4 z-50 md:absolute md:inset-x-auto md:top-auto md:right-0 md:mt-3 md:w-80 ${
                     theme === 'dark'
                       ? 'border-slate-700/60 bg-[#0b1020] shadow-[0_20px_40px_rgba(2,6,23,0.5)]'
                       : 'border-gray-200 bg-white shadow-xl'
@@ -443,7 +495,7 @@ const MainLayout: React.FC<{
                       <h3 className={`text-sm font-bold ${theme === 'dark' ? 'text-white/95' : 'text-gray-900'}`}>Notifications</h3>
                       <button
                         onClick={markAllNotificationsAsRead}
-                        className={`text-xs transition-colors ${theme === 'dark' ? 'text-sky-300 hover:text-sky-200' : 'text-blue-600 hover:text-blue-700'}`}
+                        className={`text-xs transition-colors ${theme === 'dark' ? 'text-sky-300 hover:text-sky-200' : 'text-[#154a63] hover:text-[#103c50]'}`}
                       >
                         Tout lire
                       </button>
@@ -474,7 +526,7 @@ const MainLayout: React.FC<{
               </div>
             </div>
           </header>
-          <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-10 custom-scrollbar">
             {children}
           </div>
         </main>

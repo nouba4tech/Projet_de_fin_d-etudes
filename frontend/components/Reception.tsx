@@ -1504,14 +1504,14 @@ const Reception: React.FC = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-3xl blur-3xl"></div>
               <div className="relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-xl border border-gray-700/50 rounded-3xl shadow-2xl">
-                <div className="px-8 py-6 border-b border-gray-700/50">
-                  <div className="flex items-center justify-between">
+                <div className="px-4 py-5 sm:px-8 sm:py-6 border-b border-gray-700/50">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <h2 className="text-xl font-semibold text-white">Gestion des Réservations</h2>
                       <p className="text-sm text-gray-400 mt-1">Gérez les arrivées, départs et planning des chambres</p>
                     </div>
                     {!showBookingForm && (
-                      <button 
+                      <button
                         onClick={() => {
                           setEditingBookingId(null);
                           setDraftBooking({
@@ -1544,14 +1544,14 @@ const Reception: React.FC = () => {
                   <table className="w-full">
                     <thead className="bg-gradient-to-r from-gray-800/50 to-gray-900/50 border-b border-gray-700/50">
                       <tr>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">N° Réservation</th>
+                        <th className="hidden px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">N° Réservation</th>
                         <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Client</th>
                         <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Chambre</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Arrivée</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Départ</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Paiement</th>
+                        <th className="hidden px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Type</th>
+                        <th className="hidden px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Arrivée</th>
+                        <th className="hidden px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Départ</th>
+                        <th className="hidden px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Montant</th>
+                        <th className="hidden px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Paiement</th>
                         <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                         <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                       </tr>
@@ -1559,20 +1559,25 @@ const Reception: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {filteredInvoiceBookings.map((booking) => (
                       <tr key={booking.id} className="hover:bg-white/5 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{booking.bookingNumber}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{booking.guestName}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{booking.roomNumber}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{booking.roomType}</td>
+                        <td className="hidden px-6 py-4 whitespace-nowrap text-sm font-medium text-white md:table-cell">{booking.bookingNumber}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                          {booking.guestName}
+                          <div className="mt-0.5 text-[11px] font-normal text-gray-400 md:hidden">
+                            {booking.checkIn.toLocaleDateString('fr-FR')} au {booking.checkOut.toLocaleDateString('fr-FR')} · {booking.totalAmount.toLocaleString('fr-FR')} FCFA
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{booking.roomNumber}</td>
+                        <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-400 md:table-cell">{booking.roomType}</td>
+                        <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">
                           {booking.checkIn.toLocaleDateString('fr-FR')}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">
                           {booking.checkOut.toLocaleDateString('fr-FR')}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-white">
+                        <td className="hidden px-6 py-4 whitespace-nowrap text-sm font-semibold text-white md:table-cell">
                           {booking.totalAmount.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                        <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-400 md:table-cell">
                           {getPaymentMethodLabel(booking.paymentMethod)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">

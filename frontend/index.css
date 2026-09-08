@@ -35,32 +35,36 @@ html {
 :root[data-theme='light'] {
     color-scheme: light;
 
-    --app-bg: #f5f7fa;
-    --app-text: #1b2638;
-    --app-overlay: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 247, 250, 0.98) 100%);
-    --app-pattern-dot: rgba(71, 85, 105, 0.045);
-    --app-pattern-glow: rgba(15, 118, 110, 0.035);
+    --app-bg: #f5f6f8;
+    --app-text: #14181f;
+    --app-overlay: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 246, 248, 0.98) 100%);
+    --app-pattern-dot: rgba(20, 24, 31, 0.04);
+    --app-pattern-glow: rgba(21, 74, 99, 0.035);
 
-    --scroll-thumb: rgba(71, 85, 105, 0.24);
-    --scroll-thumb-hover: rgba(15, 118, 110, 0.4);
+    --scroll-thumb: rgba(20, 24, 31, 0.22);
+    --scroll-thumb-hover: rgba(21, 74, 99, 0.4);
 
-    /* Frame palette: a calm hotel-office canvas with teal structure and warm amber highlights. */
-    --frame-canvas: #f5f7fa;
+    /* Frame palette "Mirador Clair": near-black ink on a near-white canvas for maximum
+       legibility, a single deep-navy accent ("Rade"), brass reserved for rare highlights. */
+    --frame-canvas: #f5f6f8;
     --frame-surface: #ffffff;
-    --frame-surface-soft: #f7f9fb;
-    --frame-border: #d8e0e9;
-    --frame-text: #1b2638;
-    --frame-text-soft: #475569;
-    --frame-text-muted: #64748b;
+    --frame-surface-soft: #eef1f4;
+    --frame-border: #e2e5eb;
+    --frame-text: #14181f;
+    --frame-text-soft: #525a68;
+    --frame-text-muted: #6b7280;
     --surface-solid: var(--frame-surface);
-    --chart-accent-1: #0f766e;
-    --chart-accent-2: #b7791f;
+    --frame-accent: #154a63;
+    --frame-accent-soft: #e8f0f3;
+    --frame-brass: #93611f;
+    --chart-accent-1: #154a63;
+    --chart-accent-2: #93611f;
 }
 
 body {
     background-color: var(--app-bg);
     color: var(--app-text);
-    font-family: 'Aptos', 'Segoe UI', 'Helvetica Neue', sans-serif;
+    font-family: 'Public Sans', 'Segoe UI', 'Helvetica Neue', sans-serif;
     overflow-x: hidden;
     background-image:
         var(--app-overlay),
@@ -78,7 +82,7 @@ input,
 button,
 select,
 textarea {
-    font-family: 'Aptos', 'Segoe UI', 'Helvetica Neue', sans-serif;
+    font-family: 'Public Sans', 'Segoe UI', 'Helvetica Neue', sans-serif;
 }
 
 button,
@@ -98,22 +102,26 @@ textarea,
     box-shadow: none !important;
 }
 
-/* Kill any remaining smoky, blurred, or gradient glow effects globally */
-[class*='bg-gradient-to-'],
-[class*='from-'],
-[class*='via-'],
-[class*='to-'],
-[class*='blur-'],
-[class*='backdrop-blur-'],
-[class*='shadow-'],
-[class*='shadow\['],
-[class*='hover:shadow-'],
-[class*='group-hover:blur-'],
-[class*='group-hover:shadow-'],
-button[class*='bg-gradient'],
-button[class*='shadow'],
-button[class*='blur'],
-button[class*='hover:shadow'] {
+/* Kill any remaining smoky, blurred, or gradient glow effects globally --
+   but never on an element that also carries bg-clip-text: there, the gradient
+   IS the text color (background-clip: text + text-transparent), not a glow
+   effect, and forcing background-image: none makes that text render fully
+   invisible while still taking up its layout space (a silent "empty" heading). */
+[class*='bg-gradient-to-']:not([class*='bg-clip-text']),
+[class*='from-']:not([class*='bg-clip-text']),
+[class*='via-']:not([class*='bg-clip-text']),
+[class*='to-']:not([class*='bg-clip-text']),
+[class*='blur-']:not([class*='bg-clip-text']),
+[class*='backdrop-blur-']:not([class*='bg-clip-text']),
+[class*='shadow-']:not([class*='bg-clip-text']),
+[class*='shadow\[']:not([class*='bg-clip-text']),
+[class*='hover:shadow-']:not([class*='bg-clip-text']),
+[class*='group-hover:blur-']:not([class*='bg-clip-text']),
+[class*='group-hover:shadow-']:not([class*='bg-clip-text']),
+button[class*='bg-gradient']:not([class*='bg-clip-text']),
+button[class*='shadow']:not([class*='bg-clip-text']),
+button[class*='blur']:not([class*='bg-clip-text']),
+button[class*='hover:shadow']:not([class*='bg-clip-text']) {
     background: var(--surface-solid) !important;
     background-image: none !important;
     filter: none !important;
@@ -335,7 +343,7 @@ select optgroup {
 /* Theme overrides for existing Tailwind utility classes */
 /* Light mode = clean white/light-gray surfaces, dark slate text, brand blue kept as the accent */
 [data-theme='light'] [data-app-shell='true'] .bg-\[\#0d1b3e\] {
-    background-color: #eff6ff !important;
+    background-color: var(--frame-accent-soft) !important;
 }
 
 [data-theme='light'] [data-app-shell='true'] .bg-black\/50,
@@ -419,13 +427,15 @@ select optgroup {
 
 /* Translucent white overlays (built for a dark canvas) become a soft gray tint instead --
    wildcard-matched so any opacity fraction (bg-white/5, /8, /10, /[0.07]...) is caught.
-   Table rows are excluded here: they keep their own dedicated dark hover styling below,
-   which must win instead of being outranked by this broader, higher-specificity rule. */
-[data-theme='light'] [data-app-shell='true'] [class*="bg-white/"]:not([class*="hover:bg-white/"]):not(tr) {
+   Table rows AND anything inside a table cell are excluded: cells keep their own dedicated
+   dark surface (see "Data tables" block below), and a badge whose text color is skipped
+   for being inside a <td> must not have its background re-lit independently either --
+   that mismatch (light pill, still-white text) is what made in-table badges unreadable. */
+[data-theme='light'] [data-app-shell='true'] [class*="bg-white/"]:not([class*="hover:bg-white/"]):not(tr):not(td):not(td *):not(th):not(th *) {
     background-color: var(--frame-surface-soft) !important;
 }
 
-[data-theme='light'] [data-app-shell='true'] :is([class*="hover:bg-white/"], [class*="hover:bg-white"]):not(tr):hover {
+[data-theme='light'] [data-app-shell='true'] :is([class*="hover:bg-white/"], [class*="hover:bg-white"]):not(tr):not(td):not(td *):not(th):not(th *):hover {
     background-color: #eef2f7 !important;
 }
 
@@ -497,7 +507,7 @@ select optgroup {
    family so it stays readable on the new white/light-gray surfaces. Table cells are excluded:
    they keep their own dark surface, where these pastel tones are already correctly readable. */
 [data-theme='light'] [data-app-shell='true'] :is(.text-sky-200, .text-sky-300, .text-sky-400, .text-blue-200, .text-blue-300, .text-blue-400, .text-cyan-200, .text-cyan-300, .text-cyan-400, .text-indigo-200, .text-indigo-300, .text-indigo-400):not(th):not(td):not(td *):not(th *) {
-    color: #0369a1 !important;
+    color: var(--frame-accent) !important;
 }
 
 [data-theme='light'] [data-app-shell='true'] :is(.text-emerald-200, .text-emerald-300, .text-emerald-400, .text-green-200, .text-green-300, .text-green-400, .text-teal-200, .text-teal-300, .text-teal-400):not(th):not(td):not(td *):not(th *) {
@@ -523,6 +533,34 @@ select optgroup {
     [class*='bg-amber-'], [class*='bg-purple-'], [class*='bg-violet-']
 ) .text-white {
     color: #ffffff !important;
+}
+
+/* Single brand accent: every "primary blue" button/border/ring app-wide becomes the one
+   Mirador Clair accent (deep navy "Rade"), instead of a generic Tailwind blue living
+   alongside it. Solid fills darken on hover; borders/rings/text reuse the same token. */
+[data-theme='light'] [data-app-shell='true'] :is(
+    [class*="bg-blue-6"]:not([class*="hover:bg-blue-6"]),
+    [class*="bg-blue-7"]:not([class*="hover:bg-blue-7"]),
+    [class*="bg-indigo-6"]:not([class*="hover:bg-indigo-6"])
+) {
+    background-color: var(--frame-accent) !important;
+    background-image: none !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] :is(
+    [class*="hover:bg-blue-5"]:hover, [class*="hover:bg-blue-6"]:hover, [class*="hover:bg-blue-7"]:hover,
+    [class*="hover:bg-indigo-6"]:hover
+) {
+    background-color: #103c50 !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] :is(
+    [class*="border-blue-4"], [class*="border-blue-5"], [class*="border-blue-6"],
+    [class*="ring-blue-4"], [class*="ring-blue-5"], [class*="ring-blue-6"],
+    [class*="focus:ring-blue-"]:focus, [class*="focus:border-blue-"]:focus
+) {
+    border-color: var(--frame-accent) !important;
+    --tw-ring-color: rgba(21, 74, 99, 0.35) !important;
 }
 
 /* Borders read as soft slate lines against the white/light-gray surfaces */
@@ -552,8 +590,8 @@ select optgroup {
 }
 
 [data-theme='light'] [data-app-shell='true'] :is(input, select, textarea):focus {
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18) !important;
+    border-color: var(--frame-accent) !important;
+    box-shadow: 0 0 0 3px rgba(21, 74, 99, 0.18) !important;
     outline: none;
 }
 
@@ -795,6 +833,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     background: transparent;
+    font-variant-numeric: tabular-nums;
 }
 
 table thead tr {
@@ -825,6 +864,29 @@ table tbody td {
     padding: 0.875rem 0.75rem;
     color: rgba(255, 255, 255, 0.82);
     font-size: 0.9375rem;
+}
+
+/* Data tables on narrow screens: every table still scrolls horizontally inside its own
+   container (never the page) when it genuinely doesn't fit -- that's normal, expected
+   behavior for dense multi-column data, the same pattern used by most professional
+   dashboards. What we fix here is everything that made that scroll worse than it needs
+   to be: oversized padding/text eating width, and a handful of tables hard-coded with a
+   desktop min-width (min-w-[...]) that forced the same wide layout even on a phone. */
+@media (max-width: 767px) {
+    table thead th {
+        padding: 0.625rem 0.5rem !important;
+        font-size: 0.6875rem !important;
+        white-space: nowrap;
+    }
+
+    table tbody td {
+        padding: 0.625rem 0.5rem !important;
+        font-size: 0.8125rem !important;
+    }
+
+    table[class*='min-w-'] {
+        min-width: 0 !important;
+    }
 }
 
 /* Badge & Tag Enhancement */

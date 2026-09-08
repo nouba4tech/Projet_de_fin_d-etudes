@@ -418,11 +418,11 @@ const Guests: React.FC = () => {
               <thead>
                 <tr className="border-b border-slate-700/60 text-left text-xs uppercase tracking-[0.25em] text-white/45">
                   <th className="px-4 py-3">Client</th>
-                  <th className="px-4 py-3">Type</th>
-                  <th className="px-4 py-3">Chambre</th>
-                  <th className="px-4 py-3">Contact</th>
-                  <th className="px-4 py-3">Sejours</th>
-                  <th className="px-4 py-3">Solde</th>
+                  <th className="hidden px-4 py-3 md:table-cell">Type</th>
+                  <th className="hidden px-4 py-3 md:table-cell">Chambre</th>
+                  <th className="hidden px-4 py-3 md:table-cell">Contact</th>
+                  <th className="hidden px-4 py-3 md:table-cell">Sejours</th>
+                  <th className="hidden px-4 py-3 md:table-cell">Solde</th>
                   <th className="px-4 py-3">Statut</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
@@ -435,15 +435,16 @@ const Guests: React.FC = () => {
                       <td className="px-4 py-4">
                         <p className="font-semibold text-white/95">{guest.fullName}</p>
                         <p className="mt-1 text-xs text-white/45">Dernier sejour: {guest.lastStay}</p>
+                        <p className="mt-1 text-xs text-white/45 md:hidden">{guest.clientType} · Chambre {guest.roomNumber} · {guest.balance.toLocaleString('fr-FR')} FCFA</p>
                       </td>
-                      <td className="px-4 py-4">{guest.clientType}</td>
-                      <td className="px-4 py-4">{guest.roomNumber}</td>
-                      <td className="px-4 py-4">
+                      <td className="hidden px-4 py-4 md:table-cell">{guest.clientType}</td>
+                      <td className="hidden px-4 py-4 md:table-cell">{guest.roomNumber}</td>
+                      <td className="hidden px-4 py-4 md:table-cell">
                         <p>{guest.phone}</p>
                         <p className="mt-1 text-xs text-white/45">{guest.email}</p>
                       </td>
-                      <td className="px-4 py-4">{guest.totalStays}</td>
-                      <td className="px-4 py-4">{guest.balance.toLocaleString('fr-FR')} FCFA</td>
+                      <td className="hidden px-4 py-4 md:table-cell">{guest.totalStays}</td>
+                      <td className="hidden px-4 py-4 md:table-cell">{guest.balance.toLocaleString('fr-FR')} FCFA</td>
                       <td className="px-4 py-4">
                         <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusClassName(guest.reservationStatus)}`}>
                           {guest.reservationStatus}

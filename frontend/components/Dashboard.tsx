@@ -157,17 +157,17 @@ const Dashboard: React.FC<{ stats: DashboardStats; rooms: Room[] }> = ({ stats, 
   ]), [roomSummary.cleaning, roomSummary.maintenance, stats.pendingCheckins]);
 
   return (
-    <div className="-m-10 min-h-[calc(100vh-80px)] bg-[#050b17] px-4 py-5 md:px-8 md:py-6">
+    <div className="-m-4 md:-m-10 min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-80px)] bg-[#050b17] px-4 py-5 md:px-8 md:py-6">
       <div className="mx-auto max-w-[1500px] space-y-4">
-        <header className="flex items-end justify-between gap-4 border-b border-white/5 pb-3">
+        <header className="flex flex-col gap-3 border-b border-white/5 pb-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
           <div>
             <p className="text-[10px] font-medium uppercase tracking-[0.26em] text-slate-400">Accueil</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">Tableau de bord</h1>
+            <h1 className="mt-2 text-2xl md:text-3xl font-bold tracking-tight text-white">Tableau de bord</h1>
           </div>
 
-          <div className="flex items-center gap-2 text-[10px] text-slate-400">
-            <span className="rounded-full border border-white/5 bg-[#0d1729] px-2.5 py-1.5">{roomSummary.total} chambres</span>
-            <span className="rounded-full border border-white/5 bg-[#0d1729] px-2.5 py-1.5">{stats.pendingCheckins} restants</span>
+          <div className="flex flex-wrap items-center gap-2 text-[10px] text-slate-400">
+            <span className="rounded-full border border-white/5 bg-[#0d1729] px-2.5 py-1.5 whitespace-nowrap">{roomSummary.total} chambres</span>
+            <span className="rounded-full border border-white/5 bg-[#0d1729] px-2.5 py-1.5 whitespace-nowrap">{stats.pendingCheckins} restants</span>
           </div>
         </header>
 

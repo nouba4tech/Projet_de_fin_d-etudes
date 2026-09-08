@@ -71,7 +71,7 @@ public final class RoleAccess {
                     "accounting", "cash-workflow", "finances", "reports", "economat", "stock", "restaurant", "bar",
                     "employees", "services", "ai");
                 case COMPTABLE -> List.of("dashboard", "main-courante", "accounting", "cash-workflow", "finances", "reports");
-            case RECEPTION -> List.of("dashboard", "reception", "rooms", "bookings", "guests", "services");
+            case RECEPTION -> List.of("dashboard", "reception", "main-courante", "rooms", "bookings", "guests", "services");
             default -> List.of("dashboard");
         };
     }

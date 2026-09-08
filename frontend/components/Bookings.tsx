@@ -339,15 +339,15 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
           <table className="w-full">
             <thead className="bg-white/5 border-b border-white/10">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">ID</th>
+                <th className="hidden px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">ID</th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Client</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Payeur</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Occupant</th>
+                <th className="hidden px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Type</th>
+                <th className="hidden px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Payeur</th>
+                <th className="hidden px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Occupant</th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Chambre</th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Dates</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nuitées</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant</th>
+                <th className="hidden px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Nuitées</th>
+                <th className="hidden px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Montant</th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
               </tr>
@@ -377,16 +377,17 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
 
                 return (
                   <tr key={reservation.id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-400">
+                    <td className="hidden px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-400 md:table-cell">
                       #{reservation.id}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-white">{clientDisplayName}</div>
-                        <div className="text-xs text-gray-400">{client?.email}</div>
+                      <div className="text-sm font-medium text-white">{clientDisplayName}</div>
+                      <div className="text-xs text-gray-400">{client?.email}</div>
+                      <div className="mt-1 text-[11px] text-gray-400 md:hidden">
+                        {clientTypeLabel} · {nights} nuitée{nights > 1 ? 's' : ''} · {Number(reservation.totalAmount || 0).toLocaleString('fr-FR')} FCFA
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="hidden px-6 py-4 whitespace-nowrap md:table-cell">
                       <span className="px-2 py-1 rounded-full border border-white/10 text-xs text-gray-200 bg-white/5">
                         {clientTypeLabel}
                       </span>
@@ -394,13 +395,13 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
                         <div className="text-[11px] text-gray-400 mt-1">{reservation.companyName || client?.companyName}</div>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="hidden px-6 py-4 whitespace-nowrap md:table-cell">
                       <div className="text-sm font-medium text-white">{payorLabel}</div>
                       {clientTypeLabel === 'Personne morale' && (
                         <div className="text-[11px] text-gray-400">Paie pour l'occupant</div>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="hidden px-6 py-4 whitespace-nowrap md:table-cell">
                       <div className="text-sm font-medium text-white">{reservation.occupantFirstName} {reservation.occupantLastName}</div>
                       <div className="text-xs text-gray-400">{reservation.occupantPhone}</div>
                       <div className="text-[11px] text-gray-400">{reservation.occupantIdDocument}</div>
@@ -409,15 +410,13 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
                       Chambre {room?.number || reservation.roomId} ({room?.type || reservation.roomType})
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      <div>
-                        <div>{checkInDate.toLocaleDateString('fr-FR')}</div>
-                        <div className="text-xs text-gray-400">au {checkOutDate.toLocaleDateString('fr-FR')}</div>
-                      </div>
+                      <div>{checkInDate.toLocaleDateString('fr-FR')}</div>
+                      <div className="text-xs text-gray-400">au {checkOutDate.toLocaleDateString('fr-FR')}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                    <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-300 md:table-cell">
                       {nights} nuitée{nights > 1 ? 's' : ''}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-400">
+                    <td className="hidden px-6 py-4 whitespace-nowrap text-sm font-medium text-green-400 md:table-cell">
                       {Number(reservation.totalAmount || 0).toLocaleString('fr-FR')} FCFA
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

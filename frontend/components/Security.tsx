@@ -1095,9 +1095,9 @@ const Security: React.FC = () => {
                       <thead className="bg-gray-900/80 text-left text-xs uppercase tracking-wider text-gray-400">
                         <tr>
                           <th className="px-4 py-3">Nom</th>
-                          <th className="px-4 py-3">Prénom</th>
-                          <th className="px-4 py-3">Login</th>
-                          <th className="px-4 py-3">Groupe</th>
+                          <th className="hidden px-4 py-3 md:table-cell">Prénom</th>
+                          <th className="hidden px-4 py-3 md:table-cell">Login</th>
+                          <th className="hidden px-4 py-3 md:table-cell">Groupe</th>
                           <th className="px-4 py-3">Statut</th>
                           <th className="px-4 py-3">Actions</th>
                         </tr>
@@ -1105,10 +1105,13 @@ const Security: React.FC = () => {
                       <tbody className="divide-y divide-gray-700/50">
                         {users.map((user) => (
                           <tr key={user.id} className="transition-colors hover:bg-gray-800/50">
-                            <td className="px-4 py-4 text-sm font-medium text-white">{user.lastName}</td>
-                            <td className="px-4 py-4 text-sm text-gray-300">{user.firstName}</td>
-                            <td className="px-4 py-4 text-sm text-gray-300">{user.username}</td>
-                            <td className="px-4 py-4 text-sm text-gray-300">{user.groupName || user.role}</td>
+                            <td className="px-4 py-4 text-sm font-medium text-white">
+                              {user.lastName}
+                              <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{user.firstName} · {user.username}</span>
+                            </td>
+                            <td className="hidden px-4 py-4 text-sm text-gray-300 md:table-cell">{user.firstName}</td>
+                            <td className="hidden px-4 py-4 text-sm text-gray-300 md:table-cell">{user.username}</td>
+                            <td className="hidden px-4 py-4 text-sm text-gray-300 md:table-cell">{user.groupName || user.role}</td>
                             <td className="px-4 py-4 text-sm">
                               <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold leading-5 ${
                                 user.status === 'Actif'
