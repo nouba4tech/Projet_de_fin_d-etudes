@@ -316,6 +316,20 @@ const Parametres: React.FC = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [roomsLoading, setRoomsLoading] = useState(true);
 
+  const [loadErrors, setLoadErrors] = useState<Record<string, string>>({});
+  const reportLoadError = useCallback((key: string, error: unknown) => {
+    console.error(`Erreur de chargement (${key})`, error);
+    setLoadErrors((prev) => ({ ...prev, [key]: 'Impossible de charger ces données. Vérifiez votre connexion et réessayez.' }));
+  }, []);
+  const clearLoadError = useCallback((key: string) => {
+    setLoadErrors((prev) => {
+      if (!(key in prev)) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  }, []);
+
   const [clients, setClients] = useState<Client[]>([]);
   const [clientsLoading, setClientsLoading] = useState(true);
 
@@ -646,7 +660,8 @@ const Parametres: React.FC = () => {
         capacity: rt.capacity ?? 0, basePrice: rt.basePrice ?? 0, amenities: rt.amenities ?? [],
         status: rt.status ?? 'active', floor: rt.floor ?? 1, createdAt: new Date(), createdBy: rt.createdBy ?? 'System'
       })));
-    } catch { /* empty */ }
+      clearLoadError('roomTypes');
+    } catch (error) { reportLoadError('roomTypes', error); }
     finally { setRoomTypesLoading(false); }
   }, []);
 
@@ -661,7 +676,8 @@ const Parametres: React.FC = () => {
         lastCleaned: r.lastCleaned ? new Date(r.lastCleaned) : undefined,
         notes: r.notes, createdAt: new Date(), createdBy: r.createdBy ?? 'System'
       })));
-    } catch { /* empty */ }
+      clearLoadError('rooms');
+    } catch (error) { reportLoadError('rooms', error); }
     finally { setRoomsLoading(false); }
   }, []);
 
@@ -677,7 +693,8 @@ const Parametres: React.FC = () => {
         vipStatus: c.vipStatus ?? false, preferences: c.preferences ?? [],
         status: c.status ?? 'active', createdAt: new Date(), createdBy: c.createdBy ?? 'System'
       })));
-    } catch { /* empty */ }
+      clearLoadError('clients');
+    } catch (error) { reportLoadError('clients', error); }
     finally { setClientsLoading(false); }
   }, []);
 
@@ -713,7 +730,8 @@ const Parametres: React.FC = () => {
     try {
       const data = await personnelApi.list();
       setPersonnel(data.map(mapPersonnel));
-    } catch { /* empty */ }
+      clearLoadError('personnel');
+    } catch (error) { reportLoadError('personnel', error); }
     finally { setPersonnelLoading(false); }
   }, []);
 
@@ -756,7 +774,8 @@ const Parametres: React.FC = () => {
     try {
       const data = await paramSupplierApi.list();
       setSuppliers(data.map(mapSupplier));
-    } catch { /* empty */ }
+      clearLoadError('suppliers');
+    } catch (error) { reportLoadError('suppliers', error); }
     finally { setSuppliersLoading(false); }
   }, []);
 
@@ -778,7 +797,8 @@ const Parametres: React.FC = () => {
     try {
       const data = await paramServiceApi.list();
       setServices(data.map(mapService));
-    } catch { /* empty */ }
+      clearLoadError('services');
+    } catch (error) { reportLoadError('services', error); }
     finally { setServicesLoading(false); }
   }, []);
 
@@ -792,7 +812,8 @@ const Parametres: React.FC = () => {
         status: cr.status ?? 'active', responsiblePerson: cr.responsiblePerson ?? '',
         createdAt: new Date(), createdBy: cr.createdBy ?? 'System'
       })));
-    } catch { /* empty */ }
+      clearLoadError('cashRegisters');
+    } catch (error) { reportLoadError('cashRegisters', error); }
     finally { setCashRegistersLoading(false); }
   }, []);
 
@@ -4335,6 +4356,25 @@ const Parametres: React.FC = () => {
             </p>
           </div>
         </div>
+
+        {Object.keys(loadErrors).length > 0 && (
+          <div className="mb-8 rounded-xl border border-red-500/40 bg-red-500/10 px-6 py-4 flex items-center justify-between gap-4">
+            <p className="text-sm text-red-300">
+              {Object.values(loadErrors)[0]}
+              {Object.keys(loadErrors).length > 1 ? ` (+${Object.keys(loadErrors).length - 1} autre${Object.keys(loadErrors).length - 1 > 1 ? 's' : ''})` : ''}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                loadRoomTypes(); loadRooms(); loadClients(); loadPersonnel();
+                loadSuppliers(); loadServices(); loadCashRegisters();
+              }}
+              className="shrink-0 rounded-lg border border-red-400/50 px-3 py-1.5 text-sm text-red-200 hover:bg-red-500/20 transition-colors"
+            >
+              Réessayer
+            </button>
+          </div>
+        )}
 
         {/* Content */}
         {renderTabContent()}
