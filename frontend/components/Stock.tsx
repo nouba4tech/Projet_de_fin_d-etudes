@@ -702,11 +702,11 @@ const Stock: React.FC = () => {
                 <table className="w-full">
                   <thead className="border-b border-gray-700/50 bg-white/5">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Code</th>
+                      <th className="hidden px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400 md:table-cell">Code</th>
                       <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Article</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Categorie</th>
+                      <th className="hidden px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400 md:table-cell">Categorie</th>
                       <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Stock</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Seuil</th>
+                      <th className="hidden px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400 md:table-cell">Seuil</th>
                       <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Statut</th>
                       <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Actions</th>
                     </tr>
@@ -714,11 +714,14 @@ const Stock: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {filteredItems.map((item) => (
                       <tr key={item.id} className="hover:bg-white/5">
-                        <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-white">{item.code}</td>
-                        <td className="whitespace-nowrap px-6 py-4 text-sm text-white">{item.name}</td>
-                        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-400">{item.category}</td>
+                        <td className="hidden whitespace-nowrap px-6 py-4 text-sm font-medium text-white md:table-cell">{item.code}</td>
+                        <td className="whitespace-nowrap px-6 py-4 text-sm text-white">
+                          {item.name}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{item.code}</span>
+                        </td>
+                        <td className="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-400 md:table-cell">{item.category}</td>
                         <td className="whitespace-nowrap px-6 py-4 text-sm text-white">{item.quantity} {item.unit}</td>
-                        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-400">{item.minThreshold} {item.unit}</td>
+                        <td className="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-400 md:table-cell">{item.minThreshold} {item.unit}</td>
                         <td className="whitespace-nowrap px-6 py-4">
                           <span className={`rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(item.status)}`}>
                             {item.status}
@@ -872,23 +875,26 @@ const Stock: React.FC = () => {
                 <table className="w-full">
                   <thead className="border-b border-gray-700/50 bg-white/5">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Date</th>
+                      <th className="hidden px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400 md:table-cell">Date</th>
                       <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Article</th>
                       <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Quantite</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">De</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Vers</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Reference</th>
+                      <th className="hidden px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400 md:table-cell">De</th>
+                      <th className="hidden px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400 md:table-cell">Vers</th>
+                      <th className="hidden px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400 md:table-cell">Reference</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-700/50">
                     {transfers.map(transfer => (
                       <tr key={transfer.id} className="hover:bg-white/5">
-                        <td className="px-6 py-4 text-sm text-white">{new Date(transfer.date).toLocaleDateString('fr-FR')}</td>
-                        <td className="px-6 py-4 text-sm text-white">{transfer.item?.name}</td>
+                        <td className="hidden px-6 py-4 text-sm text-white md:table-cell">{new Date(transfer.date).toLocaleDateString('fr-FR')}</td>
+                        <td className="px-6 py-4 text-sm text-white">
+                          {transfer.item?.name}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{transfer.from} → {transfer.to}</span>
+                        </td>
                         <td className="px-6 py-4 text-sm text-white">{transfer.quantity}</td>
-                        <td className="px-6 py-4 text-sm text-gray-300">{transfer.from}</td>
-                        <td className="px-6 py-4 text-sm text-gray-300">{transfer.to}</td>
-                        <td className="px-6 py-4 text-sm text-gray-300">{transfer.reference}</td>
+                        <td className="hidden px-6 py-4 text-sm text-gray-300 md:table-cell">{transfer.from}</td>
+                        <td className="hidden px-6 py-4 text-sm text-gray-300 md:table-cell">{transfer.to}</td>
+                        <td className="hidden px-6 py-4 text-sm text-gray-300 md:table-cell">{transfer.reference}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -919,29 +925,32 @@ const Stock: React.FC = () => {
                   <table className="w-full">
                     <thead className="border-b border-gray-700/50 bg-white/5">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Date</th>
+                        <th className="hidden px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400 md:table-cell">Date</th>
                         <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Article</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Type</th>
+                        <th className="hidden px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400 md:table-cell">Type</th>
                         <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Quantite</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Motif</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Reference</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">Portee</th>
+                        <th className="hidden px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400 md:table-cell">Motif</th>
+                        <th className="hidden px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400 md:table-cell">Reference</th>
+                        <th className="hidden px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400 md:table-cell">Portee</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-700/50">
                       {enrichedMovements.map(movement => (
                         <tr key={movement.id} className="hover:bg-white/5">
-                          <td className="px-6 py-4 text-sm text-white">{new Date(movement.date).toLocaleDateString('fr-FR')}</td>
-                          <td className="px-6 py-4 text-sm text-white">{movement.item ? `${movement.item.code} - ${movement.item.name}` : movement.itemId}</td>
-                          <td className="px-6 py-4">
+                          <td className="hidden px-6 py-4 text-sm text-white md:table-cell">{new Date(movement.date).toLocaleDateString('fr-FR')}</td>
+                          <td className="px-6 py-4 text-sm text-white">
+                            {movement.item ? `${movement.item.code} - ${movement.item.name}` : movement.itemId}
+                            <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{movement.type === 'ENTRY' ? 'Entree' : 'Sortie'}</span>
+                          </td>
+                          <td className="hidden px-6 py-4 md:table-cell">
                             <span className={`rounded-full px-2 py-1 text-xs font-medium ${movement.type === 'ENTRY' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                               {movement.type === 'ENTRY' ? 'Entree' : 'Sortie'}
                             </span>
                           </td>
                           <td className="px-6 py-4 text-sm text-white">{movement.quantity}</td>
-                          <td className="px-6 py-4 text-sm text-gray-300">{movement.reason}</td>
-                          <td className="px-6 py-4 text-sm text-gray-300">{movement.reference || '-'}</td>
-                          <td className="px-6 py-4 text-sm text-gray-300">{movement.location}</td>
+                          <td className="hidden px-6 py-4 text-sm text-gray-300 md:table-cell">{movement.reason}</td>
+                          <td className="hidden px-6 py-4 text-sm text-gray-300 md:table-cell">{movement.reference || '-'}</td>
+                          <td className="hidden px-6 py-4 text-sm text-gray-300 md:table-cell">{movement.location}</td>
                         </tr>
                       ))}
                     </tbody>

@@ -364,8 +364,8 @@ const CashWorkflow: React.FC = () => {
                   <thead className="border-b border-slate-700/60 text-xs uppercase tracking-[0.18em] text-white/50">
                     <tr>
                       <th className="px-4 py-3">Reference</th>
-                      <th className="px-4 py-3">De</th>
-                      <th className="px-4 py-3">Vers</th>
+                      <th className="hidden px-4 py-3 md:table-cell">De</th>
+                      <th className="hidden px-4 py-3 md:table-cell">Vers</th>
                       <th className="px-4 py-3">Montant</th>
                       <th className="px-4 py-3">Statut</th>
                       <th className="px-4 py-3 text-right">Actions</th>
@@ -374,9 +374,12 @@ const CashWorkflow: React.FC = () => {
                   <tbody className="divide-y divide-slate-700/40">
                     {transfers.map((transfer) => (
                       <tr key={transfer.id}>
-                        <td className="px-4 py-3 text-white/85">{transfer.transferNumber}</td>
-                        <td className="px-4 py-3 text-white/70">{transfer.fromRegister}</td>
-                        <td className="px-4 py-3 text-white/70">{transfer.toRegister}</td>
+                        <td className="px-4 py-3 text-white/85">
+                          {transfer.transferNumber}
+                          <span className="mt-0.5 block text-xs font-normal text-white/50 md:hidden">{transfer.fromRegister} → {transfer.toRegister}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 text-white/70 md:table-cell">{transfer.fromRegister}</td>
+                        <td className="hidden px-4 py-3 text-white/70 md:table-cell">{transfer.toRegister}</td>
                         <td className="px-4 py-3 text-white/85">{money(transfer.amount)}</td>
                         <td className="px-4 py-3"><span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusBadge(transfer.status)}`}>{transfer.status}</span></td>
                         <td className="px-4 py-3 text-right">
@@ -403,9 +406,9 @@ const CashWorkflow: React.FC = () => {
                 <table className="w-full min-w-[860px] text-left text-sm">
                   <thead className="border-b border-slate-700/60 text-xs uppercase tracking-[0.18em] text-white/50">
                     <tr>
-                      <th className="px-4 py-3">Date</th>
+                      <th className="hidden px-4 py-3 md:table-cell">Date</th>
                       <th className="px-4 py-3">Description</th>
-                      <th className="px-4 py-3">Caisse</th>
+                      <th className="hidden px-4 py-3 md:table-cell">Caisse</th>
                       <th className="px-4 py-3">Montant</th>
                       <th className="px-4 py-3">Statut</th>
                       <th className="px-4 py-3 text-right">Actions</th>
@@ -414,9 +417,12 @@ const CashWorkflow: React.FC = () => {
                   <tbody className="divide-y divide-slate-700/40">
                     {journal.map((entry) => (
                       <tr key={entry.id}>
-                        <td className="px-4 py-3 text-white/70">{formatDateTime(entry.date)}</td>
-                        <td className="px-4 py-3 text-white/85">{entry.description}</td>
-                        <td className="px-4 py-3 text-white/70">{entry.register}</td>
+                        <td className="hidden px-4 py-3 text-white/70 md:table-cell">{formatDateTime(entry.date)}</td>
+                        <td className="px-4 py-3 text-white/85">
+                          {entry.description}
+                          <span className="mt-0.5 block text-xs font-normal text-white/50 md:hidden">{entry.register}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 text-white/70 md:table-cell">{entry.register}</td>
                         <td className="px-4 py-3 text-white/85">{money(entry.amount)}</td>
                         <td className="px-4 py-3"><span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusBadge(entry.status)}`}>{entry.status}</span></td>
                         <td className="px-4 py-3 text-right">

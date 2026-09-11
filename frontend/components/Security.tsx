@@ -1423,8 +1423,8 @@ const Security: React.FC = () => {
                 <thead className="border-b border-gray-700/50 bg-gray-950/70 text-xs uppercase tracking-[0.18em] text-gray-400">
                   <tr>
                     <th className="px-6 py-4 font-semibold">Groupe</th>
-                    <th className="px-6 py-4 font-semibold">Objet</th>
-                    <th className="px-6 py-4 font-semibold">Code</th>
+                    <th className="hidden px-6 py-4 font-semibold md:table-cell">Objet</th>
+                    <th className="hidden px-6 py-4 font-semibold md:table-cell">Code</th>
                     <th className="px-6 py-4 text-center font-semibold">Visible</th>
                     <th className="px-6 py-4 text-right font-semibold">Actions</th>
                   </tr>
@@ -1440,14 +1440,15 @@ const Security: React.FC = () => {
                           <div>
                             <div className="font-semibold text-white">{selectedPrivilegeGroup?.name ?? '-'}</div>
                             <div className="text-xs text-gray-500">Groupe selectionne</div>
+                            <div className="mt-0.5 text-xs font-normal text-gray-400 md:hidden">{privilege.module} · {privilege.level}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-5">
+                      <td className="hidden px-6 py-5 md:table-cell">
                         <div className="font-semibold text-white">{privilege.module}</div>
                         <div className="mt-1 text-xs text-gray-400">{privilege.level}</div>
                       </td>
-                      <td className="px-6 py-5">
+                      <td className="hidden px-6 py-5 md:table-cell">
                         <code className="rounded-xl border border-gray-700/60 bg-gray-950/60 px-3 py-1.5 text-xs font-semibold text-blue-200">
                           {privilege.code}
                         </code>
@@ -1493,7 +1494,7 @@ const Security: React.FC = () => {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="m16.8 4.6 2.6 2.6" />
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M4 20h4.2L19 9.2 14.8 5 4 15.8V20Z" />
                             </svg>
-                            Modifier
+                            <span className="hidden md:inline">Modifier</span>
                           </button>
                           <button
                             type="button"
@@ -1504,7 +1505,7 @@ const Security: React.FC = () => {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M19 7 18.1 19.2A2 2 0 0 1 16.1 21H7.9a2 2 0 0 1-2-1.8L5 7" />
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M10 11v6M14 11v6M4 7h16M9 7V4h6v3" />
                             </svg>
-                            Supprimer
+                            <span className="hidden md:inline">Supprimer</span>
                           </button>
                         </div>
                       </td>
