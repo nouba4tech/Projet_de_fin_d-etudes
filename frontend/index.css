@@ -937,16 +937,19 @@ table tbody td {
        an inner p-6 card (Bar/Accounting/Economat/Reception/Security all use this
        same pattern). Each padding level is fine alone, but stacked 2-3 deep they
        eat 150-200px+ out of a 393px portrait phone before any real content
-       starts, which is what was squeezing the button row above to ~164px of
-       usable width. Shrink those two padding levels on narrow screens only --
-       desktop/tablet/landscape keep the original spacious padding. */
-    .rounded-2xl.p-8,
-    .rounded-3xl.p-8 {
+       starts. Shrink these padding levels on narrow screens only -- desktop/
+       tablet/landscape keep the original spacious padding.
+       Note: p-6/p-8 is targeted directly (not only combined with rounded-2xl/3xl
+       on the same element) because several cards split the rounded border and
+       the padding across a parent/child pair -- e.g. Security's users table is
+       `rounded-3xl` on one div and a plain `p-6` on its child -- so requiring
+       both classes on one element silently missed those and left them at the
+       full desktop padding (measured: only 142px left for a 2-column table). */
+    .p-8 {
         padding: 1.25rem !important;
     }
 
-    .rounded-2xl.p-6,
-    .rounded-3xl.p-6 {
+    .p-6 {
         padding: 1rem !important;
     }
 

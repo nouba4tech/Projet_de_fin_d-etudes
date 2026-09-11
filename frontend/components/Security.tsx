@@ -926,7 +926,7 @@ const Security: React.FC = () => {
   const renderContent = () => {
     if (activeSection === 'users') {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+        <div>
           <div className="relative mb-8">
             <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-3xl"></div>
             <div className="relative flex flex-col gap-6 rounded-3xl border border-gray-700/50 bg-gradient-to-r from-gray-800/50 to-gray-900/50 p-8 backdrop-blur-xl md:flex-row md:items-center md:justify-between">
@@ -1152,7 +1152,7 @@ const Security: React.FC = () => {
 
     if (activeSection === 'groups') {
       return (
-        <div className="min-h-screen bg-slate-950 p-6">
+        <div>
           <div className="mb-8 rounded-2xl border border-slate-700/60 bg-slate-900/80 p-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
@@ -1312,7 +1312,7 @@ const Security: React.FC = () => {
 
     if (activeSection === 'privileges') {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+        <div>
           <div className="relative mb-6 overflow-hidden rounded-2xl border border-gray-700/50 bg-gradient-to-br from-gray-800/75 to-gray-900/75 p-5 shadow-xl backdrop-blur-xl">
             <div className="absolute -right-16 -top-24 h-44 w-44 rounded-full bg-blue-500/10 blur-3xl"></div>
             <div className="relative flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
@@ -1520,7 +1520,7 @@ const Security: React.FC = () => {
 
     if (activeSection === 'password') {
       return (
-        <div className="min-h-screen bg-[#070d1a] p-6">
+        <div>
           <div className="mb-8 rounded-2xl border border-gray-700/50 bg-[#0d1327] p-8 shadow-[0_10px_30px_rgba(0,0,0,0.2)]">
             <h2 className="text-3xl font-black text-white">Changer le mot de passe</h2>
           </div>
@@ -1631,7 +1631,7 @@ const Security: React.FC = () => {
     }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+      <div>
         <div className="relative mb-8">
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-3xl"></div>
           <div className="relative rounded-3xl border border-gray-700/50 bg-gradient-to-r from-gray-800/50 to-gray-900/50 p-8 backdrop-blur-xl">
