@@ -1014,7 +1014,8 @@ table tbody td {
     /* Status badges (Actif/Suspendu/Validé...) were sized for desktop; trim
        their padding a touch so the wider labels ("Suspendu", "Validée") stop
        eating into the Actions column's reclaimed space. */
-    td [class*='rounded-full'][class*='px-3'] {
+    td [class*='rounded-full'][class*='px-3'],
+    td [class*='rounded-full'][class*='px-2'] {
         padding-left: 0.4375rem !important;
         padding-right: 0.4375rem !important;
     }

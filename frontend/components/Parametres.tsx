@@ -1864,11 +1864,11 @@ const Parametres: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Code</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nom</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Capacité</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Prix base</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Étage</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Nom</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Description</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Capacité</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Prix base</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Étage</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -1876,14 +1876,17 @@ const Parametres: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {roomTypes.map((type) => (
                       <tr key={type.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{type.code}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{type.name}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{type.description}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{type.capacity} personnes</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {type.code}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{type.name}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{type.name}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{type.description}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{type.capacity} personnes</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm font-medium text-white md:table-cell">
                           {type.basePrice.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{type.floor}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{type.floor}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(type.status)}`}>
                             {type.status === 'active' ? 'Actif' : 'Inactif'}
@@ -1957,7 +1960,7 @@ const Parametres: React.FC = () => {
                       <thead className="sticky top-0 z-10 bg-slate-950 text-xs uppercase text-slate-500">
                         <tr>
                           <th className="px-4 py-3 font-semibold">Code</th>
-                          <th className="px-4 py-3 font-semibold">Type</th>
+                          <th className="hidden px-4 py-3 font-semibold md:table-cell">Type</th>
                           <th className="px-4 py-3 font-semibold">Statut</th>
                           <th className="px-4 py-3 font-semibold">Nettoyage</th>
                         </tr>
@@ -1988,8 +1991,9 @@ const Parametres: React.FC = () => {
                             >
                               <td className="px-4 py-3">
                                 <span className="font-semibold text-white">{room.number}</span>
+                                <span className="mt-0.5 block text-xs font-normal text-slate-400 md:hidden">{room.roomTypeName || 'Non defini'}</span>
                               </td>
-                              <td className="px-4 py-3 text-sm text-slate-300">{room.roomTypeName || 'Non defini'}</td>
+                              <td className="hidden px-4 py-3 text-sm text-slate-300 md:table-cell">{room.roomTypeName || 'Non defini'}</td>
                               <td className="px-4 py-3">
                                 <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${getStatusColor(room.status)}`}>
                                   {room.status === 'available' ? 'Disponible' :
@@ -2182,10 +2186,10 @@ const Parametres: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Code</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nom</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Email</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Téléphone</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nationalité</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Nom</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Email</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Téléphone</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Nationalité</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -2193,14 +2197,20 @@ const Parametres: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {clients.map((client) => (
                       <tr key={client.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{client.code}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {client.code}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">
+                            {client.firstName} {client.lastName}
+                            {client.vipStatus && <span className="ml-1 text-yellow-400">· VIP</span>}
+                          </span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {client.firstName} {client.lastName}
                           {client.vipStatus && <span className="ml-2 px-2 py-1 text-xs font-medium rounded-full bg-yellow-500/20 text-yellow-400">VIP</span>}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{client.email}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{client.phone}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{client.nationality}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{client.email}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{client.phone}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{client.nationality}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(client.status)}`}>
                             {client.status === 'active' ? 'Actif' :
@@ -2214,7 +2224,7 @@ const Parametres: React.FC = () => {
                             className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 mr-2"
                           >
                             <FaEye className="h-4 w-4" aria-hidden="true" />
-                            Détails
+                            <span className="hidden md:inline">Détails</span>
                           </button>
                           <button type="button" onClick={() => handleClientEdit(client)} className="text-green-400 hover:text-green-300 mr-2">Modifier</button>
                           <button type="button" onClick={() => handleClientDelete(client.id)} className="text-red-400 hover:text-red-300">Supprimer</button>
@@ -2396,11 +2406,11 @@ const Parametres: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Matricule</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nom</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Poste</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Département</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Email</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Salaire</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Nom</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Poste</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Département</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Email</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Salaire</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -2408,14 +2418,17 @@ const Parametres: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {personnel.map((person) => (
                       <tr key={person.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{person.employeeNumber}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {person.employeeNumber}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{person.firstName} {person.lastName}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {person.firstName} {person.lastName}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{person.position}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{person.department}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{person.email}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{person.position}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{person.department}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{person.email}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm font-medium text-white md:table-cell">
                           {person.salary.toLocaleString('fr-FR')} FCFA
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
@@ -2431,7 +2444,7 @@ const Parametres: React.FC = () => {
                             className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 mr-2"
                           >
                             <FaEye className="h-4 w-4" aria-hidden="true" />
-                            Détails
+                            <span className="hidden md:inline">Détails</span>
                           </button>
                           <button type="button" onClick={() => handlePersonnelEdit(person)} className="text-green-400 hover:text-green-300 mr-2">Modifier</button>
                           <button type="button" onClick={() => handlePersonnelDelete(person.id)} className="text-red-400 hover:text-red-300">Supprimer</button>
@@ -2960,11 +2973,11 @@ const Parametres: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Code</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nom</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Catégorie</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Prix</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Unité</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Nom</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Description</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Catégorie</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Prix</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Unité</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -2972,19 +2985,22 @@ const Parametres: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {services.map((service) => (
                       <tr key={service.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{service.code}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{service.name}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{service.description}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {service.code}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{service.name}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{service.name}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{service.description}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {service.category === 'accommodation' ? 'Hébergement' :
                            service.category === 'food_beverage' ? 'Restauration' :
                            service.category === 'wellness' ? 'Bien-être' :
                            service.category === 'business' ? 'Affaires' : 'Autre'}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm font-medium text-white md:table-cell">
                           {service.price.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {service.unit === 'per_night' ? 'Par nuit' :
                            service.unit === 'per_person' ? 'Par personne' :
                            service.unit === 'per_hour' ? 'Par heure' : 'Forfait'}
@@ -3001,7 +3017,7 @@ const Parametres: React.FC = () => {
                             className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 mr-2"
                           >
                             <FaEye className="h-4 w-4" aria-hidden="true" />
-                            Détails
+                            <span className="hidden md:inline">Détails</span>
                           </button>
                           <button
                             type="button"
@@ -3557,13 +3573,13 @@ const Parametres: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Code</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nom</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Catégorie</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Marque</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Volume</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Coût</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Nom</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Catégorie</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Marque</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Volume</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Coût</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Prix vente</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Fournisseur</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Fournisseur</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -3571,9 +3587,12 @@ const Parametres: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {beverages.map((beverage) => (
                       <tr key={beverage.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{beverage.code}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{beverage.name}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {beverage.code}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{beverage.name}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{beverage.name}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap md:table-cell">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                             beverage.category === 'alcoholic' ? 'bg-red-500/20 text-red-400' :
                             beverage.category === 'non_alcoholic' ? 'bg-green-500/20 text-green-400' :
@@ -3585,15 +3604,15 @@ const Parametres: React.FC = () => {
                              beverage.category === 'hot' ? 'Chaude' : 'Froide'}
                           </span>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{beverage.brand}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{beverage.volume} {beverage.unit}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{beverage.brand}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{beverage.volume} {beverage.unit}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {beverage.unitCost.toLocaleString('fr-FR')} FCFA
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
                           {beverage.sellingPrice.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{beverage.supplierName}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{beverage.supplierName}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${beverage.status === 'active' ? 'bg-green-500/20 text-green-400' : 'bg-white/50/20 text-gray-400'}`}>
                             {beverage.status === 'active' ? 'Actif' : 'Discontinué'}
@@ -3730,11 +3749,11 @@ const Parametres: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Code</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nom</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Catégorie</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Nom</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Description</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Catégorie</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Prix</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Temps préparation</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Temps préparation</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -3742,14 +3761,17 @@ const Parametres: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {dishes.map((dish) => (
                       <tr key={dish.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{dish.code}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{dish.name}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{dish.description}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{dish.categoryName}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {dish.code}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{dish.name}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{dish.name}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{dish.description}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{dish.categoryName}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
                           {dish.price.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{dish.preparationTime} min</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{dish.preparationTime} min</td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${dish.isAvailable ? 'bg-green-500/20 text-green-400' : 'bg-white/50/20 text-gray-400'}`}>
                             {dish.isAvailable ? 'Disponible' : 'Indisponible'}
@@ -3894,13 +3916,13 @@ const Parametres: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Code</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nom</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Catégorie</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Volume</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Coût</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Nom</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Catégorie</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Type</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Volume</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Coût</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Prix vente</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Fournisseur</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Fournisseur</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -3908,9 +3930,12 @@ const Parametres: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {drinks.map((drink) => (
                       <tr key={drink.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{drink.code}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{drink.name}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {drink.code}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{drink.name}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{drink.name}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap md:table-cell">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                             drink.category === 'alcoholic' ? 'bg-red-500/20 text-red-400' :
                             drink.category === 'non_alcoholic' ? 'bg-green-500/20 text-green-400' :
@@ -3922,15 +3947,15 @@ const Parametres: React.FC = () => {
                              drink.category === 'hot' ? 'Chaude' : 'Froide'}
                           </span>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{drink.type}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{drink.volume} {drink.unit}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{drink.type}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{drink.volume} {drink.unit}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {drink.unitCost.toLocaleString('fr-FR')} FCFA
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
                           {drink.sellingPrice.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{drink.supplierName}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{drink.supplierName}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${drink.status === 'active' ? 'bg-green-500/20 text-green-400' : 'bg-white/50/20 text-gray-400'}`}>
                             {drink.status === 'active' ? 'Actif' : 'Discontinué'}
@@ -4036,9 +4061,9 @@ const Parametres: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Code</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nom</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Catégorie parente</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Nom</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Description</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Catégorie parente</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -4046,10 +4071,13 @@ const Parametres: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {dishTypes.map((type) => (
                       <tr key={type.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{type.code}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{type.name}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{type.description}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{type.parentCategoryName || 'N/A'}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {type.code}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{type.name}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{type.name}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{type.description}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{type.parentCategoryName || 'N/A'}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(type.status)}`}>
                             {type.status === 'active' ? 'Actif' : 'Inactif'}
@@ -4121,12 +4149,12 @@ const Parametres: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Référence</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Catégorie</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Type</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Catégorie</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Description</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Créé par</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Créé par</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -4136,8 +4164,11 @@ const Parametres: React.FC = () => {
                       <tr><td colSpan={9} className="px-4 py-8 text-center text-sm text-gray-400">Aucune transaction trouvée.</td></tr>
                     ) : filteredTransactions.map((transaction) => (
                       <tr key={transaction.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{transaction.reference}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {transaction.reference}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{transaction.description}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap md:table-cell">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                             transaction.type === 'sale' ? 'bg-green-500/20 text-green-400' :
                             transaction.type === 'purchase' ? 'bg-blue-500/20 text-blue-400' :
@@ -4151,15 +4182,15 @@ const Parametres: React.FC = () => {
                              transaction.type === 'transfer' ? 'Transfert' : 'Ajustement'}
                           </span>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{transaction.category}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{transaction.description}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{transaction.category}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{transaction.description}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
                           {transaction.amount.toLocaleString('fr-FR')} {transaction.currency}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {transaction.date.toLocaleDateString('fr-FR')}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{transaction.createdBy}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{transaction.createdBy}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(transaction.status)}`}>
                             {transaction.status === 'completed' ? 'Complété' :
@@ -4244,13 +4275,13 @@ const Parametres: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Référence</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Compte</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Débit</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Crédit</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Compte</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Description</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Débit</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Crédit</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Solde</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Catégorie</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Catégorie</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -4260,22 +4291,25 @@ const Parametres: React.FC = () => {
                       <tr><td colSpan={10} className="px-4 py-8 text-center text-sm text-gray-400">Aucune écriture trouvée.</td></tr>
                     ) : filteredJournalEntries.map((entry) => (
                       <tr key={entry.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{entry.reference}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {entry.reference}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{entry.account}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {entry.date.toLocaleDateString('fr-FR')}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.account}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.description}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.account}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.description}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {entry.debit > 0 ? entry.debit.toLocaleString('fr-FR') : '-'}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {entry.credit > 0 ? entry.credit.toLocaleString('fr-FR') : '-'}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
                           {entry.balance.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.category}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.category}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(entry.status)}`}>
                             {entry.status === 'posted' ? 'Validé' :
