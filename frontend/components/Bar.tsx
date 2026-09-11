@@ -1082,11 +1082,11 @@ const Bar: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">N° Facture</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Table</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Client</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Table</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Client</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Paiement</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Paiement</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -1094,16 +1094,19 @@ const Bar: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {filteredInvoices.map((invoice) => (
                       <tr key={invoice.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{invoice.invoiceNumber}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{invoice.tableNumber}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{invoice.customerName || 'N/A'}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {invoice.invoiceNumber}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{invoice.customerName || 'N/A'}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{invoice.tableNumber}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{invoice.customerName || 'N/A'}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {invoice.createdAt.toLocaleDateString('fr-FR')} {invoice.createdAt.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
                           {invoice.totalAmount.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {getPaymentMethodLabel(invoice.paymentMethod)}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
@@ -1114,19 +1117,19 @@ const Bar: React.FC = () => {
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
                           <div className="flex gap-3">
                             {invoice.status !== 'cancelled' && (
-                              <button 
+                              <button
                                 onClick={() => deleteOrder(invoice.id)}
                                 className="text-red-400 hover:text-red-300 text-sm font-medium transition-colors"
                               >
-                                <FaTrash className="inline-block mr-1"/>Annuler
+                                <FaTrash className="inline-block mr-1"/><span className="hidden md:inline">Annuler</span>
                               </button>
                             )}
                             <button className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors" onClick={() => setSelectedInvoice(invoice)}>
-                              <FaEye className="inline-block mr-1"/>Voir
+                              <FaEye className="inline-block mr-1"/><span className="hidden md:inline">Voir</span>
                             </button>
                             {invoice.status !== 'paid' && invoice.status !== 'cancelled' && (
                               <button className="text-green-400 hover:text-green-300 text-sm font-medium transition-colors" onClick={() => handlePayOrder(invoice.id)}>
-                                <FaMoneyBillWave className="inline-block mr-1"/>Payer
+                                <FaMoneyBillWave className="inline-block mr-1"/><span className="hidden md:inline">Payer</span>
                               </button>
                             )}
                           </div>
@@ -1242,11 +1245,11 @@ const Bar: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">N° Facture</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Table</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Client</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Table</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Client</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Paiement</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Paiement</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -1254,16 +1257,19 @@ const Bar: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {filteredInvoices.map((invoice) => (
                       <tr key={invoice.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{invoice.invoiceNumber}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{invoice.tableNumber}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{invoice.customerName || 'N/A'}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {invoice.invoiceNumber}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{invoice.customerName || 'N/A'}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{invoice.tableNumber}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{invoice.customerName || 'N/A'}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {invoice.createdAt.toLocaleDateString('fr-FR')} {invoice.createdAt.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
                           {invoice.totalAmount.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {getPaymentMethodLabel(invoice.paymentMethod)}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
@@ -1274,8 +1280,8 @@ const Bar: React.FC = () => {
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
                           <div className="flex gap-3">
                             <button className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors" onClick={() => setSelectedInvoice(invoice)}>Voir</button>
-                            <button className="text-green-400 hover:text-green-300 text-sm font-medium transition-colors" onClick={() => printInvoiceAsPdf(invoice)}><FaPrint className="inline-block mr-1"/> Imprimer</button>
-                            <button className="text-gray-400 hover:text-gray-200 text-sm font-medium transition-colors" onClick={() => handleOpenEmailModal(invoice)}><FaEnvelope className="inline-block mr-1"/> Email</button>
+                            <button className="text-green-400 hover:text-green-300 text-sm font-medium transition-colors" onClick={() => printInvoiceAsPdf(invoice)}><FaPrint className="inline-block mr-1"/> <span className="hidden md:inline">Imprimer</span></button>
+                            <button className="text-gray-400 hover:text-gray-200 text-sm font-medium transition-colors" onClick={() => handleOpenEmailModal(invoice)}><FaEnvelope className="inline-block mr-1"/> <span className="hidden md:inline">Email</span></button>
                           </div>
                         </td>
                       </tr>
@@ -1305,12 +1311,12 @@ const Bar: React.FC = () => {
                 <table className="w-full">
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date/Heure</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date/Heure</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Titre</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Catégorie</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Catégorie</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Priorité</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Localisation</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rapporté par</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Localisation</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Rapporté par</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -1318,11 +1324,14 @@ const Bar: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {mainCourante.map((entry) => (
                       <tr key={entry.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {entry.entryDate.toLocaleDateString('fr-FR')} {entry.entryTime}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{entry.title}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {entry.title}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{entry.location}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap md:table-cell">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full bg-red-500/20 text-red-400`}>
                             {entry.category}
                           </span>
@@ -1332,8 +1341,8 @@ const Bar: React.FC = () => {
                             {entry.priority}
                           </span>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.location}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.reportedBy}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.location}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.reportedBy}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(entry.status)}`}>
                             {entry.status === 'in_progress' ? 'En cours' : entry.status}
@@ -1341,8 +1350,8 @@ const Bar: React.FC = () => {
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
                           <div className="flex gap-3">
-                            <button className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors" onClick={() => handleMainEntryDetails(entry)}><FaInfoCircle className="inline-block mr-1"/> Détails</button>
-                            <button className="text-green-400 hover:text-green-300 text-sm font-medium transition-colors" onClick={() => handleEditMainEntry(entry)}><FaEdit className="inline-block mr-1"/> Modifier</button>
+                            <button className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors" onClick={() => handleMainEntryDetails(entry)}><FaInfoCircle className="inline-block mr-1"/> <span className="hidden md:inline">Détails</span></button>
+                            <button className="text-green-400 hover:text-green-300 text-sm font-medium transition-colors" onClick={() => handleEditMainEntry(entry)}><FaEdit className="inline-block mr-1"/> <span className="hidden md:inline">Modifier</span></button>
                           </div>
                         </td>
                       </tr>
@@ -1538,10 +1547,10 @@ const Bar: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">N° Transfert</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">De</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Vers</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">De</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Vers</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Motif</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Motif</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -1549,13 +1558,16 @@ const Bar: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {cashTransfers.map((transfer) => (
                       <tr key={transfer.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{transfer.transferNumber}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{transfer.fromRegister}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{transfer.toRegister}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {transfer.transferNumber}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{transfer.fromRegister} → {transfer.toRegister}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{transfer.fromRegister}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{transfer.toRegister}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
                           {transfer.amount.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{transfer.reason}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{transfer.reason}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={'px-2 py-1 text-xs font-medium rounded-full ' + getStatusColor(transfer.status)}>
                             {transfer.status === 'completed' ? 'Complété' : transfer.status}
@@ -1565,11 +1577,11 @@ const Bar: React.FC = () => {
                           <div className="flex gap-3">
                             {transfer.status === 'pending' && (
                               <>
-                                <button className="text-green-400 hover:text-green-300 text-sm font-medium transition-colors" onClick={() => approveTransfer(transfer.id)}><FaCheck className="inline-block mr-1"/> Approuver</button>
-                                <button className="text-yellow-400 hover:text-yellow-300 text-sm font-medium transition-colors" onClick={() => cancelTransfer(transfer.id)}><FaTimes className="inline-block mr-1"/> Annuler</button>
+                                <button className="text-green-400 hover:text-green-300 text-sm font-medium transition-colors" onClick={() => approveTransfer(transfer.id)}><FaCheck className="inline-block mr-1"/> <span className="hidden md:inline">Approuver</span></button>
+                                <button className="text-yellow-400 hover:text-yellow-300 text-sm font-medium transition-colors" onClick={() => cancelTransfer(transfer.id)}><FaTimes className="inline-block mr-1"/> <span className="hidden md:inline">Annuler</span></button>
                               </>
                             )}
-                            <button className="text-red-400 hover:text-red-300 text-sm font-medium transition-colors" onClick={() => deleteTransfer(transfer.id)}><FaTrash className="inline-block mr-1"/> Supprimer</button>
+                            <button className="text-red-400 hover:text-red-300 text-sm font-medium transition-colors" onClick={() => deleteTransfer(transfer.id)}><FaTrash className="inline-block mr-1"/> <span className="hidden md:inline">Supprimer</span></button>
                           </div>
                         </td>
                       </tr>
@@ -1619,25 +1631,34 @@ const Bar: React.FC = () => {
                 <table className="w-full">
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date/Heure</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date/Heure</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Type</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Solde</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Caisse</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Utilisateur</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Référence</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Solde</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Caisse</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Utilisateur</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Référence</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-700/50">
                     {filteredCashJournal.map((entry) => (
                       <tr key={entry.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {entry.date.toLocaleDateString('fr-FR')} {entry.date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.description}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                          {entry.description}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">
+                            {entry.type === 'opening' ? 'Ouverture' :
+                             entry.type === 'sale' ? 'Vente' :
+                             entry.type === 'cash_in' ? 'Entrée' :
+                             entry.type === 'cash_out' ? 'Sortie' :
+                             entry.type === 'transfer' ? 'Transfert' : entry.type}
+                          </span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap md:table-cell">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(entry.type)}`}>
                             {entry.type === 'opening' ? 'Ouverture' :
                              entry.type === 'sale' ? 'Vente' :
@@ -1649,12 +1670,12 @@ const Bar: React.FC = () => {
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
                           {entry.amount.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm font-medium text-white md:table-cell">
                           {entry.balance.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.register}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.user}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.reference || 'N/A'}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.register}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.user}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.reference || 'N/A'}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
                           {entry.type === 'closing' && entry.sourceType === 'register-closing' && entry.status !== 'cancelled' && (
                             <button
@@ -1662,7 +1683,7 @@ const Bar: React.FC = () => {
                               onClick={() => cancelClosure(entry.id)}
                               className="text-yellow-300 hover:text-yellow-200 text-sm"
                             >
-                              <FaTimes className="inline-block mr-1"/> Annuler
+                              <FaTimes className="inline-block mr-1"/> <span className="hidden md:inline">Annuler</span>
                             </button>
                           )}
                           {entry.type === 'closing' && entry.sourceType === 'register-closing' && entry.status === 'cancelled' && (
@@ -1671,7 +1692,7 @@ const Bar: React.FC = () => {
                               onClick={() => deleteClosure(entry.id)}
                               className="text-red-400 hover:text-red-300 text-sm"
                             >
-                              <FaTrash className="inline-block mr-1"/> Supprimer
+                              <FaTrash className="inline-block mr-1"/> <span className="hidden md:inline">Supprimer</span>
                             </button>
                           )}
                         </td>
