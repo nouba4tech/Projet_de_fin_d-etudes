@@ -2649,11 +2649,11 @@ const Parametres: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Code</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nom</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Contact</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Catégorie</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Conditions</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Évaluation</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Nom</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Contact</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Catégorie</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Conditions</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Évaluation</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -2661,12 +2661,15 @@ const Parametres: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {suppliers.map((supplier) => (
                       <tr key={supplier.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{supplier.code}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{supplier.name}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{supplier.contactPerson}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{supplier.category}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{supplier.paymentTerms}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {supplier.code}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{supplier.name}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{supplier.name}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{supplier.contactPerson}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{supplier.category}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{supplier.paymentTerms}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           <div className="flex items-center">
                             <span className="mr-1">{supplier.rating}</span>
                             <div className="flex text-yellow-400">
@@ -2690,7 +2693,7 @@ const Parametres: React.FC = () => {
                             className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 mr-2"
                           >
                             <FaEye className="h-4 w-4" aria-hidden="true" />
-                            Détails
+                            <span className="hidden md:inline">Détails</span>
                           </button>
                           <button
                             type="button"
