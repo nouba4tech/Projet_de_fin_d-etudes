@@ -207,18 +207,24 @@ const HebergementSection: React.FC<{ data: ReservationRecord[]; loading: boolean
           <table className="w-full">
             <thead className="bg-white/5">
               <tr>
-                {['Client', 'Chambre', 'Arrivée', 'Départ', 'Montant', 'Statut'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">{h}</th>
+                {['Client', 'Chambre', 'Arrivée', 'Départ', 'Montant', 'Statut'].map((h, i) => (
+                  <th key={h} className={`px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider ${i >= 1 && i <= 3 ? 'hidden md:table-cell' : ''}`}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700/50">
               {data.slice(0, 15).map(r => (
                 <tr key={r.id} className="hover:bg-white/5 transition-colors">
-                  <td className="px-4 py-3 text-sm text-white font-medium">{r.guestName || '—'}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{r.roomNumber || '—'}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{r.checkIn ? new Date(r.checkIn).toLocaleDateString('fr-FR') : '—'}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{r.checkOut ? new Date(r.checkOut).toLocaleDateString('fr-FR') : '—'}</td>
+                  <td className="px-4 py-3 text-sm text-white font-medium">
+                    {r.guestName || '—'}
+                    <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">
+                      {r.roomNumber ? `Ch. ${r.roomNumber} · ` : ''}
+                      {r.checkIn ? new Date(r.checkIn).toLocaleDateString('fr-FR') : '—'} → {r.checkOut ? new Date(r.checkOut).toLocaleDateString('fr-FR') : '—'}
+                    </span>
+                  </td>
+                  <td className="hidden px-4 py-3 text-sm text-gray-300 md:table-cell">{r.roomNumber || '—'}</td>
+                  <td className="hidden px-4 py-3 text-sm text-gray-300 md:table-cell">{r.checkIn ? new Date(r.checkIn).toLocaleDateString('fr-FR') : '—'}</td>
+                  <td className="hidden px-4 py-3 text-sm text-gray-300 md:table-cell">{r.checkOut ? new Date(r.checkOut).toLocaleDateString('fr-FR') : '—'}</td>
                   <td className="px-4 py-3 text-sm font-medium text-white">{fmtCurrency(r.totalAmount || 0)}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
@@ -317,16 +323,19 @@ const RestaurantSection: React.FC<{ data: RestaurantOrder[]; loading: boolean }>
           <table className="w-full">
             <thead className="bg-white/5">
               <tr>
-                {['#', 'Table', 'Montant', 'Statut', 'Date'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">{h}</th>
+                {['#', 'Table', 'Montant', 'Statut', 'Date'].map((h, i) => (
+                  <th key={h} className={`px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider ${i === 1 || i === 4 ? 'hidden md:table-cell' : ''}`}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700/50">
               {data.slice(0, 15).map(o => (
                 <tr key={o.id} className="hover:bg-white/5 transition-colors">
-                  <td className="px-4 py-3 text-sm text-gray-400">#{o.id}</td>
-                  <td className="px-4 py-3 text-sm text-white font-medium">Table {o.tableNumber}</td>
+                  <td className="px-4 py-3 text-sm text-gray-400">
+                    #{o.id}
+                    <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">Table {o.tableNumber}</span>
+                  </td>
+                  <td className="hidden px-4 py-3 text-sm text-white font-medium md:table-cell">Table {o.tableNumber}</td>
                   <td className="px-4 py-3 text-sm font-medium text-white">{fmtCurrency(o.totalAmount || 0)}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
@@ -335,7 +344,7 @@ const RestaurantSection: React.FC<{ data: RestaurantOrder[]; loading: boolean }>
                       'bg-yellow-500/20 text-yellow-400'
                     }`}>{o.status || 'N/A'}</span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-300">
+                  <td className="hidden px-4 py-3 text-sm text-gray-300 md:table-cell">
                     {o.createdAt ? new Date(o.createdAt).toLocaleDateString('fr-FR') : '—'}
                   </td>
                 </tr>
@@ -421,20 +430,23 @@ const BarSection: React.FC<{ data: BarProduct[]; loading: boolean }> = ({ data, 
           <table className="w-full">
             <thead className="bg-white/5">
               <tr>
-                {['Produit', 'Catégorie', 'Prix vente', 'Stock', 'Seuil min', 'Valeur', 'État'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">{h}</th>
+                {['Produit', 'Catégorie', 'Prix vente', 'Stock', 'Seuil min', 'Valeur', 'État'].map((h, i) => (
+                  <th key={h} className={`px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider ${(i >= 1 && i <= 2) || i === 4 || i === 5 ? 'hidden md:table-cell' : ''}`}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700/50">
               {data.map(p => (
                 <tr key={p.id} className="hover:bg-white/5 transition-colors">
-                  <td className="px-4 py-3 text-sm font-medium text-white">{p.name}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{p.category}</td>
-                  <td className="px-4 py-3 text-sm text-white">{fmtCurrency(p.price)}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-white">
+                    {p.name}
+                    <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{p.category}</span>
+                  </td>
+                  <td className="hidden px-4 py-3 text-sm text-gray-300 md:table-cell">{p.category}</td>
+                  <td className="hidden px-4 py-3 text-sm text-white md:table-cell">{fmtCurrency(p.price)}</td>
                   <td className="px-4 py-3 text-sm font-bold text-white">{fmt(p.stock)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-400">{fmt(p.minThreshold)}</td>
-                  <td className="px-4 py-3 text-sm font-medium text-yellow-400">{fmtCurrency(p.price * p.stock)}</td>
+                  <td className="hidden px-4 py-3 text-sm text-gray-400 md:table-cell">{fmt(p.minThreshold)}</td>
+                  <td className="hidden px-4 py-3 text-sm font-medium text-yellow-400 md:table-cell">{fmtCurrency(p.price * p.stock)}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                       p.stock === 0 ? 'bg-red-500/20 text-red-400' :
@@ -524,18 +536,21 @@ const EmployesSection: React.FC<{ data: Employee[]; loading: boolean }> = ({ dat
           <table className="w-full">
             <thead className="bg-white/5">
               <tr>
-                {['Nom', 'Poste', 'Département', 'Salaire', 'Statut'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">{h}</th>
+                {['Nom', 'Poste', 'Département', 'Salaire', 'Statut'].map((h, i) => (
+                  <th key={h} className={`px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider ${i >= 1 && i <= 3 ? 'hidden md:table-cell' : ''}`}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700/50">
               {data.map(e => (
                 <tr key={e.id} className="hover:bg-white/5 transition-colors">
-                  <td className="px-4 py-3 text-sm font-medium text-white">{e.firstName} {e.lastName}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{e.position || '—'}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{e.department || '—'}</td>
-                  <td className="px-4 py-3 text-sm font-medium text-white">{fmtCurrency(e.salary || 0)}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-white">
+                    {e.firstName} {e.lastName}
+                    <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{e.position || '—'}</span>
+                  </td>
+                  <td className="hidden px-4 py-3 text-sm text-gray-300 md:table-cell">{e.position || '—'}</td>
+                  <td className="hidden px-4 py-3 text-sm text-gray-300 md:table-cell">{e.department || '—'}</td>
+                  <td className="hidden px-4 py-3 text-sm font-medium text-white md:table-cell">{fmtCurrency(e.salary || 0)}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                       e.status === 'Actif' ? 'bg-emerald-500/20 text-emerald-400' :
@@ -583,26 +598,29 @@ const FinancesSection: React.FC<{ data: FinanceTransaction[]; loading: boolean }
           <table className="w-full">
             <thead className="bg-white/5">
               <tr>
-                {['Type', 'Description', 'Catégorie', 'Montant', 'Date'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">{h}</th>
+                {['Type', 'Description', 'Catégorie', 'Montant', 'Date'].map((h, i) => (
+                  <th key={h} className={`px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider ${i === 0 || i === 2 || i === 4 ? 'hidden md:table-cell' : ''}`}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700/50">
               {data.slice(0, 20).map(t => (
                 <tr key={t.id} className="hover:bg-white/5 transition-colors">
-                  <td className="px-4 py-3">
+                  <td className="hidden px-4 py-3 md:table-cell">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                       t.transactionType === 'Recette' ? 'bg-emerald-500/20 text-emerald-400' :
                       'bg-red-500/20 text-red-400'
                     }`}>{t.transactionType}</span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-300 max-w-xs truncate">{t.description || '—'}</td>
-                  <td className="px-4 py-3 text-sm text-gray-400">{t.category || '—'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-300 max-w-xs truncate">
+                    {t.description || '—'}
+                    <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{t.transactionType}</span>
+                  </td>
+                  <td className="hidden px-4 py-3 text-sm text-gray-400 md:table-cell">{t.category || '—'}</td>
                   <td className={`px-4 py-3 text-sm font-medium ${
                     t.transactionType === 'Recette' ? 'text-emerald-400' : 'text-red-400'
                   }`}>{t.transactionType === 'Recette' ? '+' : '-'}{fmtCurrency(t.amount || 0)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">
+                  <td className="hidden px-4 py-3 text-sm text-gray-300 md:table-cell">
                     {t.transactionDate ? new Date(t.transactionDate).toLocaleDateString('fr-FR') : '—'}
                   </td>
                 </tr>
