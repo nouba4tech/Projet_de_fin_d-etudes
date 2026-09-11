@@ -703,7 +703,7 @@ const Economat: React.FC = () => {
                           </td>
                           <td className="px-4 py-3 text-sm text-white">{((Number(line.quantity) || 0) * (Number(line.unitPrice) || 0)).toLocaleString('fr-FR')} FCFA</td>
                           <td className="px-4 py-3">
-                            <button type="button" onClick={() => removeInvoiceLine(index)} className="inline-flex items-center gap-1 text-red-400 hover:text-red-300 text-sm"><FaTrash /> Supprimer</button>
+                            <button type="button" onClick={() => removeInvoiceLine(index)} className="inline-flex items-center gap-1 text-red-400 hover:text-red-300 text-sm"><FaTrash /> <span className="hidden md:inline">Supprimer</span></button>
                           </td>
                         </tr>
                       ))}
@@ -811,7 +811,7 @@ const Economat: React.FC = () => {
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Article</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Stock actuel</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Quantité</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Valeur</th>
+                        <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Valeur</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                       </tr>
                     </thead>
@@ -834,11 +834,11 @@ const Economat: React.FC = () => {
                             <td className="px-4 py-3">
                               <input type="number" min="0" value={line.quantity} onChange={(e) => updateTransferLine(index, { quantity: e.target.value })} className="w-full px-2 py-1 border border-gray-600/50 rounded text-sm" placeholder="0" />
                             </td>
-                            <td className="px-4 py-3 text-sm text-white">
+                            <td className="hidden px-4 py-3 text-sm text-white md:table-cell">
                               {selectedItem ? ((Number(line.quantity) || 0) * selectedItem.unitCost).toLocaleString('fr-FR') : 0} FCFA
                             </td>
                             <td className="px-4 py-3">
-                              <button type="button" onClick={() => removeTransferLine(index)} className="inline-flex items-center gap-1 text-red-400 hover:text-red-300 text-sm"><FaTrash /> Supprimer</button>
+                              <button type="button" onClick={() => removeTransferLine(index)} className="inline-flex items-center gap-1 text-red-400 hover:text-red-300 text-sm"><FaTrash /> <span className="hidden md:inline">Supprimer</span></button>
                             </td>
                           </tr>
                         );
@@ -1015,13 +1015,13 @@ const Economat: React.FC = () => {
             <table className="w-full">
               <thead className="bg-white/5 border-b border-gray-700/50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date/Heure</th>
+                  <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date/Heure</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Titre</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Catégorie</th>
+                  <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Catégorie</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Priorité</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Localisation</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rapporté par</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Assigné à</th>
+                  <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Localisation</th>
+                  <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Rapporté par</th>
+                  <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Assigné à</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
@@ -1029,11 +1029,14 @@ const Economat: React.FC = () => {
               <tbody className="divide-y divide-gray-700/50">
                 {mainCouranteEntries.map((entry) => (
                   <tr key={entry.id} className="hover:bg-white/5">
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                    <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                       {entry.entryDate.toLocaleDateString('fr-FR')} {entry.entryTime}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{entry.title}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                      {entry.title}
+                      <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{entry.location}</span>
+                    </td>
+                    <td className="hidden px-4 py-3 whitespace-nowrap md:table-cell">
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(entry.category)}`}>
                         {entry.category}
                       </span>
@@ -1043,17 +1046,17 @@ const Economat: React.FC = () => {
                         {entry.priority}
                       </span>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.location}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.reportedBy}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.assignedTo || 'N/A'}</td>
+                    <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.location}</td>
+                    <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.reportedBy}</td>
+                    <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.assignedTo || 'N/A'}</td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(entry.status)}`}>
                         {entry.status}
                       </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm">
-                      <button className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 mr-2 text-sm"><FaEye /> Détails</button>
-                      <button className="inline-flex items-center gap-1 text-green-400 hover:text-green-300 text-sm"><FaEdit /> Modifier</button>
+                      <button className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 mr-2 text-sm"><FaEye /> <span className="hidden md:inline">Détails</span></button>
+                      <button className="inline-flex items-center gap-1 text-green-400 hover:text-green-300 text-sm"><FaEdit /> <span className="hidden md:inline">Modifier</span></button>
                     </td>
                   </tr>
                 ))}
@@ -1114,11 +1117,11 @@ const Economat: React.FC = () => {
                 <thead className="bg-white/5 border-b border-gray-700/50">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">N° Facture</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Fournisseur</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date facture</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date échéance</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant HT</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">TVA</th>
+                    <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Fournisseur</th>
+                    <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date facture</th>
+                    <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date échéance</th>
+                    <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Montant HT</th>
+                    <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">TVA</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant TTC</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
@@ -1131,18 +1134,21 @@ const Economat: React.FC = () => {
                     .filter((invoice) => !searchTerm.trim() || invoice.invoiceNumber.toLowerCase().includes(searchTerm.trim().toLowerCase()))
                     .map((invoice) => (
                     <tr key={invoice.id} className="hover:bg-white/5">
-                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{invoice.invoiceNumber}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{invoice.supplierName}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                        {invoice.invoiceNumber}
+                        <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{invoice.supplierName}</span>
+                      </td>
+                      <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{invoice.supplierName}</td>
+                      <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                         {invoice.invoiceDate.toLocaleDateString('fr-FR')}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                      <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                         {invoice.dueDate.toLocaleDateString('fr-FR')}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                      <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                         {invoice.amount.toLocaleString('fr-FR')} FCFA
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                      <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                         {invoice.tax.toLocaleString('fr-FR')} FCFA
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
@@ -1154,14 +1160,14 @@ const Economat: React.FC = () => {
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm">
-                        <button type="button" onClick={() => setSelectedSupplierInvoice(invoice)} className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 mr-2 text-sm"><FaEye /> Voir</button>
+                        <button type="button" onClick={() => setSelectedSupplierInvoice(invoice)} className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 mr-2 text-sm"><FaEye /> <span className="hidden md:inline">Voir</span></button>
                         {invoice.status !== 'validated' && invoice.status !== 'paid' ? (
                           <button
                             type="button"
                             onClick={() => void validateSupplierInvoice(invoice.id)}
                             className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 mr-2 text-sm"
                           >
-                            <FaCheck /> Valider
+                            <FaCheck /> <span className="hidden md:inline">Valider</span>
                           </button>
                         ) : null}
                         <button
@@ -1170,9 +1176,9 @@ const Economat: React.FC = () => {
                           disabled={invoice.status === 'paid'}
                           className="inline-flex items-center gap-1 text-green-400 hover:text-green-300 mr-2 text-sm disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-green-400"
                         >
-                          <FaMoneyCheckAlt /> {invoice.status === 'paid' ? 'Payée' : 'Payer'}
+                          <FaMoneyCheckAlt /> <span className="hidden md:inline">{invoice.status === 'paid' ? 'Payée' : 'Payer'}</span>
                         </button>
-                        <button type="button" onClick={() => printSupplierInvoice(invoice)} className="inline-flex items-center gap-1 text-gray-400 hover:text-gray-200 text-sm"><FaPrint /> Imprimer</button>
+                        <button type="button" onClick={() => printSupplierInvoice(invoice)} className="inline-flex items-center gap-1 text-gray-400 hover:text-gray-200 text-sm"><FaPrint /> <span className="hidden md:inline">Imprimer</span></button>
                       </td>
                     </tr>
                   ))}
@@ -1223,20 +1229,20 @@ const Economat: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Article</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Catégorie</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Stock théorique</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Catégorie</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Stock théorique</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Stock physique</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Différence</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Valeur différence</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Motif</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Valeur différence</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Motif</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-700/50">
                     {inventoryEntries.map((entry) => (
                       <tr key={entry.itemId} className="hover:bg-white/5">
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.productName}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.category}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.theoreticalStock} {entry.unit}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.category}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.theoreticalStock} {entry.unit}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <input
                             type="number"
@@ -1254,10 +1260,10 @@ const Economat: React.FC = () => {
                             {entry.difference > 0 ? '+' : ''}{entry.difference} {entry.unit}
                           </span>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm font-medium text-white md:table-cell">
                           {entry.differenceValue.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="hidden px-4 py-3 md:table-cell">
                           <input
                             type="text"
                             value={inventoryReasons[entry.itemId] ?? ''}
