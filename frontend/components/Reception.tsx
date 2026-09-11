@@ -1669,10 +1669,10 @@ const Reception: React.FC = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-700/50">
-                      <th className="px-6 py-4">N° Visite</th>
+                      <th className="hidden px-6 py-4 md:table-cell">N° Visite</th>
                       <th className="px-6 py-4">Visiteur</th>
-                      <th className="px-6 py-4">Objet / Observation</th>
-                      <th className="px-6 py-4">Date & Heure</th>
+                      <th className="hidden px-6 py-4 md:table-cell">Objet / Observation</th>
+                      <th className="hidden px-6 py-4 md:table-cell">Date & Heure</th>
                       <th className="px-6 py-4">Statut</th>
                       <th className="px-6 py-4 text-right">Actions</th>
                     </tr>
@@ -1680,10 +1680,13 @@ const Reception: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/30">
                     {visits.map((visit) => (
                       <tr key={visit.id} className="hover:bg-white/5 transition-colors group">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{visit.visitNumber}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{visit.visitorName}</td>
-                        <td className="px-6 py-4 text-sm text-gray-400 max-w-xs truncate">{visit.purpose}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                        <td className="hidden px-6 py-4 whitespace-nowrap text-sm font-medium text-white md:table-cell">{visit.visitNumber}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {visit.visitorName}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{visit.purpose}</span>
+                        </td>
+                        <td className="hidden px-6 py-4 text-sm text-gray-400 max-w-xs truncate md:table-cell">{visit.purpose}</td>
+                        <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-400 md:table-cell">
                           {visit.visitDate.toLocaleDateString()} à {visit.checkInTime}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -1897,14 +1900,14 @@ const Reception: React.FC = () => {
                 <table className="w-full">
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">N° Service</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">N° Service</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Client</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Chambre</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Chambre</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Type</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Description</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Coût</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Paiement</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Paiement</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -1912,20 +1915,23 @@ const Reception: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {internalServices.map((service) => (
                       <tr key={service.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{service.serviceNumber}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{service.guestName}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{service.roomNumber}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm font-medium text-white md:table-cell">{service.serviceNumber}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                          {service.guestName}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{service.roomNumber}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{service.roomNumber}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {getServiceTypeLabel(service.serviceType)}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{service.description}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{service.description}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {service.requestDate.toLocaleDateString('fr-FR')} {service.requestDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
                           {service.cost.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {service.paymentStatus === 'charged_to_room' ? 'Débit chambre' :
                            service.paymentStatus === 'paid' ? 'Payé' : 'En attente'}
                         </td>
@@ -2141,12 +2147,12 @@ const Reception: React.FC = () => {
                 <table className="w-full">
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date/Heure</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date/Heure</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Titre</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Catégorie</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Catégorie</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Priorité</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Localisation</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rapporté par</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Localisation</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Rapporté par</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -2154,11 +2160,14 @@ const Reception: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {mainCourante.map((entry) => (
                       <tr key={entry.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {entry.entryDate.toLocaleDateString('fr-FR')} {entry.entryTime}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{entry.title}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {entry.title}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{entry.location}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap md:table-cell">
                           <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-500/20 text-red-400">
                             {entry.category}
                           </span>
@@ -2168,8 +2177,8 @@ const Reception: React.FC = () => {
                             {entry.priority}
                           </span>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.location}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.reportedBy}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.location}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.reportedBy}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(entry.status)}`}>
                             {entry.status === 'in_progress' ? 'En cours' : entry.status}
@@ -2802,11 +2811,11 @@ const Reception: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">N° Facture</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Client</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Chambre</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Client</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Chambre</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Paiement</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Paiement</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -2814,16 +2823,19 @@ const Reception: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {filteredInvoiceBookings.map((booking) => (
                       <tr key={booking.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{booking.bookingNumber}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{booking.guestName}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{booking.roomNumber}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {booking.bookingNumber}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{booking.guestName}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{booking.guestName}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{booking.roomNumber}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {booking.createdAt.toLocaleDateString('fr-FR')}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
                           {booking.totalAmount.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {getPaymentMethodLabel(booking.paymentMethod)}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
@@ -2972,10 +2984,10 @@ const Reception: React.FC = () => {
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">N° Transfert</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">De</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Vers</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">De</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Vers</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Motif</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Motif</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -2983,13 +2995,16 @@ const Reception: React.FC = () => {
                   <tbody className="divide-y divide-gray-700/50">
                     {cashTransfers.map((transfer) => (
                       <tr key={transfer.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">{transfer.transferNumber}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{transfer.fromRegister}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{transfer.toRegister}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                          {transfer.transferNumber}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{transfer.fromRegister} → {transfer.toRegister}</span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{transfer.fromRegister}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{transfer.toRegister}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
                           {transfer.amount.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{transfer.reason}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{transfer.reason}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={'px-2 py-1 text-xs font-medium rounded-full ' + getStatusColor(transfer.status)}>
                             {transfer.status === 'completed' ? 'Complété' : transfer.status}
@@ -3149,25 +3164,34 @@ const Reception: React.FC = () => {
                 <table className="w-full">
                   <thead className="bg-white/5 border-b border-gray-700/50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date/Heure</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date/Heure</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Type</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Solde</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Caisse</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Utilisateur</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Référence</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Solde</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Caisse</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Utilisateur</th>
+                      <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Référence</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-700/50">
                     {filteredCashJournal.map((entry) => (
                       <tr key={entry.id} className="hover:bg-white/5">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
                           {entry.date.toLocaleDateString('fr-FR')} {entry.date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.description}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                          {entry.description}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">
+                            {entry.type === 'opening' ? 'Ouverture' :
+                             entry.type === 'sale' ? 'Vente' :
+                             entry.type === 'cash_in' ? 'Entrée' :
+                             entry.type === 'cash_out' ? 'Sortie' :
+                             entry.type === 'transfer' ? 'Transfert' : 'Fermeture'}
+                          </span>
+                        </td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap md:table-cell">
                           <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-500/20 text-green-400">
                             {entry.type === 'opening' ? 'Ouverture' :
                              entry.type === 'sale' ? 'Vente' :
@@ -3179,12 +3203,12 @@ const Reception: React.FC = () => {
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
                           {entry.amount.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm font-medium text-white md:table-cell">
                           {entry.balance.toLocaleString('fr-FR')} FCFA
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.register}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.user}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-white">{entry.reference || 'N/A'}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.register}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.user}</td>
+                        <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.reference || 'N/A'}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
                           {entry.type === 'closing' && entry.sourceType === 'register-closing' && entry.status !== 'cancelled' && (
                             <button
