@@ -887,6 +887,91 @@ table tbody td {
     table[class*='min-w-'] {
         min-width: 0 !important;
     }
+
+    /* Action-button rows (title + "Ajouter/Importer/Exporter"-style buttons in a
+       justify-between header, or a group of buttons in a space-x-N row) are the
+       most common cause of content disappearing sideways on a narrow phone: with
+       overflow-x:hidden on the page (needed to stop the whole app scrolling
+       sideways), anything in these rows that doesn't fit is silently clipped
+       instead of shown or scrolled. Portrait Android widths (~360-412px) hit this
+       constantly even though the same row fits fine in landscape (~700px+). Let
+       these wrap onto their own line(s) instead of disappearing. Tab bars are
+       deliberately excluded (they use overflow-x-auto + swipe, no items-center).
+       */
+    .flex.items-center.justify-between {
+        flex-wrap: wrap;
+        row-gap: 0.75rem;
+    }
+
+    .flex.items-center.space-x-2,
+    .flex.items-center.space-x-3,
+    .flex.items-center.space-x-4,
+    .flex.items-center.space-x-6,
+    .flex.items-center.space-x-8 {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .flex.items-center.space-x-2 > *,
+    .flex.items-center.space-x-3 > *,
+    .flex.items-center.space-x-4 > *,
+    .flex.items-center.space-x-6 > *,
+    .flex.items-center.space-x-8 > * {
+        margin-left: 0 !important;
+    }
+
+    /* Same overflow, gap-based variant: a row-direction flex with gap-N (no
+       items-center required, e.g. CashWorkflow's "Rafraichir / Ouvrir une
+       caisse / Nouveau virement" button row) needs no margin fixup, just
+       wrapping -- excluding flex-col so a tall vertical stack never gets
+       reinterpreted as multiple columns. */
+    .flex.gap-2:not(.flex-col),
+    .flex.gap-3:not(.flex-col),
+    .flex.gap-4:not(.flex-col),
+    .flex.gap-6:not(.flex-col),
+    .flex.gap-8:not(.flex-col) {
+        flex-wrap: wrap;
+    }
+
+    /* The app's "glass card" look nests a decorative blurred p-8 wrapper around
+       an inner p-6 card (Bar/Accounting/Economat/Reception/Security all use this
+       same pattern). Each padding level is fine alone, but stacked 2-3 deep they
+       eat 150-200px+ out of a 393px portrait phone before any real content
+       starts, which is what was squeezing the button row above to ~164px of
+       usable width. Shrink those two padding levels on narrow screens only --
+       desktop/tablet/landscape keep the original spacious padding. */
+    .rounded-2xl.p-8,
+    .rounded-3xl.p-8 {
+        padding: 1.25rem !important;
+    }
+
+    .rounded-2xl.p-6,
+    .rounded-3xl.p-6 {
+        padding: 1rem !important;
+    }
+
+    /* The gradient CTA buttons ("+ Nouvelle facture", "+ Nouvelle reservation"...)
+       all share this exact px-6 py-3 padding. Inside the now-narrower cards above,
+       shaving the horizontal padding is what keeps their one-line label from
+       wrapping in two on a phone. */
+    button.px-6.py-3 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* Large bold page-title headings (text-3xl font-black, often gradient
+       bg-clip-text) contain long unbreakable French words ("utilisateurs").
+       At this size a single such word can be wider than the whole card on a
+       portrait phone; since the page has overflow-x:hidden, the overflow was
+       silently clipped instead of wrapping (the final letter of "utilisateurs"
+       disappearing off the edge). Shrink the size and allow the word itself to
+       break as a last resort. */
+    h1.text-3xl, h2.text-3xl, h3.text-3xl,
+    [class*='bg-clip-text'].text-3xl {
+        font-size: 1.5rem !important;
+        line-height: 1.25 !important;
+        overflow-wrap: break-word;
+    }
 }
 
 /* Badge & Tag Enhancement */
