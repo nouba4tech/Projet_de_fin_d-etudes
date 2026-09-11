@@ -85,6 +85,23 @@ textarea {
     font-family: 'Public Sans', 'Segoe UI', 'Helvetica Neue', sans-serif;
 }
 
+/* The whole authenticated app shell (sidebar + scrollable content) is built on
+   Tailwind's h-screen (height:100vh) so the sidebar stays pinned full-height
+   while only the main content area scrolls. On mobile browsers, 100vh is
+   measured including the address bar even when it isn't actually taking up
+   screen space, so the shell is sized taller than what's visible -- and
+   because the outer shell uses overflow-hidden (by design, so the sidebar
+   never scrolls with the page), that extra height is hard-clipped with no way
+   to scroll to it: the bottom of whatever page is open (Dashboard's last
+   cards/chart, a table's last rows...) gets cut off. 100dvh tracks the real
+   visible viewport as the browser's chrome shows/hides, so this keeps the
+   100vh value for browsers that don't understand dvh and overrides it for
+   the ones that do. */
+[data-app-shell='true'] {
+    height: 100vh;
+    height: 100dvh;
+}
+
 button,
 input,
 select,
