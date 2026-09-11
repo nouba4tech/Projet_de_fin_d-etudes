@@ -161,8 +161,7 @@ const Auth: React.FC = () => {
             <img src="/assets/logo_mirador_transparent_cropped.png" alt="Mirador Logo" className="h-full w-full object-contain" />
           </div>
           <div className="min-w-0 text-left">
-            <p className="mb-1 inline-flex rounded-full border border-sky-300/20 bg-sky-400/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-100/80">Gestion hoteliere</p>
-            <h1 className="text-2xl font-extrabold leading-tight tracking-normal text-white sm:text-3xl">Hôtel Mirador</h1>
+            <p className="inline-flex rounded-full border border-sky-300/20 bg-sky-400/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-100/80">Gestion hoteliere</p>
           </div>
         </header>
 
