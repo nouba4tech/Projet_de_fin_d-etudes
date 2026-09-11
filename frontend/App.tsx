@@ -526,7 +526,7 @@ const MainLayout: React.FC<{
               </div>
             </div>
           </header>
-          <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-10 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 pb-10 md:p-10 custom-scrollbar">
             {children}
           </div>
         </main>
