@@ -1102,9 +1102,9 @@ const Accounting: React.FC = () => {
                 <thead className="bg-white/5 border-b border-gray-700/50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Code</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nom du compte</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Classe</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Nom du compte</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Type</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Classe</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Solde</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
@@ -1113,9 +1113,12 @@ const Accounting: React.FC = () => {
                 <tbody className="divide-y divide-gray-700/50">
                   {accounts.map((account) => (
                     <tr key={account.id} className="hover:bg-white/5">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{account.code}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{account.name}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                        {account.code}
+                        <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{account.name}</span>
+                      </td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">{account.name}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap md:table-cell">
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                           account.type === 'Actif' ? 'bg-blue-500/20 text-blue-400' :
                           account.type === 'Passif' ? 'bg-green-500/20 text-green-400' :
@@ -1125,7 +1128,7 @@ const Accounting: React.FC = () => {
                           {account.type}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{account.className || account.code.substring(0, 3)}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-400 md:table-cell">{account.className || account.code.substring(0, 3)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {account.balance.toLocaleString('fr-FR')} {currencySymbol}
                       </td>
@@ -1170,8 +1173,8 @@ const Accounting: React.FC = () => {
                   <tr>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-400">Code</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-400">Nom</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-400">Type</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-400">Classe</th>
+                    <th className="hidden px-3 py-2 text-left text-xs font-medium text-gray-400 md:table-cell">Type</th>
+                    <th className="hidden px-3 py-2 text-left text-xs font-medium text-gray-400 md:table-cell">Classe</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-400">Solde</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-400">Statut</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-400">Action</th>
@@ -1196,7 +1199,7 @@ const Accounting: React.FC = () => {
                           className="w-full px-2 py-1 bg-gray-800 border border-gray-600/50 rounded text-sm text-white"
                         />
                       </td>
-                      <td className="px-3 py-2">
+                      <td className="hidden px-3 py-2 md:table-cell">
                         <select
                           value={account.type}
                           onChange={(e) => updatePreviewAccount(index, 'type', e.target.value)}
@@ -1208,7 +1211,7 @@ const Accounting: React.FC = () => {
                           <option value="Produit">Produit</option>
                         </select>
                       </td>
-                      <td className="px-3 py-2">
+                      <td className="hidden px-3 py-2 md:table-cell">
                         <input
                           type="text"
                           value={account.className}
@@ -1346,12 +1349,12 @@ const Accounting: React.FC = () => {
                 <thead className="bg-white/5 border-b border-gray-700/50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Référence</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Compte</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Libellé</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Référence</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Compte</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Libellé</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Débit</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Crédit</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Journal</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Journal</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
@@ -1360,17 +1363,18 @@ const Accounting: React.FC = () => {
                     <tr key={operation.id} className="hover:bg-white/5">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {operation.date.includes('T') ? new Date(operation.date).toLocaleDateString('fr-FR') : operation.date}
+                        <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{operation.accountCode}</span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{operation.reference}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{operation.accountCode}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{operation.label}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm font-medium text-white md:table-cell">{operation.reference}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">{operation.accountCode}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-400 md:table-cell">{operation.label}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {operation.debitAmount > 0 ? `${operation.debitAmount.toLocaleString('fr-FR')} ${currencySymbol}` : '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {operation.creditAmount > 0 ? `${operation.creditAmount.toLocaleString('fr-FR')} ${currencySymbol}` : '-'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="hidden px-6 py-4 whitespace-nowrap md:table-cell">
                         <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-500/20 text-blue-400">
                           {operation.journalCode}
                         </span>
@@ -1453,10 +1457,10 @@ const Accounting: React.FC = () => {
                 <thead className="bg-white/5 border-b border-gray-700/50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Total Débit</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Total Crédit</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Opérations</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Journaux</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Total Débit</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Total Crédit</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Opérations</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Journaux</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                   </tr>
@@ -1464,15 +1468,18 @@ const Accounting: React.FC = () => {
                 <tbody className="divide-y divide-gray-700/50">
                   {JOURNAL_DAYS.map((day) => (
                     <tr key={day.date} className="hover:bg-white/5">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{day.date}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                        {day.date}
+                        <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{day.totalDebit.toLocaleString('fr-FR')} {currencySymbol}</span>
+                      </td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">
                         {day.totalDebit.toLocaleString('fr-FR')} {currencySymbol}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">
                         {day.totalCredit.toLocaleString('fr-FR')} {currencySymbol}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{day.operations}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">{day.operations}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">
                         {day.journals.join(', ')}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -1591,11 +1598,11 @@ const Accounting: React.FC = () => {
                 <thead className="bg-white/5 border-b border-gray-700/50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Heure</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Heure</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Type</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Description</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Solde</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Solde</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
@@ -1604,20 +1611,21 @@ const Accounting: React.FC = () => {
                     <tr key={entry.id} className="hover:bg-white/5">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {entry.date.includes('-') ? new Date(entry.date).toLocaleDateString('fr-FR') : entry.date}
+                        <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{entry.description}</span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{entry.time?.slice(0, 5) || '-'}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">{entry.time?.slice(0, 5) || '-'}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap md:table-cell">
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                           entry.type === 'Entrée' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
                         }`}>
                           {entry.type}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{entry.description}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-400 md:table-cell">{entry.description}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                         {entry.amount.toLocaleString('fr-FR')} {currencySymbol}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm font-medium text-white md:table-cell">
                         {entry.balance.toLocaleString('fr-FR')} {currencySymbol}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -1699,12 +1707,12 @@ const Accounting: React.FC = () => {
               <table className="w-full">
                 <thead className="bg-white/5 border-b border-gray-700/50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Code</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Journal</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Opérations</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Total Débit</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Total Crédit</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Journal</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Opérations</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Total Débit</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Total Crédit</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                   </tr>
@@ -1712,14 +1720,17 @@ const Accounting: React.FC = () => {
                 <tbody className="divide-y divide-gray-700/50">
                   {JOURNAL_BOOK.map((journal) => (
                     <tr key={journal.date + journal.code} className="hover:bg-white/5">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{journal.date}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{journal.code}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{journal.name}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{journal.operations}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">{journal.date}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                        {journal.code}
+                        <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{journal.date}</span>
+                      </td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">{journal.name}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">{journal.operations}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">
                         {journal.totalDebit.toLocaleString('fr-FR')} {currencySymbol}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">
                         {journal.totalCredit.toLocaleString('fr-FR')} {currencySymbol}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -1870,13 +1881,13 @@ const Accounting: React.FC = () => {
               <table className="w-full">
                 <thead className="bg-white/5 border-b border-gray-700/50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Heure</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Heure</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">De</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Vers</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Vers</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Montant</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Motif</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Autorisé par</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Motif</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Autorisé par</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                   </tr>
@@ -1884,15 +1895,18 @@ const Accounting: React.FC = () => {
                 <tbody className="divide-y divide-gray-700/50">
                   {interCashTransfers.map((transfer) => (
                     <tr key={transfer.id} className="hover:bg-white/5">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{transfer.date}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{transfer.time}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{transfer.from}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{transfer.to}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">{transfer.date}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">{transfer.time}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                        {transfer.from}
+                        <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">→ {transfer.to}</span>
+                      </td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">{transfer.to}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                         {transfer.amount.toLocaleString('fr-FR')} {currencySymbol}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{transfer.reason}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{transfer.authorizedBy}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-400 md:table-cell">{transfer.reason}</td>
+                      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">{transfer.authorizedBy}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500/20 text-green-400">
                           {transfer.status}
@@ -1992,10 +2006,10 @@ const Accounting: React.FC = () => {
                 <thead className="bg-white/5 border-b border-gray-700/50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Compte</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Libellé</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Libellé</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Solde Débiteur</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Solde Créditeur</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
+                    <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Type</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
@@ -2004,15 +2018,18 @@ const Accounting: React.FC = () => {
                     const isDebit = account.type === 'Actif' || account.type === 'Charge';
                     return (
                       <tr key={account.id} className="hover:bg-white/5">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{account.code}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{account.name}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                          {account.code}
+                          <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{account.name}</span>
+                        </td>
+                        <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-white md:table-cell">{account.name}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                           {isDebit ? `${account.balance.toLocaleString('fr-FR')} ${currencySymbol}` : '-'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                           {!isDebit ? `${account.balance.toLocaleString('fr-FR')} ${currencySymbol}` : '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="hidden px-6 py-4 whitespace-nowrap md:table-cell">
                           <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             account.type === 'Actif' ? 'bg-blue-500/20 text-blue-400' :
                             account.type === 'Passif' ? 'bg-green-500/20 text-green-400' :
