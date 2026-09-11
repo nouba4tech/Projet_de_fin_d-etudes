@@ -232,10 +232,10 @@ const Finances: React.FC = () => {
             <table className="w-full min-w-[980px]">
               <thead>
                 <tr className="border-b border-slate-700/60 text-left text-xs uppercase tracking-[0.25em] text-white/45">
-                  <th className="px-4 py-3">Date</th>
+                  <th className="hidden px-4 py-3 md:table-cell">Date</th>
                   <th className="px-4 py-3">Libelle</th>
-                  <th className="px-4 py-3">Categorie</th>
-                  <th className="px-4 py-3">Reference</th>
+                  <th className="hidden px-4 py-3 md:table-cell">Categorie</th>
+                  <th className="hidden px-4 py-3 md:table-cell">Reference</th>
                   <th className="px-4 py-3">Type</th>
                   <th className="px-4 py-3">Montant</th>
                   <th className="px-4 py-3">Actions</th>
@@ -244,14 +244,15 @@ const Finances: React.FC = () => {
               <tbody>
                 {filteredEntries.map((entry) => (
                   <tr key={entry.id} className="border-b border-slate-800/80 text-sm text-white/80">
-                    <td className="px-4 py-4">{entry.transactionDate}</td>
+                    <td className="hidden px-4 py-4 md:table-cell">{entry.transactionDate}</td>
                     <td className="px-4 py-4">
                       <p className="font-semibold text-white/95">{entry.description}</p>
                       <p className="mt-1 text-xs text-white/45">Transaction {entry.id}</p>
+                      <p className="mt-1 text-xs text-white/45 md:hidden">{entry.type}</p>
                     </td>
-                    <td className="px-4 py-4">{entry.category}</td>
-                    <td className="px-4 py-4">{entry.reference || '-'}</td>
-                    <td className="px-4 py-4">
+                    <td className="hidden px-4 py-4 md:table-cell">{entry.category}</td>
+                    <td className="hidden px-4 py-4 md:table-cell">{entry.reference || '-'}</td>
+                    <td className="hidden px-4 py-4 md:table-cell">
                       <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${entry.type.toLowerCase().includes('recette') || entry.type.toLowerCase().includes('income') ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/20' : 'bg-rose-500/15 text-rose-300 border border-rose-500/20'}`}>
                         {entry.type}
                       </span>
