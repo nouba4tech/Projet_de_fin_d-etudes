@@ -975,6 +975,48 @@ table tbody td {
         line-height: 1.25 !important;
         overflow-wrap: break-word;
     }
+
+    /* Table "Actions" columns (Modifier/Supprimer, etc.) use App.tsx's global
+       auto-icon system (applyButtonIcons -> data-button-icon), which prepends an
+       icon but keeps the full text label too. That's fine on desktop, but inside
+       an already-narrow mobile table it was the single biggest column hog --
+       e.g. Security's users table needed 104px just for "Modifier"/"Supprimer"
+       text, more than the Nom or Statut column, pushing the whole row past the
+       visible width. Collapse the label to icon-only inside table cells; the
+       accessible name (still in the DOM) is unaffected, only the visual text is
+       zero-size. */
+    td button[data-button-icon]:not(.no-auto-icon) {
+        font-size: 0;
+        gap: 0;
+    }
+
+    td button[data-button-icon]:not(.no-auto-icon).mr-2 {
+        margin-right: 0.375rem;
+    }
+
+    /* Status badges (Actif/Suspendu/Validé...) were sized for desktop; trim
+       their padding a touch so the wider labels ("Suspendu", "Validée") stop
+       eating into the Actions column's reclaimed space. */
+    td [class*='rounded-full'][class*='px-3'] {
+        padding-left: 0.4375rem !important;
+        padding-right: 0.4375rem !important;
+    }
+
+    /* One more notch on table cell padding specifically -- the general 0.5rem
+       reduction above still left a 3-column table (Nom/Statut/Actions, the
+       common shape once Prenom/Login/Groupe are hidden) needing to scroll for
+       ~30-40px. Every side of every cell shaving 0.125rem (2px) recovers that
+       without cell content touching. */
+    table thead th,
+    table tbody td {
+        padding-left: 0.1875rem !important;
+        padding-right: 0.1875rem !important;
+    }
+
+    td button[data-button-icon]:not(.no-auto-icon)::before {
+        width: 1rem !important;
+        height: 1rem !important;
+    }
 }
 
 /* Badge & Tag Enhancement */
