@@ -520,35 +520,47 @@ select optgroup {
     color: var(--frame-text) !important;
 }
 
-/* Pastel tone text (badges, stat trends, icons) was picked for a dark canvas -- darken each
-   family so it stays readable on the new white/light-gray surfaces. Table cells are excluded:
-   they keep their own dark surface, where these pastel tones are already correctly readable. */
-[data-theme='light'] [data-app-shell='true'] :is(.text-sky-200, .text-sky-300, .text-sky-400, .text-blue-200, .text-blue-300, .text-blue-400, .text-cyan-200, .text-cyan-300, .text-cyan-400, .text-indigo-200, .text-indigo-300, .text-indigo-400):not(th):not(td):not(td *):not(th *) {
+/* Pastel tone text (badges, stat trends, icons, and inline alert/error banners such as the
+   "HTTP 403" notices several pages show on a failed request) was picked for a dark canvas --
+   darken each family so it stays readable on the new white/light-gray surfaces. The -100
+   shades are included alongside -200/-300/-400: those are the near-white tones alert banners
+   use for their message text (e.g. text-amber-100 on a bg-amber-500/10 banner), so without
+   them the banner's own text was close to invisible against the light page behind it. Table
+   cells are excluded: they keep their own dark surface, where these pastel tones are already
+   correctly readable. */
+[data-theme='light'] [data-app-shell='true'] :is(.text-sky-100, .text-sky-200, .text-sky-300, .text-sky-400, .text-blue-100, .text-blue-200, .text-blue-300, .text-blue-400, .text-cyan-100, .text-cyan-200, .text-cyan-300, .text-cyan-400, .text-indigo-100, .text-indigo-200, .text-indigo-300, .text-indigo-400):not(th):not(td):not(td *):not(th *) {
     color: var(--frame-accent) !important;
 }
 
-[data-theme='light'] [data-app-shell='true'] :is(.text-emerald-200, .text-emerald-300, .text-emerald-400, .text-green-200, .text-green-300, .text-green-400, .text-teal-200, .text-teal-300, .text-teal-400):not(th):not(td):not(td *):not(th *) {
+[data-theme='light'] [data-app-shell='true'] :is(.text-emerald-100, .text-emerald-200, .text-emerald-300, .text-emerald-400, .text-green-100, .text-green-200, .text-green-300, .text-green-400, .text-teal-100, .text-teal-200, .text-teal-300, .text-teal-400):not(th):not(td):not(td *):not(th *) {
     color: #15803d !important;
 }
 
-[data-theme='light'] [data-app-shell='true'] :is(.text-violet-200, .text-violet-300, .text-violet-400, .text-purple-200, .text-purple-300, .text-purple-400, .text-fuchsia-200, .text-fuchsia-300, .text-fuchsia-400):not(th):not(td):not(td *):not(th *) {
+[data-theme='light'] [data-app-shell='true'] :is(.text-violet-100, .text-violet-200, .text-violet-300, .text-violet-400, .text-purple-100, .text-purple-200, .text-purple-300, .text-purple-400, .text-fuchsia-100, .text-fuchsia-200, .text-fuchsia-300, .text-fuchsia-400):not(th):not(td):not(td *):not(th *) {
     color: #6d28d9 !important;
 }
 
-[data-theme='light'] [data-app-shell='true'] :is(.text-amber-200, .text-amber-300, .text-amber-400, .text-yellow-200, .text-yellow-300, .text-yellow-400, .text-orange-200, .text-orange-300, .text-orange-400):not(th):not(td):not(td *):not(th *) {
+[data-theme='light'] [data-app-shell='true'] :is(.text-amber-100, .text-amber-200, .text-amber-300, .text-amber-400, .text-yellow-100, .text-yellow-200, .text-yellow-300, .text-yellow-400, .text-orange-100, .text-orange-200, .text-orange-300, .text-orange-400):not(th):not(td):not(td *):not(th *) {
     color: #b45309 !important;
 }
 
-[data-theme='light'] [data-app-shell='true'] :is(.text-rose-200, .text-rose-300, .text-rose-400, .text-red-200, .text-red-300, .text-red-400, .text-pink-200, .text-pink-300, .text-pink-400):not(th):not(td):not(td *):not(th *) {
+[data-theme='light'] [data-app-shell='true'] :is(.text-rose-100, .text-rose-200, .text-rose-300, .text-rose-400, .text-red-100, .text-red-200, .text-red-300, .text-red-400, .text-pink-100, .text-pink-200, .text-pink-300, .text-pink-400):not(th):not(td):not(td *):not(th *) {
     color: #be123c !important;
 }
 
-/* Keep white text where it sits on a solid colored button/badge, not on the light canvas */
+/* Keep white text where it sits on a solid colored button/badge, not on the light canvas.
+   Specificity note: the generic "darken text-white" rule above this one (base text: dark
+   slate instead of white) has 6 class/attribute selectors of specificity (its 3 chained
+   :not() exclusions plus the 4-deep :not(th):not(td):not(td *):not(th *) tail), so a plain
+   ":is(...) .text-white" here (4 selectors) loses that fight and the avatar initials /
+   notification-count bubble render as dark text on a navy circle -- unreadable. Repeating
+   .text-white four times is a standard CSS specificity bump (each repeat of the same class
+   adds one more selector to the count) to push this rule's specificity above that one. */
 [data-theme='light'] [data-app-shell='true'] :is(
     button, [class*='bg-blue-'], [class*='bg-indigo-'], [class*='bg-sky-'],
     [class*='bg-emerald-'], [class*='bg-green-'], [class*='bg-red-'], [class*='bg-rose-'],
     [class*='bg-amber-'], [class*='bg-purple-'], [class*='bg-violet-']
-) .text-white {
+) .text-white.text-white.text-white.text-white {
     color: #ffffff !important;
 }
 
@@ -578,6 +590,50 @@ select optgroup {
 ) {
     border-color: var(--frame-accent) !important;
     --tw-ring-color: rgba(21, 74, 99, 0.35) !important;
+}
+
+/* Primary CTA buttons (every page's "+ Nouvelle facture" / "Confirmer la reservation" /
+   etc. style) are built as bg-gradient-to-r from-X-600 to-Y-600 text-white. The global
+   gradient-killer near the top of this file (kill any smoky/blurred/gradient glow effect)
+   flattens every gradient -- including these -- to var(--surface-solid), which in light
+   mode IS the card/page's own white surface. The button doesn't just lose its color, it
+   disappears into the page it sits on. Give it back the single brand accent instead of
+   the neutral surface so it still reads as a clickable primary action. The repeated
+   [class*="text-white"] is a specificity bump (same trick as the avatar/badge fix above):
+   the generic "darken text-white" rule earlier in this file outweighs a single-attribute
+   selector here and would otherwise win the color property back to dark-on-navy. */
+[data-theme='light'] [data-app-shell='true'] button[class*="bg-gradient-to-"][class*="text-white"][class*="text-white"][class*="text-white"][class*="text-white"] {
+    background: var(--frame-accent) !important;
+    background-image: none !important;
+    color: #ffffff !important;
+}
+
+[data-theme='light'] [data-app-shell='true'] button[class*="bg-gradient-to-"][class*="text-white"]:hover {
+    background: #103c50 !important;
+}
+
+/* Same self-element case as the CTA fix above, but for solid (non-gradient) colored
+   buttons: bg-blue-600 text-white, bg-emerald-600 text-white, etc. -- used all over
+   (Rooms' "+ Nouvelle chambre" and its "Toutes" filter pill, Stock, Security, Bar,
+   Economat, Reception, Parametres). The "Single brand accent" rule above already
+   repaints a blue/indigo background to navy, and other color families' backgrounds are
+   untouched (still their real emerald/red/amber/etc, which is fine) -- but every one of
+   these buttons' own text-white class still loses the same specificity fight the
+   avatar/badge fix (further up) solves for. That fix only covers text-white as a
+   DESCENDANT of a colored-background ancestor, and does nothing when the colored
+   background and text-white are classes on the very same element, which is how these
+   buttons are written. */
+[data-theme='light'] [data-app-shell='true'] button[class*="bg-blue-"][class*="text-white"][class*="text-white"][class*="text-white"][class*="text-white"],
+[data-theme='light'] [data-app-shell='true'] button[class*="bg-indigo-"][class*="text-white"][class*="text-white"][class*="text-white"][class*="text-white"],
+[data-theme='light'] [data-app-shell='true'] button[class*="bg-sky-"][class*="text-white"][class*="text-white"][class*="text-white"][class*="text-white"],
+[data-theme='light'] [data-app-shell='true'] button[class*="bg-emerald-"][class*="text-white"][class*="text-white"][class*="text-white"][class*="text-white"],
+[data-theme='light'] [data-app-shell='true'] button[class*="bg-green-"][class*="text-white"][class*="text-white"][class*="text-white"][class*="text-white"],
+[data-theme='light'] [data-app-shell='true'] button[class*="bg-red-"][class*="text-white"][class*="text-white"][class*="text-white"][class*="text-white"],
+[data-theme='light'] [data-app-shell='true'] button[class*="bg-rose-"][class*="text-white"][class*="text-white"][class*="text-white"][class*="text-white"],
+[data-theme='light'] [data-app-shell='true'] button[class*="bg-amber-"][class*="text-white"][class*="text-white"][class*="text-white"][class*="text-white"],
+[data-theme='light'] [data-app-shell='true'] button[class*="bg-purple-"][class*="text-white"][class*="text-white"][class*="text-white"][class*="text-white"],
+[data-theme='light'] [data-app-shell='true'] button[class*="bg-violet-"][class*="text-white"][class*="text-white"][class*="text-white"][class*="text-white"] {
+    color: #ffffff !important;
 }
 
 /* Borders read as soft slate lines against the white/light-gray surfaces */
