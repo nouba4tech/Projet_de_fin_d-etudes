@@ -12,7 +12,15 @@ export class ApiError extends Error {
   }
 }
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+// Calls in this file pass paths that already include the "/api" prefix (e.g.
+// '/api/accounting/accounts'), so the base must be the backend's ROOT -- unlike
+// services/api.ts, whose baseURL already ends in "/api" and whose callers omit it.
+// VITE_API_URL (the only API env var actually set on Vercel) is configured as that
+// "/api"-suffixed root, so it's stripped back down to the bare root here.
+const rawApiUrl = import.meta.env.VITE_API_URL as string | undefined;
+export const API_BASE_URL = rawApiUrl
+  ? rawApiUrl.replace(/\/api\/?$/, '')
+  : 'http://localhost:8080';
 
 const buildUrl = (path: string) => {
   const base = String(API_BASE_URL).replace(/\/+$/, '');
@@ -20,14 +28,33 @@ const buildUrl = (path: string) => {
   return `${base}${safePath}`;
 };
 
+const getAuthToken = (): string | null => {
+  let token = localStorage.getItem('token');
+  if (!token) {
+    try {
+      const authTokens = sessionStorage.getItem('authTokens');
+      if (authTokens) {
+        const parsed = JSON.parse(authTokens);
+        token = parsed.accessToken || null;
+      }
+    } catch { /* ignore */ }
+  }
+  return token;
+};
+
 export async function apiRequest<T>(
   method: HttpMethod,
   path: string,
   body?: unknown
 ): Promise<T> {
+  const token = getAuthToken();
+  const headers: Record<string, string> = {};
+  if (body != null) headers['Content-Type'] = 'application/json';
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
   const response = await fetch(buildUrl(path), {
     method,
-    headers: body == null ? undefined : { 'Content-Type': 'application/json' },
+    headers: Object.keys(headers).length ? headers : undefined,
     body: body == null ? undefined : JSON.stringify(body)
   });
 
