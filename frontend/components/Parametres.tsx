@@ -448,6 +448,8 @@ const Parametres: React.FC = () => {
   const [detailsDish, setDetailsDish] = useState<Dish | null>(null);
   const [detailsTransaction, setDetailsTransaction] = useState<Transaction | null>(null);
   const [detailsJournalEntry, setDetailsJournalEntry] = useState<JournalEntry | null>(null);
+  const [detailsRoomType, setDetailsRoomType] = useState<RoomType | null>(null);
+  const [detailsCashRegister, setDetailsCashRegister] = useState<CashRegister | null>(null);
   const [showDishForm, setShowDishForm] = useState(false);
   const [editingDishId, setEditingDishId] = useState<string | null>(null);
   const [dishForm, setDishForm] = useState({
@@ -1893,7 +1895,7 @@ const Parametres: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          <button className="text-blue-400 hover:text-blue-300 mr-2">Détails</button>
+                          <button type="button" onClick={() => setDetailsRoomType(type)} className="text-blue-400 hover:text-blue-300 mr-2">Détails</button>
                           <button type="button" onClick={() => handleRoomTypeEdit(type)} className="text-green-400 hover:text-green-300 mr-2">Modifier</button>
                           <button type="button" onClick={() => handleRoomTypeDelete(type.id)} disabled={roomTypeSaving} className="text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50">Supprimer</button>
                         </td>
@@ -1903,6 +1905,25 @@ const Parametres: React.FC = () => {
                 </table>
               </div>
             </div>
+            {detailsRoomType && (
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                <div className="bg-[#0d1327] border border-gray-700/60 rounded-2xl p-8 max-w-md w-full mx-4">
+                  <div className="mb-6 flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-white">{detailsRoomType.name}</h3>
+                    <button type="button" onClick={() => setDetailsRoomType(null)} className="rounded-full border border-gray-600/60 px-3 py-1 text-sm text-gray-300 hover:border-gray-500 hover:text-white">Fermer</button>
+                  </div>
+                  <dl className="space-y-3 text-sm">
+                    <div className="flex justify-between border-b border-white/10 pb-2"><dt className="text-gray-400">Code</dt><dd className="text-white font-medium">{detailsRoomType.code}</dd></div>
+                    <div className="flex justify-between border-b border-white/10 pb-2"><dt className="text-gray-400">Description</dt><dd className="text-white font-medium">{detailsRoomType.description || 'N/A'}</dd></div>
+                    <div className="flex justify-between border-b border-white/10 pb-2"><dt className="text-gray-400">Capacité</dt><dd className="text-white font-medium">{detailsRoomType.capacity} personne(s)</dd></div>
+                    <div className="flex justify-between border-b border-white/10 pb-2"><dt className="text-gray-400">Prix de base</dt><dd className="text-white font-medium">{detailsRoomType.basePrice.toLocaleString('fr-FR')} FCFA</dd></div>
+                    <div className="flex justify-between border-b border-white/10 pb-2"><dt className="text-gray-400">Étage</dt><dd className="text-white font-medium">{detailsRoomType.floor}</dd></div>
+                    <div className="flex justify-between border-b border-white/10 pb-2"><dt className="text-gray-400">Équipements</dt><dd className="text-white font-medium">{detailsRoomType.amenities.length ? detailsRoomType.amenities.join(', ') : 'N/A'}</dd></div>
+                    <div className="flex justify-between border-b border-white/10 pb-2"><dt className="text-gray-400">Statut</dt><dd className="text-white font-medium">{detailsRoomType.status === 'active' ? 'Actif' : 'Inactif'}</dd></div>
+                  </dl>
+                </div>
+              </div>
+            )}
           </div>
         );
 
@@ -3280,7 +3301,7 @@ const Parametres: React.FC = () => {
                     </div>
                     
                     <div className="flex gap-2">
-                      <button className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+                      <button type="button" onClick={() => setDetailsCashRegister(register)} className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
                         Détails
                       </button>
                       <button
@@ -3302,6 +3323,24 @@ const Parametres: React.FC = () => {
                 ))}
               </div>
             </div>
+            {detailsCashRegister && (
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                <div className="bg-[#0d1327] border border-gray-700/60 rounded-2xl p-8 max-w-md w-full mx-4">
+                  <div className="mb-6 flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-white">{detailsCashRegister.name}</h3>
+                    <button type="button" onClick={() => setDetailsCashRegister(null)} className="rounded-full border border-gray-600/60 px-3 py-1 text-sm text-gray-300 hover:border-gray-500 hover:text-white">Fermer</button>
+                  </div>
+                  <dl className="space-y-3 text-sm">
+                    <div className="flex justify-between border-b border-white/10 pb-2"><dt className="text-gray-400">Code</dt><dd className="text-white font-medium">{detailsCashRegister.code}</dd></div>
+                    <div className="flex justify-between border-b border-white/10 pb-2"><dt className="text-gray-400">Localisation</dt><dd className="text-white font-medium">{detailsCashRegister.location || 'N/A'}</dd></div>
+                    <div className="flex justify-between border-b border-white/10 pb-2"><dt className="text-gray-400">Devise</dt><dd className="text-white font-medium">{detailsCashRegister.currency}</dd></div>
+                    <div className="flex justify-between border-b border-white/10 pb-2"><dt className="text-gray-400">Solde d'ouverture</dt><dd className="text-white font-medium">{detailsCashRegister.openingBalance.toLocaleString('fr-FR')} FCFA</dd></div>
+                    <div className="flex justify-between border-b border-white/10 pb-2"><dt className="text-gray-400">Responsable</dt><dd className="text-white font-medium">{detailsCashRegister.responsiblePerson || 'N/A'}</dd></div>
+                    <div className="flex justify-between border-b border-white/10 pb-2"><dt className="text-gray-400">Statut</dt><dd className="text-white font-medium">{detailsCashRegister.status === 'active' ? 'Active' : 'Inactive'}</dd></div>
+                  </dl>
+                </div>
+              </div>
+            )}
           </div>
         );
 

@@ -1829,54 +1829,6 @@ const Accounting: React.FC = () => {
               </div>
             </form>
 
-            {/* Formulaire de transfert rapide */}
-            <div className="hidden bg-white/5 border border-gray-700/50 rounded-lg p-6">
-              <h3 className="text-lg font-medium text-white mb-4">Nouveau transfert</h3>
-              <div className="grid grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Date</label>
-                  <input type="date" className="w-full px-3 py-2 border border-gray-600/50 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">De</label>
-                  <select className="w-full px-3 py-2 border border-gray-600/50 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Sélectionner</option>
-                    <option value="banque">Banque</option>
-                    <option value="principale">Caisse Principale</option>
-                    <option value="restaurant">Caisse Restaurant</option>
-                    <option value="bar">Caisse Bar</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Vers</label>
-                  <select className="w-full px-3 py-2 border border-gray-600/50 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Sélectionner</option>
-                    <option value="principale">Caisse Principale</option>
-                    <option value="restaurant">Caisse Restaurant</option>
-                    <option value="bar">Caisse Bar</option>
-                    <option value="reception">Caisse Réception</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Montant</label>
-                  <input type="number" placeholder="0" className="w-full px-3 py-2 border border-gray-600/50 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Motif</label>
-                  <input type="text" placeholder="Description" className="w-full px-3 py-2 border border-gray-600/50 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Autorisé par</label>
-                  <input type="text" placeholder="Nom" className="w-full px-3 py-2 border border-gray-600/50 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div className="flex items-end">
-                  <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-                    Effectuer transfert
-                  </button>
-                </div>
-              </div>
-            </div>
-            
             <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl overflow-hidden">
               <table className="w-full">
                 <thead className="bg-white/5 border-b border-gray-700/50">

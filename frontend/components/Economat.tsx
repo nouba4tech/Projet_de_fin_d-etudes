@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { FaFileInvoiceDollar, FaExchangeAlt, FaBoxOpen, FaBook, FaListAlt, FaClipboardCheck, FaCheck, FaPlus, FaTimes, FaSave, FaTrash, FaEye, FaEdit, FaMoneyCheckAlt, FaPrint, FaArrowsAltV } from 'react-icons/fa';
 import api from '../services/api';
 import { openInvoiceWindow } from '../utils/invoiceTemplate';
+import MainCourantePage from './MainCourante';
 
 interface Supplier {
   id: string;
@@ -423,37 +424,7 @@ const Economat: React.FC = () => {
     }
   };
 
-  const mainCouranteEntries: MainCourante[] = [
-    {
-      id: '1',
-      entryDate: new Date('2024-04-10'),
-      entryTime: '14:30',
-      category: 'incident',
-      priority: 'medium',
-      title: 'Fuite au restaurant',
-      description: 'Fuite d\'eau détectée près du lave-vaisselle du restaurant',
-      location: 'Restaurant - Zone cuisine',
-      reportedBy: 'Chef de cuisine',
-      assignedTo: 'Service maintenance',
-      status: 'in_progress'
-    },
-    {
-      id: '2',
-      entryDate: new Date('2024-04-10'),
-      entryTime: '09:15',
-      category: 'maintenance',
-      priority: 'low',
-      title: 'Changement ampoule chambre 201',
-      description: 'Ampoule de la salle de bain clignote',
-      location: 'Chambre 201',
-      reportedBy: 'Maid service',
-      assignedTo: 'Service technique',
-      status: 'resolved',
-      resolution: 'Ampoule remplacée',
-      resolvedBy: 'Technicien',
-      resolvedAt: new Date('2024-04-10')
-    }
-  ];
+
 
   const [inventoryPhysicalCounts, setInventoryPhysicalCounts] = useState<Record<number, string>>({});
   const [inventoryReasons, setInventoryReasons] = useState<Record<number, string>>({});
@@ -956,116 +927,7 @@ const Economat: React.FC = () => {
         );
 
       case 'main_courante':
-        return (
-          <div className="space-y-6">
-            <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-xl font-semibold text-white">Main Courante</h2>
-                  <p className="text-sm text-gray-400 mt-1">
-                    Suivez les incidents et événements quotidiens de l'hôtel.
-                  </p>
-                </div>
-                <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
-                  <FaPlus /> Nouvelle entrée
-                </button>
-              </div>
-              
-              <div className="mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">Date</label>
-                    <input type="date" className="w-full px-3 py-2 border border-gray-600/50 rounded-md text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">Catégorie</label>
-                    <select className="w-full px-3 py-2 border border-gray-600/50 rounded-md text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                      <option value="">Toutes</option>
-                      <option value="incident">Incident</option>
-                      <option value="maintenance">Maintenance</option>
-                      <option value="security">Sécurité</option>
-                      <option value="complaint">Plainte</option>
-                      <option value="other">Autre</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">Priorité</label>
-                    <select className="w-full px-3 py-2 border border-gray-600/50 rounded-md text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                      <option value="">Toutes</option>
-                      <option value="urgent">Urgent</option>
-                      <option value="high">Élevée</option>
-                      <option value="medium">Moyenne</option>
-                      <option value="low">Faible</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">Statut</label>
-                    <select className="w-full px-3 py-2 border border-gray-600/50 rounded-md text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                      <option value="">Tous</option>
-                      <option value="open">Ouvert</option>
-                  <option value="in_progress">En cours</option>
-                  <option value="resolved">Résolu</option>
-                  <option value="closed">Fermé</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-white/5 border-b border-gray-700/50">
-                <tr>
-                  <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Date/Heure</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Titre</th>
-                  <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Catégorie</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Priorité</th>
-                  <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Localisation</th>
-                  <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Rapporté par</th>
-                  <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider md:table-cell">Assigné à</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-700/50">
-                {mainCouranteEntries.map((entry) => (
-                  <tr key={entry.id} className="hover:bg-white/5">
-                    <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">
-                      {entry.entryDate.toLocaleDateString('fr-FR')} {entry.entryTime}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-white">
-                      {entry.title}
-                      <span className="mt-0.5 block text-xs font-normal text-gray-400 md:hidden">{entry.location}</span>
-                    </td>
-                    <td className="hidden px-4 py-3 whitespace-nowrap md:table-cell">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(entry.category)}`}>
-                        {entry.category}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(entry.priority)}`}>
-                        {entry.priority}
-                      </span>
-                    </td>
-                    <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.location}</td>
-                    <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.reportedBy}</td>
-                    <td className="hidden px-4 py-3 whitespace-nowrap text-sm text-white md:table-cell">{entry.assignedTo || 'N/A'}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(entry.status)}`}>
-                        {entry.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm">
-                      <button className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 mr-2 text-sm"><FaEye /> <span className="hidden md:inline">Détails</span></button>
-                      <button className="inline-flex items-center gap-1 text-green-400 hover:text-green-300 text-sm"><FaEdit /> <span className="hidden md:inline">Modifier</span></button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    );
+        return <MainCourantePage />;
 
     case 'liste_factures':
       return (
