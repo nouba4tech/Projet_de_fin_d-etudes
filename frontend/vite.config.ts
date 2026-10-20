@@ -8,6 +8,8 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: '0.0.0.0',
+      // lets the app be reached through a Cloudflare quick tunnel (demo); other host names stay blocked
+      allowedHosts: ['.trycloudflare.com'],
       proxy: {
         '/api': {
           target: 'http://127.0.0.1:8080',
