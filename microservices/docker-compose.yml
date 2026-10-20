@@ -1,0 +1,382 @@
+# Full stack: MySQL + 11 microservices + API gateway + frontend.
+# The gateway is named "backend" so anything that targeted the old monolith (backend:8080) keeps working.
+#   docker compose up --build
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  utilisateurs-service:
+    build:
+      context: .
+      args:
+        MODULE: utilisateurs-service
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      JWT_SECRET: ${JWT_SECRET:-change-me-please-set-a-secure-random-secret-1234567890abcdef}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-mirador-internal-dev-token}
+      UTILISATEURS_URL: http://utilisateurs-service:8081
+      CHAMBRES_URL: http://chambres-service:8082
+      CLIENTS_URL: http://clients-service:8083
+      RESERVATIONS_URL: http://reservations-service:8084
+      PAIEMENTS_URL: http://paiements-service:8085
+      FACTURATION_URL: http://facturation-service:8086
+      PERSONNEL_URL: http://personnel-service:8087
+      PROMOTIONS_URL: http://promotions-service:8088
+      AVIS_URL: http://avis-service:8089
+      NOTIFICATIONS_URL: http://notifications-service:8090
+      EXPLOITATION_URL: http://exploitation-service:8091
+    depends_on:
+      db:
+        condition: service_healthy
+
+  chambres-service:
+    build:
+      context: .
+      args:
+        MODULE: chambres-service
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      JWT_SECRET: ${JWT_SECRET:-change-me-please-set-a-secure-random-secret-1234567890abcdef}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-mirador-internal-dev-token}
+      UTILISATEURS_URL: http://utilisateurs-service:8081
+      CHAMBRES_URL: http://chambres-service:8082
+      CLIENTS_URL: http://clients-service:8083
+      RESERVATIONS_URL: http://reservations-service:8084
+      PAIEMENTS_URL: http://paiements-service:8085
+      FACTURATION_URL: http://facturation-service:8086
+      PERSONNEL_URL: http://personnel-service:8087
+      PROMOTIONS_URL: http://promotions-service:8088
+      AVIS_URL: http://avis-service:8089
+      NOTIFICATIONS_URL: http://notifications-service:8090
+      EXPLOITATION_URL: http://exploitation-service:8091
+    depends_on:
+      db:
+        condition: service_healthy
+
+  clients-service:
+    build:
+      context: .
+      args:
+        MODULE: clients-service
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      JWT_SECRET: ${JWT_SECRET:-change-me-please-set-a-secure-random-secret-1234567890abcdef}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-mirador-internal-dev-token}
+      UTILISATEURS_URL: http://utilisateurs-service:8081
+      CHAMBRES_URL: http://chambres-service:8082
+      CLIENTS_URL: http://clients-service:8083
+      RESERVATIONS_URL: http://reservations-service:8084
+      PAIEMENTS_URL: http://paiements-service:8085
+      FACTURATION_URL: http://facturation-service:8086
+      PERSONNEL_URL: http://personnel-service:8087
+      PROMOTIONS_URL: http://promotions-service:8088
+      AVIS_URL: http://avis-service:8089
+      NOTIFICATIONS_URL: http://notifications-service:8090
+      EXPLOITATION_URL: http://exploitation-service:8091
+    depends_on:
+      db:
+        condition: service_healthy
+
+  reservations-service:
+    build:
+      context: .
+      args:
+        MODULE: reservations-service
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      JWT_SECRET: ${JWT_SECRET:-change-me-please-set-a-secure-random-secret-1234567890abcdef}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-mirador-internal-dev-token}
+      UTILISATEURS_URL: http://utilisateurs-service:8081
+      CHAMBRES_URL: http://chambres-service:8082
+      CLIENTS_URL: http://clients-service:8083
+      RESERVATIONS_URL: http://reservations-service:8084
+      PAIEMENTS_URL: http://paiements-service:8085
+      FACTURATION_URL: http://facturation-service:8086
+      PERSONNEL_URL: http://personnel-service:8087
+      PROMOTIONS_URL: http://promotions-service:8088
+      AVIS_URL: http://avis-service:8089
+      NOTIFICATIONS_URL: http://notifications-service:8090
+      EXPLOITATION_URL: http://exploitation-service:8091
+    depends_on:
+      db:
+        condition: service_healthy
+
+  paiements-service:
+    build:
+      context: .
+      args:
+        MODULE: paiements-service
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      JWT_SECRET: ${JWT_SECRET:-change-me-please-set-a-secure-random-secret-1234567890abcdef}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-mirador-internal-dev-token}
+      UTILISATEURS_URL: http://utilisateurs-service:8081
+      CHAMBRES_URL: http://chambres-service:8082
+      CLIENTS_URL: http://clients-service:8083
+      RESERVATIONS_URL: http://reservations-service:8084
+      PAIEMENTS_URL: http://paiements-service:8085
+      FACTURATION_URL: http://facturation-service:8086
+      PERSONNEL_URL: http://personnel-service:8087
+      PROMOTIONS_URL: http://promotions-service:8088
+      AVIS_URL: http://avis-service:8089
+      NOTIFICATIONS_URL: http://notifications-service:8090
+      EXPLOITATION_URL: http://exploitation-service:8091
+      # PAIEMENTS_SAGA_FAULT_INJECTION: "true"   # demo only: lets a payment request force a saga step to fail
+    depends_on:
+      db:
+        condition: service_healthy
+
+  facturation-service:
+    build:
+      context: .
+      args:
+        MODULE: facturation-service
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      JWT_SECRET: ${JWT_SECRET:-change-me-please-set-a-secure-random-secret-1234567890abcdef}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-mirador-internal-dev-token}
+      UTILISATEURS_URL: http://utilisateurs-service:8081
+      CHAMBRES_URL: http://chambres-service:8082
+      CLIENTS_URL: http://clients-service:8083
+      RESERVATIONS_URL: http://reservations-service:8084
+      PAIEMENTS_URL: http://paiements-service:8085
+      FACTURATION_URL: http://facturation-service:8086
+      PERSONNEL_URL: http://personnel-service:8087
+      PROMOTIONS_URL: http://promotions-service:8088
+      AVIS_URL: http://avis-service:8089
+      NOTIFICATIONS_URL: http://notifications-service:8090
+      EXPLOITATION_URL: http://exploitation-service:8091
+    depends_on:
+      db:
+        condition: service_healthy
+
+  personnel-service:
+    build:
+      context: .
+      args:
+        MODULE: personnel-service
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      JWT_SECRET: ${JWT_SECRET:-change-me-please-set-a-secure-random-secret-1234567890abcdef}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-mirador-internal-dev-token}
+      UTILISATEURS_URL: http://utilisateurs-service:8081
+      CHAMBRES_URL: http://chambres-service:8082
+      CLIENTS_URL: http://clients-service:8083
+      RESERVATIONS_URL: http://reservations-service:8084
+      PAIEMENTS_URL: http://paiements-service:8085
+      FACTURATION_URL: http://facturation-service:8086
+      PERSONNEL_URL: http://personnel-service:8087
+      PROMOTIONS_URL: http://promotions-service:8088
+      AVIS_URL: http://avis-service:8089
+      NOTIFICATIONS_URL: http://notifications-service:8090
+      EXPLOITATION_URL: http://exploitation-service:8091
+    depends_on:
+      db:
+        condition: service_healthy
+
+  promotions-service:
+    build:
+      context: .
+      args:
+        MODULE: promotions-service
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      JWT_SECRET: ${JWT_SECRET:-change-me-please-set-a-secure-random-secret-1234567890abcdef}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-mirador-internal-dev-token}
+      UTILISATEURS_URL: http://utilisateurs-service:8081
+      CHAMBRES_URL: http://chambres-service:8082
+      CLIENTS_URL: http://clients-service:8083
+      RESERVATIONS_URL: http://reservations-service:8084
+      PAIEMENTS_URL: http://paiements-service:8085
+      FACTURATION_URL: http://facturation-service:8086
+      PERSONNEL_URL: http://personnel-service:8087
+      PROMOTIONS_URL: http://promotions-service:8088
+      AVIS_URL: http://avis-service:8089
+      NOTIFICATIONS_URL: http://notifications-service:8090
+      EXPLOITATION_URL: http://exploitation-service:8091
+    depends_on:
+      db:
+        condition: service_healthy
+
+  avis-service:
+    build:
+      context: .
+      args:
+        MODULE: avis-service
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      JWT_SECRET: ${JWT_SECRET:-change-me-please-set-a-secure-random-secret-1234567890abcdef}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-mirador-internal-dev-token}
+      UTILISATEURS_URL: http://utilisateurs-service:8081
+      CHAMBRES_URL: http://chambres-service:8082
+      CLIENTS_URL: http://clients-service:8083
+      RESERVATIONS_URL: http://reservations-service:8084
+      PAIEMENTS_URL: http://paiements-service:8085
+      FACTURATION_URL: http://facturation-service:8086
+      PERSONNEL_URL: http://personnel-service:8087
+      PROMOTIONS_URL: http://promotions-service:8088
+      AVIS_URL: http://avis-service:8089
+      NOTIFICATIONS_URL: http://notifications-service:8090
+      EXPLOITATION_URL: http://exploitation-service:8091
+    depends_on:
+      db:
+        condition: service_healthy
+
+  notifications-service:
+    build:
+      context: .
+      args:
+        MODULE: notifications-service
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      JWT_SECRET: ${JWT_SECRET:-change-me-please-set-a-secure-random-secret-1234567890abcdef}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-mirador-internal-dev-token}
+      UTILISATEURS_URL: http://utilisateurs-service:8081
+      CHAMBRES_URL: http://chambres-service:8082
+      CLIENTS_URL: http://clients-service:8083
+      RESERVATIONS_URL: http://reservations-service:8084
+      PAIEMENTS_URL: http://paiements-service:8085
+      FACTURATION_URL: http://facturation-service:8086
+      PERSONNEL_URL: http://personnel-service:8087
+      PROMOTIONS_URL: http://promotions-service:8088
+      AVIS_URL: http://avis-service:8089
+      NOTIFICATIONS_URL: http://notifications-service:8090
+      EXPLOITATION_URL: http://exploitation-service:8091
+    depends_on:
+      db:
+        condition: service_healthy
+
+  exploitation-service:
+    build:
+      context: .
+      args:
+        MODULE: exploitation-service
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      JWT_SECRET: ${JWT_SECRET:-change-me-please-set-a-secure-random-secret-1234567890abcdef}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-mirador-internal-dev-token}
+      UTILISATEURS_URL: http://utilisateurs-service:8081
+      CHAMBRES_URL: http://chambres-service:8082
+      CLIENTS_URL: http://clients-service:8083
+      RESERVATIONS_URL: http://reservations-service:8084
+      PAIEMENTS_URL: http://paiements-service:8085
+      FACTURATION_URL: http://facturation-service:8086
+      PERSONNEL_URL: http://personnel-service:8087
+      PROMOTIONS_URL: http://promotions-service:8088
+      AVIS_URL: http://avis-service:8089
+      NOTIFICATIONS_URL: http://notifications-service:8090
+      EXPLOITATION_URL: http://exploitation-service:8091
+    depends_on:
+      db:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: .
+      args:
+        MODULE: api-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      UTILISATEURS_URL: http://utilisateurs-service:8081
+      CHAMBRES_URL: http://chambres-service:8082
+      CLIENTS_URL: http://clients-service:8083
+      RESERVATIONS_URL: http://reservations-service:8084
+      PAIEMENTS_URL: http://paiements-service:8085
+      FACTURATION_URL: http://facturation-service:8086
+      PERSONNEL_URL: http://personnel-service:8087
+      PROMOTIONS_URL: http://promotions-service:8088
+      AVIS_URL: http://avis-service:8089
+      NOTIFICATIONS_URL: http://notifications-service:8090
+      EXPLOITATION_URL: http://exploitation-service:8091
+    depends_on:
+      utilisateurs-service:
+        condition: service_started
+      chambres-service:
+        condition: service_started
+      clients-service:
+        condition: service_started
+      reservations-service:
+        condition: service_started
+      paiements-service:
+        condition: service_started
+      facturation-service:
+        condition: service_started
+      personnel-service:
+        condition: service_started
+      promotions-service:
+        condition: service_started
+      avis-service:
+        condition: service_started
+      notifications-service:
+        condition: service_started
+      exploitation-service:
+        condition: service_started
+
+  frontend:
+    build: ../frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  db-data:

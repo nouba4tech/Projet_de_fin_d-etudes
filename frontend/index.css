@@ -64,7 +64,7 @@ html {
 body {
     background-color: var(--app-bg);
     color: var(--app-text);
-    font-family: 'Public Sans', 'Segoe UI', 'Helvetica Neue', sans-serif;
+    font-family: 'Times New Roman', Times, serif;
     overflow-x: hidden;
     background-image:
         var(--app-overlay),
@@ -82,7 +82,7 @@ input,
 button,
 select,
 textarea {
-    font-family: 'Public Sans', 'Segoe UI', 'Helvetica Neue', sans-serif;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 /* The whole authenticated app shell (sidebar + scrollable content) is built on

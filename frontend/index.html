@@ -6,7 +6,7 @@
     <title>MIRADOR - Gestion hôtelière</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&display=swap" />
     <script>
       (() => {
         const themeKey = 'mirador-theme';
@@ -14,14 +14,14 @@
         const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
         const initialTheme = savedTheme === 'light' || savedTheme === 'dark'
           ? savedTheme
-          : (prefersLight ? 'light' : 'dark');
+          : 'dark';
 
         document.documentElement.setAttribute('data-theme', initialTheme);
       })();
     </script>
     <style>
       body {
-        font-family: 'Public Sans', 'Segoe UI', 'Helvetica Neue', sans-serif;
+        font-family: 'Times New Roman', Times, serif;
         background-color: #050714;
         color: #ffffff;
       }

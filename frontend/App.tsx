@@ -27,6 +27,11 @@ const MainCourante = lazy(() => import('./components/MainCourante'));
 const Accounting = lazy(() => import('./components/Accounting'));
 const CashWorkflow = lazy(() => import('./components/CashWorkflow'));
 const Economat = lazy(() => import('./components/Economat'));
+const Invoices = lazy(() => import('./components/Invoices'));
+const Promotions = lazy(() => import('./components/Promotions'));
+const Reviews = lazy(() => import('./components/Reviews'));
+const Notifications = lazy(() => import('./components/Notifications'));
+const Planning = lazy(() => import('./components/Planning'));
 
 type Theme = 'dark' | 'light';
 
@@ -48,7 +53,7 @@ const resolveInitialTheme = (): Theme => {
     return storedTheme;
   }
 
-  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  return 'dark';
 };
 
 const QUICK_SEARCH_ROUTES: Array<{ path: string; feature?: FeatureKey; label: string; keywords: string[] }> = [
@@ -59,7 +64,12 @@ const QUICK_SEARCH_ROUTES: Array<{ path: string; feature?: FeatureKey; label: st
   { path: '/restaurant', feature: 'restaurant', label: 'Restaurant', keywords: ['resto'] },
   { path: '/accounting', feature: 'accounting', label: 'Gestion comptable', keywords: ['comptable', 'finance', 'facturation'] },
   { path: '/economat', feature: 'economat', label: 'Economat', keywords: ['economat', 'achat', 'approvisionnement'] },
-  { path: '/stock', feature: 'stock', label: 'Gestion de stock', keywords: ['stock', 'inventaire'] }
+  { path: '/stock', feature: 'stock', label: 'Gestion de stock', keywords: ['stock', 'inventaire'] },
+  { path: '/invoices', feature: 'invoices', label: 'Factures et paiements', keywords: ['facture', 'paiement', 'encaissement', 'archive'] },
+  { path: '/promotions', feature: 'promotions', label: 'Promotions', keywords: ['promotion', 'promo', 'code', 'remise', 'reduction'] },
+  { path: '/reviews', feature: 'reviews', label: 'Avis des clients', keywords: ['avis', 'satisfaction', 'note', 'moderation'] },
+  { path: '/notifications', feature: 'notifications', label: 'Notifications', keywords: ['notification', 'email', 'sms', 'rappel'] },
+  { path: '/planning', feature: 'planning', label: 'Planning du personnel', keywords: ['planning', 'horaire', 'creneau', 'equipe'] }
 ];
 
 type QuickSearchRoute = (typeof QUICK_SEARCH_ROUTES)[number];
@@ -243,6 +253,11 @@ const MiradorSidebar: React.FC<{ theme: Theme; isOpen: boolean; onClose: () => v
         <SidebarItem to="/cash-workflow" label="Gestion de caisse" icon={ICONS.CashWorkflow} allowed={canAccessFeature(currentUser, 'cash-workflow')} theme={theme} />
         <SidebarItem to="/economat" label="Economat" icon={ICONS.Economat} allowed={canAccessFeature(currentUser, 'economat')} theme={theme} />
         <SidebarItem to="/stock" label="Gestion de stock" icon={ICONS.Stock} allowed={canAccessFeature(currentUser, 'stock')} theme={theme} />
+        <SidebarItem to="/invoices" label="Factures et paiements" icon={ICONS.Invoices} allowed={canAccessFeature(currentUser, 'invoices')} theme={theme} />
+        <SidebarItem to="/promotions" label="Promotions" icon={ICONS.Promotions} allowed={canAccessFeature(currentUser, 'promotions')} theme={theme} />
+        <SidebarItem to="/reviews" label="Avis des clients" icon={ICONS.Reviews} allowed={canAccessFeature(currentUser, 'reviews')} theme={theme} />
+        <SidebarItem to="/notifications" label="Notifications" icon={ICONS.Notifications} allowed={canAccessFeature(currentUser, 'notifications')} theme={theme} />
+        <SidebarItem to="/planning" label="Planning du personnel" icon={ICONS.Planning} allowed={canAccessFeature(currentUser, 'planning')} theme={theme} />
       </nav>
 
       <div className={`p-4 border-t ${isDark ? 'border-white/5' : 'border-gray-200'}`}>
@@ -769,6 +784,11 @@ const App: React.FC = () => {
           <Route path="/restaurant" element={renderPage('Restaurant', 'restaurant', <Restaurant />)} />
           <Route path="/bar" element={renderPage('Bar', 'bar', <Bar />)} />
           <Route path="/stock" element={renderPage('Gestion de stock', 'stock', <Stock />)} />
+          <Route path="/invoices" element={renderPage('Factures et paiements', 'invoices', <Invoices />)} />
+          <Route path="/promotions" element={renderPage('Promotions', 'promotions', <Promotions />)} />
+          <Route path="/reviews" element={renderPage('Avis des clients', 'reviews', <Reviews />)} />
+          <Route path="/notifications" element={renderPage('Notifications', 'notifications', <Notifications />)} />
+          <Route path="/planning" element={renderPage('Planning du personnel', 'planning', <Planning />)} />
           <Route path="/reports" element={renderPage('Rapports', 'reports', <Reports />)} />
           <Route path="/settings" element={renderPage('Gestion des paramètres', 'settings', <Parametres />)} />
           <Route path="/ai" element={renderPage('Assistant hotel', 'ai', <AIAssistant stats={stats} rooms={rooms} />)} />

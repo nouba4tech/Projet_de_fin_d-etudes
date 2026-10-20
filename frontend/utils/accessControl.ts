@@ -19,16 +19,21 @@ export type FeatureKey =
   | 'bar'
   | 'employees'
   | 'services'
-  | 'ai';
+  | 'ai'
+  | 'invoices'
+  | 'promotions'
+  | 'reviews'
+  | 'notifications'
+  | 'planning';
 
 export const ROLE_PERMISSIONS: Record<string, FeatureKey[]> = {
   Admin: [
     'dashboard', 'security', 'settings', 'reception', 'main-courante', 'rooms', 'bookings', 'guests',
     'accounting', 'cash-workflow', 'finances', 'reports', 'economat', 'stock', 'restaurant', 'bar',
-    'employees', 'services', 'ai'
+    'employees', 'services', 'ai', 'invoices', 'promotions', 'reviews', 'notifications', 'planning'
   ],
-  Comptable: ['dashboard', 'accounting', 'cash-workflow', 'finances', 'reports'],
-  Reception: ['dashboard', 'reception', 'main-courante', 'rooms', 'bookings', 'guests', 'services'],
+  Comptable: ['dashboard', 'accounting', 'cash-workflow', 'finances', 'reports', 'invoices'],
+  Reception: ['dashboard', 'reception', 'main-courante', 'rooms', 'bookings', 'guests', 'services', 'invoices', 'promotions', 'reviews', 'notifications'],
   Service: ['dashboard']
 };
 

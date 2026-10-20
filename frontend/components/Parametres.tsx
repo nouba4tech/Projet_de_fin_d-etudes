@@ -640,7 +640,8 @@ const Parametres: React.FC = () => {
       console.error('Erreur chargement données démo', error);
       setDemoFeedback({
         type: 'error',
-        message: 'Impossible de charger les données démo. Vérifiez que MySQL et le backend sont démarrés.'
+        message: (error as any)?.response?.data?.message
+          ?? 'Impossible de charger les données démo. Vérifiez que MySQL et le backend sont démarrés.'
       });
     } finally {
       setDemoSeeding(false);

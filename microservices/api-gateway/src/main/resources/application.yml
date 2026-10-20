@@ -1,0 +1,84 @@
+# API gateway: single entry point (port 8080) so the frontend keeps calling /api/... unchanged.
+# /internal/** is deliberately NOT routed: it is only reachable service-to-service.
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 3000
+        response-timeout: 60s
+      routes:
+        - id: parametres-rooms
+          uri: ${CHAMBRES_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/parametres/room-types/**,/api/parametres/rooms/**
+        - id: parametres-clients
+          uri: ${CLIENTS_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/parametres/clients/**
+        - id: parametres-personnel
+          uri: ${PERSONNEL_URL:http://localhost:8087}
+          predicates:
+            - Path=/api/parametres/personnel/**
+        - id: parametres-cash-registers
+          uri: ${FACTURATION_URL:http://localhost:8086}
+          predicates:
+            - Path=/api/parametres/cash-registers/**
+        - id: parametres-exploitation
+          uri: ${EXPLOITATION_URL:http://localhost:8091}
+          predicates:
+            - Path=/api/parametres/suppliers/**,/api/parametres/services/**,/api/parametres/parameters/**
+        - id: utilisateurs
+          uri: ${UTILISATEURS_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/auth/**,/api/security/**
+        - id: chambres
+          uri: ${CHAMBRES_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/chambres/**
+        - id: clients
+          uri: ${CLIENTS_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/clients/**
+        - id: reservations
+          uri: ${RESERVATIONS_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/reservations/**,/api/visits/**
+        - id: paiements
+          uri: ${PAIEMENTS_URL:http://localhost:8085}
+          predicates:
+            - Path=/api/paiements/**,/api/finances/**,/api/cash/**
+        - id: facturation
+          uri: ${FACTURATION_URL:http://localhost:8086}
+          predicates:
+            - Path=/api/factures/**,/api/accounting/**,/api/comptabilite/**
+        - id: personnel
+          uri: ${PERSONNEL_URL:http://localhost:8087}
+          predicates:
+            - Path=/api/employees/**,/api/planning/**
+        - id: promotions
+          uri: ${PROMOTIONS_URL:http://localhost:8088}
+          predicates:
+            - Path=/api/promotions/**
+        - id: avis
+          uri: ${AVIS_URL:http://localhost:8089}
+          predicates:
+            - Path=/api/avis/**
+        - id: notifications
+          uri: ${NOTIFICATIONS_URL:http://localhost:8090}
+          predicates:
+            - Path=/api/notifications/**
+        - id: exploitation
+          uri: ${EXPLOITATION_URL:http://localhost:8091}
+          predicates:
+            - Path=/api/stock/**,/api/fournisseurs/**,/api/restaurant/**,/api/bar/**,/api/services/**,/api/main-courante/**,/api/dashboard/**,/api/demo/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
