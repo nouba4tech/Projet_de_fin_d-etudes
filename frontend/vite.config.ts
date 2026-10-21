@@ -15,6 +15,13 @@ export default defineConfig(({ mode }) => {
           target: 'http://127.0.0.1:8080',
           changeOrigin: true,
           secure: false,
+          // The browser reaches the app and /api on the SAME origin. Drop the Origin header so the backend CORS
+          // check (which only knows localhost) does not reject calls that arrive through a public tunnel.
+          configure: (proxy) => {
+            proxy.on('proxyReq', (proxyReq) => {
+              proxyReq.removeHeader('origin');
+            });
+          },
         }
       }
     },
