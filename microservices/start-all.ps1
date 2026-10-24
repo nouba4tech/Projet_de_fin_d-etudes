@@ -4,6 +4,16 @@ param([switch]$Rebuild)
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
 
+# Optional local settings (e.g. a remote database such as TiDB Cloud): KEY=VALUE lines of .env (never committed)
+# become environment variables of the services. Remove or rename .env to go back to the local MySQL.
+if (Test-Path .env) {
+    Get-Content .env | Where-Object { $_ -match '^\s*[A-Za-z_][A-Za-z0-9_]*\s*=' } | ForEach-Object {
+        $name, $value = $_ -split '=', 2
+        Set-Item -Path "Env:$($name.Trim())" -Value $value.Trim()
+    }
+    Write-Host "Configuration chargee depuis .env (base : $env:MYSQL_HOST)"
+}
+
 $modules = @(
     @{ Name = 'utilisateurs-service'; Port = 8081 },
     @{ Name = 'chambres-service'; Port = 8082 },

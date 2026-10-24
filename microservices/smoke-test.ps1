@@ -38,6 +38,25 @@ function Check([string]$Name, [bool]$Condition, [string]$Detail = '') {
 }
 function Section([string]$t) { Write-Host "`n== $t" -ForegroundColor Cyan }
 
+# Direct SQL checks run against the same database as the services: local MySQL, or the one configured in .env
+$dbArgs = @('-u', 'root')
+$envFile = Join-Path $PSScriptRoot '.env'
+$dbCnf = $null
+if (Test-Path $envFile) {
+    $cfg = @{}
+    Get-Content $envFile | Where-Object { $_ -match '^\s*[A-Za-z_][A-Za-z0-9_]*\s*=' } | ForEach-Object { $k, $v = $_ -split '=', 2; $cfg[$k.Trim()] = $v.Trim() }
+    if ($cfg['MYSQL_HOST']) {
+        $dbCnf = Join-Path $env:TEMP 'mirador-smoke-db.cnf'
+        @('[client]', "host=$($cfg['MYSQL_HOST'])", "port=$($cfg['MYSQL_PORT'])", "user=$($cfg['MYSQL_USERNAME'])",
+          "password=$($cfg['MYSQL_PASSWORD'])", 'ssl-mode=REQUIRED') | Set-Content -Path $dbCnf -Encoding ascii
+        $dbArgs = @("--defaults-extra-file=$dbCnf")
+    }
+}
+function Invoke-Db([string]$Sql) {
+    $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try { & mysql @dbArgs -N -e $Sql 2>$null } finally { $ErrorActionPreference = $previous }
+}
+
 Section 'Utilisateurs / securite'
 $login = Call POST '/api/auth/login' @{ username = 'noubasra'; password = 'noubasra' }
 Check 'login admin' ($login.Status -eq 200 -and $login.Body.token) "status=$($login.Status)"
@@ -85,7 +104,7 @@ Section 'Clients -> Facturation (compte client 411 ouvert chez facturation)'
 $client = Call POST '/api/clients' @{ firstName = 'Smoke'; lastName = "Test$ts"; phone = "+23769$($ts.ToString().Substring(3))"; email = "smoke$ts@test.cm"; clientType = 'Personne physique' } $T
 Check 'creer un client' ($client.Status -eq 201) "status=$($client.Status) $($client.Text)"
 $clientId = $client.Body.id
-$acc = & mysql -u root -N -e "select count(*) from mirador_facturation.lescompte where libelle_compte like '%Test$ts%'" 2>$null
+$acc = Invoke-Db "select count(*) from mirador_facturation.lescompte where libelle_compte like '%Test$ts%'"
 Check 'le compte comptable du client existe dans mirador_facturation' ($acc -eq '1') "count=$acc"
 
 Section 'Reservations (+ promo, facture, notification)'
@@ -247,7 +266,7 @@ Check 'client inconnu -> 404' ((Call GET '/api/clients/99999999/fidelite' $null 
 
 Section 'Utilisateurs : roles appliques par le serveur'
 $rec = "smokerec$ts"
-& mysql -u root -e "INSERT INTO mirador_utilisateurs.utilisateur (compte, psw, nom, prenom, code_groupe, statut) VALUES ('$rec', MD5('Rec-$ts'), 'SMOKE', 'Reception', 28, 'Actif'); INSERT INTO mirador_utilisateurs.app_user_profile (code_user, role_name) SELECT code_user, 'Reception' FROM mirador_utilisateurs.utilisateur WHERE compte = '$rec';" 2>$null
+Invoke-Db "INSERT INTO mirador_utilisateurs.utilisateur (compte, psw, nom, prenom, code_groupe, statut) VALUES ('$rec', MD5('Rec-$ts'), 'SMOKE', 'Reception', 28, 'Actif'); INSERT INTO mirador_utilisateurs.app_user_profile (code_user, role_name) SELECT code_user, 'Reception' FROM mirador_utilisateurs.utilisateur WHERE compte = '$rec';" | Out-Null
 $R = (Call POST '/api/auth/login' @{ username = $rec; password = "Rec-$ts" }).Body.token
 Check 'connexion d un compte Reception' ([bool]$R)
 Check 'Reception : liste des utilisateurs -> 403' ((Call GET '/api/security/users' $null $R).Status -eq 403)
@@ -259,7 +278,7 @@ Check 'Reception : operation comptable (ecran Reception) -> pas bloquee' ((Call 
 Check 'Reception : mouvement de stock (ecran Reception) -> pas bloque' ((Call POST '/api/stock/movements' @{} $R).Status -ne 403)
 Check 'Reception : changer son mot de passe -> pas bloque' ((Call POST '/api/security/change-password' @{ currentPassword = 'faux'; newPassword = 'x'; confirmPassword = 'x' } $R).Status -ne 403)
 Check 'Admin : liste des utilisateurs -> 200' ((Call GET '/api/security/users' $null $T).Status -eq 200)
-& mysql -u root -D mirador_utilisateurs -e "DELETE p FROM mirador_utilisateurs.app_user_profile p JOIN mirador_utilisateurs.utilisateur u ON u.code_user = p.code_user WHERE u.compte = '$rec'; DELETE FROM mirador_utilisateurs.utilisateur WHERE compte = '$rec';" 2>$null
+Invoke-Db "USE mirador_utilisateurs; DELETE p FROM mirador_utilisateurs.app_user_profile p JOIN mirador_utilisateurs.utilisateur u ON u.code_user = p.code_user WHERE u.compte = '$rec'; DELETE FROM mirador_utilisateurs.utilisateur WHERE compte = '$rec';" | Out-Null
 
 Section 'Nettoyage'
 Check 'supprimer la promotion de test' ((Call DELETE "/api/promotions/$promoId" $null $T).Status -eq 204)
@@ -267,4 +286,5 @@ Check 'supprimer la promotion de test' ((Call DELETE "/api/promotions/$promoId" 
 Write-Host "`n==============================" -ForegroundColor Cyan
 Write-Host "Reussis : $script:pass   Echecs : $script:fail" -ForegroundColor $(if ($script:fail -eq 0) { 'Green' } else { 'Red' })
 if ($skippedCompensation) { Write-Host '(compensation du Saga non verifiee : injection de panne desactivee)' -ForegroundColor Yellow }
+if ($dbCnf) { Remove-Item $dbCnf -ErrorAction SilentlyContinue }
 exit $(if ($script:fail -eq 0) { 0 } else { 1 })

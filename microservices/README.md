@@ -127,6 +127,21 @@ Les schémas se créent au premier démarrage (`schema.sql` de chaque service, i
 `noubasra` est créé dans `mirador_utilisateurs`. Douze JVM tournent côte à côte : prévoir ~3 Go de RAM libre
 (`-Xmx192m` chacune).
 
+### Base de données distante (TiDB Cloud)
+
+`start-all.ps1` lit le fichier `microservices/.env` s'il existe (**jamais envoyé sur GitHub**) et transmet ses
+variables aux services : `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USERNAME`, `MYSQL_PASSWORD`, `MYSQL_SSL_MODE=REQUIRED`,
+plus quelques réglages du pool de connexions adaptés à une base lointaine.
+
+- Les 11 bases `mirador_*` ont été copiées telles quelles dans TiDB Cloud (compatible MySQL) ; la base MySQL locale
+  reste intacte.
+- **État actuel : désactivé.** Testé le 24/10/2026 avec un cluster à Tokyo et les services sur un PC : ~430 ms par requête et des coupures (« Communications link failure », pool de connexions épuisé) faisaient échouer la création de réservations et les paiements. La configuration est conservée dans `.env.tidb` (ignoré par git).
+- **Réactiver TiDB** : renommer `.env.tidb` en `.env`, puis `.\stop-all.ps1` et `.\start-all.ps1`. **Revenir au local** : l'inverse.
+- **Lenteur** : avec des services sur un PC et une base lointaine, chaque requête SQL fait l'aller-retour
+  (mesuré : ~430 ms vers Tokyo contre < 1 ms en local). Un écran qui enchaîne des requêtes prend plusieurs secondes.
+  Une base dans une région proche, ou des services hébergés à côté de la base, réduisent fortement ce délai.
+- `smoke-test.ps1` interroge automatiquement la même base que les services.
+
 ### Reprendre les données de l'ancienne base `bd_mirador`
 
 Une seule fois, **après** le premier démarrage :

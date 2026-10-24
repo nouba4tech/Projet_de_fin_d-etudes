@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { FaDownload, FaRecycle } from 'react-icons/fa';
 import api from '../services/api';
 import { userApi, groupApi, privilegeApi, backupApi } from '../services/securityService';
+import { generateSecurePassword } from '../utils/passwordGenerator';
 
 type SecuritySection = 'users' | 'groups' | 'privileges' | 'password' | 'backup';
 
@@ -451,6 +452,8 @@ const Security: React.FC = () => {
 
   const prepareCreateUser = () => {
     resetUserForm();
+    // a secure initial password is proposed in the field (visible); the administrator may replace it
+    setUserForm({ ...defaultUserForm(), password: generateSecurePassword() });
     setUserFormMode('create');
     setIsUserFormVisible(true);
   };
@@ -1016,7 +1019,7 @@ const Security: React.FC = () => {
                       <div>
                         <label className="mb-2 block text-sm font-medium text-gray-300">Password</label>
                         <input
-                          type="password"
+                          type={userFormMode === 'create' ? 'text' : 'password'}
                           value={userForm.password}
                           onChange={(event) => setUserForm(prev => ({ ...prev, password: event.target.value }))}
                           placeholder={userFormMode === 'edit' ? 'Laisser vide pour conserver' : 'Mot de passe'}

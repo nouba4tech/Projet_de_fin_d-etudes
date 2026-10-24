@@ -214,12 +214,12 @@ const MiradorSidebar: React.FC<{ theme: Theme; isOpen: boolean; onClose: () => v
     <>
       {isOpen ? (
         <div
-          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
           onClick={onClose}
           aria-hidden="true"
         />
       ) : null}
-      <aside className={`w-[280px] flex flex-col fixed h-full z-40 overflow-y-auto transition-transform duration-200 ease-in-out md:translate-x-0 ${
+      <aside className={`w-[280px] flex flex-col fixed h-full z-40 overflow-y-auto transition-transform duration-200 ease-in-out lg:translate-x-0 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } ${
         isDark ? 'bg-[#050714] border-r border-white/5' : 'bg-white border-r border-gray-200'
@@ -228,7 +228,7 @@ const MiradorSidebar: React.FC<{ theme: Theme; isOpen: boolean; onClose: () => v
           type="button"
           onClick={onClose}
           aria-label="Fermer le menu"
-          className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full md:hidden ${
+          className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full lg:hidden ${
             isDark ? 'text-gray-400 hover:bg-white/5' : 'text-gray-500 hover:bg-gray-100'
           }`}
         >
@@ -405,14 +405,14 @@ const MainLayout: React.FC<{
         className={`flex h-screen overflow-hidden ${theme === 'dark' ? 'bg-[#050714] text-white' : 'bg-[#f5f6f8] text-[#14181f]'}`}
       >
         <MiradorSidebar theme={theme} isOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
-        <main className={`flex-1 md:ml-[280px] h-full overflow-hidden flex flex-col ${theme === 'dark' ? 'bg-[#050714]' : 'bg-[#f5f6f8]'}`}>
+        <main className={`min-w-0 flex-1 lg:ml-[280px] h-full overflow-hidden flex flex-col ${theme === 'dark' ? 'bg-[#050714]' : 'bg-[#f5f6f8]'}`}>
           <header className={`h-16 md:h-20 border-b flex items-center justify-between gap-2 px-3 md:px-10 shrink-0 ${theme === 'dark' ? 'bg-[#06101d] border-slate-700/60' : 'bg-white border-[#e2e5eb]'}`}>
             <div className="flex min-w-0 items-center gap-2 md:gap-4">
               <button
                 type="button"
                 onClick={() => setMobileNavOpen(true)}
                 aria-label="Ouvrir le menu"
-                className={`flex h-9 w-9 flex-none items-center justify-center rounded-lg md:hidden ${
+                className={`flex h-9 w-9 flex-none items-center justify-center rounded-lg lg:hidden ${
                   theme === 'dark' ? 'text-white/80 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
@@ -423,7 +423,7 @@ const MainLayout: React.FC<{
               <h2 className={`truncate text-base md:text-xl font-bold tracking-tight ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{title}</h2>
             </div>
             <div className="flex flex-none items-center gap-2 md:gap-6">
-              <div className="hidden md:flex md:flex-col">
+              <div className="hidden lg:flex lg:flex-col">
                 <form onSubmit={handleQuickSearch} className="relative">
                   <input
                     type="text"

@@ -946,6 +946,43 @@ table tbody td {
    to be: oversized padding/text eating width, and a handful of tables hard-coded with a
    desktop min-width (min-w-[...]) that forced the same wide layout even on a phone. */
 @media (max-width: 767px) {
+    /* Keep flex and grid content inside the available phone width. A number of
+       pages contain dense KPI grids that were authored with fixed 3/4 column
+       counts and stayed compressed into tiny slivers on phones. */
+    [data-app-shell='true'],
+    [data-app-shell='true'] > main,
+    [data-app-shell='true'] > main > div {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .grid.grid-cols-3,
+    .grid.grid-cols-4,
+    .grid.grid-cols-5,
+    .grid.grid-cols-6 {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .grid > *,
+    .flex > * {
+        min-width: 0;
+    }
+
+    /* Centered dialogs become scrollable sheets on phones so tall forms stay
+       reachable above the browser controls. */
+    .fixed.inset-0.z-50.flex.items-center.justify-center {
+        align-items: flex-start;
+        overflow-y: auto;
+        padding-top: max(0.75rem, env(safe-area-inset-top));
+        padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    }
+
+    .fixed.inset-0.z-50.flex.items-center.justify-center > div {
+        max-height: calc(100vh - 1.5rem);
+        max-height: calc(100dvh - 1.5rem);
+        overflow-y: auto;
+    }
+
     table thead th {
         padding: 0.625rem 0.5rem !important;
         font-size: 0.6875rem !important;

@@ -11,11 +11,13 @@ import {
   FaLock,
   FaShieldAlt,
   FaSignInAlt,
+  FaSyncAlt,
   FaUser,
   FaUserPlus,
   FaUserTie
 } from 'react-icons/fa';
 import api from '../services/api';
+import { generateSecurePassword } from '../utils/passwordGenerator';
 
 const DEFAULT_FORM_STATE = {
   username: '',
@@ -140,14 +142,31 @@ const Auth: React.FC = () => {
     });
   };
 
+  // Opening the sign-up form pre-fills both password fields with a secure suggestion (shown in clear):
+  // the user keeps it or simply types their own password over it.
+  const suggestPassword = () => {
+    const suggested = generateSecurePassword();
+    setFormData((previous) => ({ ...previous, password: suggested, confirmPassword: suggested }));
+    setShowPassword(true);
+    setShowConfirmPassword(true);
+  };
+
   const toggleMode = () => {
-    setIsLogin((previous) => !previous);
+    const toSignUp = isLogin;
+    setIsLogin(!isLogin);
     setError('');
     setFormData(DEFAULT_FORM_STATE);
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    if (toSignUp) {
+      suggestPassword();
+    }
   };
 
   return (
-    <div className="relative min-h-screen bg-[#040914]">
+    // <body> is overflow-hidden (the app shell scrolls its own content), so this page must scroll by itself:
+    // otherwise the bottom of a long form - the submit button - is cut off on smaller screens.
+    <div className="relative h-[100dvh] overflow-y-auto bg-[#040914]">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-16 top-12 h-56 w-56 rounded-full bg-sky-500/10 blur-3xl" />
         <div className="absolute -bottom-20 right-0 h-72 w-72 rounded-full bg-indigo-500/10 blur-3xl" />
@@ -288,9 +307,21 @@ const Auth: React.FC = () => {
                     required
                     value={formData.password}
                     onChange={handleInputChange}
-                    className="w-full rounded-2xl border border-white/10 bg-[#0d172a] px-4 py-3.5 pr-12 text-white placeholder-slate-500 transition-all duration-200 focus:border-sky-400/60 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
+                    className={`w-full rounded-2xl border border-white/10 bg-[#0d172a] px-4 py-3.5 ${isLogin ? 'pr-12' : 'pr-20'} text-white placeholder-slate-500 transition-all duration-200 focus:border-sky-400/60 focus:outline-none focus:ring-2 focus:ring-sky-500/30`}
                     placeholder="••••••••"
                   />
+                  {!isLogin && (
+                    <button
+                      type="button"
+                      onClick={suggestPassword}
+                      className="absolute inset-y-0 right-10 flex items-center pr-1 text-slate-400 transition-colors hover:text-sky-300"
+                      aria-label="Proposer un autre mot de passe sécurisé"
+                      title="Proposer un autre mot de passe sécurisé"
+                      tabIndex={-1}
+                    >
+                      <FaSyncAlt className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => setShowPassword((previous) => !previous)}
