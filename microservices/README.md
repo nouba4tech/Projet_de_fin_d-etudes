@@ -36,12 +36,12 @@ Les services récents ont leur écran dans le menu (droits d'accès par rôle, v
 
 | Service | Rôle | Routes `/api/...` |
 |---|---|---|
-| **chambres** | catalogue, types, tarifs, statut (la disponibilité du jour est calculée avec *réservations*) | `chambres`, `parametres/room-types`, `parametres/rooms` |
-| **clients** | profils, historique de séjours, compte client | `clients`, `parametres/clients` |
-| **réservations** | création, modification, annulation, occupants, visites, code promo | `reservations`, `visits` |
+| **chambres** | catalogue, types, tarifs, statut ; **recherche des chambres libres** sur une période (`GET /chambres/disponibles?from&to&capacite`) | `chambres`, `parametres/room-types`, `parametres/rooms` |
+| **clients** | profils, compte client, **historique** (`GET /clients/{id}/historique`) et **fidélité** (`GET /clients/{id}/fidelite` : 1 point / 1 000 FCFA de séjours réalisés, niveaux Bronze → Argent 100 → Or 500 → Platine 1 500) | `clients`, `parametres/clients` |
+| **réservations** | création, modification, **annulation** (`POST /reservations/{id}/annulation` : facture annulée, chambre libérée, client prévenu ; refusée si déjà payée ou terminée), occupants, visites, code promo | `reservations`, `visits` |
 | **paiements** | transactions, caisses, **Saga de paiement** | `paiements`, `finances`, `cash` |
 | **facturation** | génération (document imprimable), archivage, suivi, comptabilité | `factures`, `accounting`, `comptabilite`, `parametres/cash-registers` |
-| **utilisateurs** | authentification, rôles, droits | `auth`, `security` |
+| **utilisateurs** | authentification, rôles **appliqués par le serveur** (voir « Rôles » plus bas) | `auth`, `security` |
 | **personnel** | employés et **plannings** | `employees`, `planning`, `parametres/personnel` |
 | **promotions** | offres tarifaires, codes promo | `promotions` |
 | **avis** | collecte, **modération**, affichage public | `avis` (`avis/public` sans token) |
@@ -54,6 +54,23 @@ du schéma ; les supprimer aurait cassé des écrans. Pour présenter strictemen
 
 Chaque service a **sa propre base MySQL** (même serveur) : aucune jointure SQL entre services. Le module `common`
 partage le JWT (même secret → un token est valable partout), la sécurité, les erreurs et le client inter-services.
+
+## Rôles (contrôlés par chaque service)
+
+Le rôle est lu dans le JWT. **Toute lecture (GET) est permise à un utilisateur connecté**, sauf le module sécurité.
+Les écritures (POST/PUT/PATCH/DELETE) sont réservées :
+
+| Domaine | Admin | Comptable | Réception |
+|---|---|---|---|
+| sécurité (utilisateurs, groupes, sauvegardes) — lecture comprise | ✓ | | |
+| paramètres, personnel, plannings, stock, fournisseurs, restaurant, bar | ✓ | | |
+| comptabilité, finances, caisse | ✓ | ✓ | |
+| opérations comptables et mouvements de stock saisis depuis l'écran Réception | ✓ | ✓ (opérations) | ✓ |
+| factures, paiements | ✓ | ✓ | ✓ |
+| réservations, clients, chambres, visites, services, promotions, avis, notifications | ✓ | | ✓ |
+| main courante | ✓ | ✓ | ✓ |
+
+Changer son propre mot de passe reste possible pour tous. Un appel interdit renvoie **403**.
 
 ## Communication entre services
 
@@ -171,4 +188,4 @@ docker compose up --build      # MySQL + 11 services + gateway (nommée "backend
 - Sauvegardes de l'écran Sécurité : elles n'exportent que `mirador_utilisateurs`. Pour tout sauvegarder, `mysqldump`
   des 11 bases `mirador_*`.
 - Les `Dto` partagés (`OperationsDtos`, `ParametresDtos`, `HotelDtos`) sont dupliqués par service : chacun possède son contrat.
-- Les erreurs métier héritées du monolithe (ex. « chambre non disponible ») restent renvoyées en HTTP 500 avec leur message.
+- Codes d'erreur : saisie invalide → 400, conflit métier (chambre déjà réservée, suppression impossible…) → 409, service distant indisponible → 503. Les « Impossible de récupérer l'identifiant… » restent des 500 (vraies pannes internes).

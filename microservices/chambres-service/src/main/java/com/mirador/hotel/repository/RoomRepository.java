@@ -1,4 +1,5 @@
 package com.mirador.hotel.repository;
+import com.mirador.hotel.exception.ConflictException;
 
 import com.mirador.hotel.client.RemoteApi;
 import com.mirador.hotel.dto.HotelDtos;
@@ -111,7 +112,7 @@ public class RoomRepository {
         long reservations = remoteApi.reservationsForRoom(codeChambre);
 
         if (reservations > 0) {
-            throw new IllegalStateException("Cette chambre est liee a des reservations et ne peut pas etre supprimee.");
+            throw new ConflictException("Cette chambre est liee a des reservations et ne peut pas etre supprimee.");
         }
 
         jdbcTemplate.update("DELETE FROM app_room_status WHERE code_chambre = ?", codeChambre.trim());

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import api from '../services/api';
+import ClientLoyaltyPanel from './ClientLoyaltyPanel';
 
 type ClientDto = {
   id: number;
@@ -549,6 +550,8 @@ const Guests: React.FC = () => {
                 <p className="mt-2 text-sm text-white">{detailsClient.address || '-'}</p>
               </div>
             </div>
+
+            <ClientLoyaltyPanel clientId={detailsClient.id} />
 
             <div className="flex justify-end gap-3">
               <button

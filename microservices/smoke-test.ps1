@@ -15,13 +15,13 @@ function Read-Utf8([System.IO.Stream]$stream) {
 function Call([string]$Method, [string]$Path, $Body = $null, [string]$Token = $null, [string]$Base = $Gateway) {
     $headers = @{}
     if ($Token) { $headers['Authorization'] = "Bearer $Token" }
-    $args = @{ Uri = "$Base$Path"; Method = $Method; Headers = $headers; UseBasicParsing = $true }
+    $req = @{ Uri = "$Base$Path"; Method = $Method; Headers = $headers; UseBasicParsing = $true }
     if ($null -ne $Body) {
-        $args['ContentType'] = 'application/json; charset=utf-8'
-        $args['Body'] = [Text.Encoding]::UTF8.GetBytes(($Body | ConvertTo-Json -Depth 8 -Compress))
+        $req['ContentType'] = 'application/json; charset=utf-8'
+        $req['Body'] = [Text.Encoding]::UTF8.GetBytes(($Body | ConvertTo-Json -Depth 8 -Compress))
     }
     try {
-        $r = Invoke-WebRequest @args
+        $r = Invoke-WebRequest @req
         $text = Read-Utf8 $r.RawContentStream; $code = [int]$r.StatusCode
     } catch [System.Net.WebException] {
         if (-not $_.Exception.Response) { return @{ Status = 0; Body = $null; Text = $_.Exception.Message } }
@@ -42,7 +42,13 @@ Section 'Utilisateurs / securite'
 $login = Call POST '/api/auth/login' @{ username = 'noubasra'; password = 'noubasra' }
 Check 'login admin' ($login.Status -eq 200 -and $login.Body.token) "status=$($login.Status)"
 $T = $login.Body.token
-Check 'login utilisateur de demo (akono)' ((Call POST '/api/auth/login' @{ username = 'akono'; password = 'Mirador123' }).Status -eq 200)
+$demo = (Call POST '/api/auth/login' @{ username = 'akono'; password = 'Mirador123' }).Status
+if ($demo -eq 401) {
+    # the demo accounts are locked (random password) whenever the app is exposed publicly
+    Write-Host '  [SKIP] login utilisateur de demo (akono) : comptes de demonstration verrouilles' -ForegroundColor Yellow
+} else {
+    Check 'login utilisateur de demo (akono)' ($demo -eq 200) "status=$demo"
+}
 Check 'mauvais mot de passe -> 401' ((Call POST '/api/auth/login' @{ username = 'noubasra'; password = 'x' }).Status -eq 401)
 Check 'route metier sans token -> 403' ((Call GET '/api/clients').Status -eq 403)
 Check '/internal non expose par la gateway' ((Call GET '/internal/clients/count').Status -eq 404)
@@ -92,7 +98,10 @@ Check 'creer une reservation avec code promo' ($resv.Status -eq 201) "status=$($
 $resId = $resv.Body.id
 Check 'montant remise : 90 000' ([decimal]$resv.Body.totalAmount -eq 90000) "montant=$($resv.Body.totalAmount)"
 Check 'reservation enrichie par clients/chambres (nom du client)' ($resv.Body.clientName -like '*Smoke*')
-Check 'chambre deja prise sur la periode -> refus' ((Call POST '/api/reservations' @{ clientId = $clientId; roomId = '101'; checkIn = $ci; checkOut = $co; occupantFirstName = 'A'; occupantLastName = 'B' } $T).Status -ge 400)
+Check 'chambre deja prise sur la periode -> 409' ((Call POST '/api/reservations' @{ clientId = $clientId; roomId = '101'; checkIn = $ci; checkOut = $co; occupantFirstName = 'A'; occupantLastName = 'B' } $T).Status -eq 409)
+Check 'depart avant arrivee -> 400' ((Call POST '/api/reservations' @{ clientId = $clientId; roomId = '102'; checkIn = $co; checkOut = $ci; occupantFirstName = 'A'; occupantLastName = 'B'; totalAmount = 1 } $T).Status -eq 400)
+Check 'supprimer un client qui a des reservations -> 409' ((Call DELETE "/api/clients/$clientId" $null $T).Status -eq 409)
+Check 'supprimer une chambre reservee -> 409' ((Call DELETE '/api/chambres/101' $null $T).Status -eq 409)
 Check 'client inconnu -> 404' ((Call POST '/api/reservations' @{ clientId = 99999999; roomId = '102'; checkIn = $ci; checkOut = $co; occupantFirstName = 'A'; occupantLastName = 'B'; totalAmount = 1 } $T).Status -eq 404)
 Check 'la promotion a ete consommee (usedCount = 1)' ((Call GET "/api/promotions/$promoId" $null $T).Body.usedCount -eq 1)
 $inv = (Call GET "/api/factures?clientId=$clientId" $null $T).Body | Select-Object -First 1
@@ -206,6 +215,51 @@ Check 'employe inconnu -> 404' ((Call POST '/api/employees/99999999/planning' @{
 Check 'creneau adjacent accepte' ((Call POST "/api/employees/$($emp.id)/planning" @{ date = $day; startTime = '12:00:00'; endTime = '14:00:00'; post = 'Reception SMOKE' } $T).Status -eq 201)
 Check 'planning de l employe' ((((Call GET "/api/planning?employeeId=$($emp.id)&from=$day&to=$day" $null $T).Body) | Measure-Object).Count -ge 2)
 foreach ($s in (Call GET "/api/planning?employeeId=$($emp.id)&from=$day&to=$day" $null $T).Body) { [void](Call DELETE "/api/planning/$($s.id)" $null $T) }
+
+Section 'Chambres : disponibilites'
+$free = (Call GET "/api/chambres/disponibles?from=$ci&to=$co" $null $T).Body
+Check 'recherche de chambres libres sur la periode' ($free.Count -gt 0)
+Check 'la chambre reservee (101) n est pas proposee' (-not ($free | Where-Object { $_.number -eq '101' }))
+Check 'periode invalide -> 400' ((Call GET "/api/chambres/disponibles?from=$co&to=$ci" $null $T).Status -eq 400)
+
+Section 'Reservations : annulation'
+$r2 = Call POST '/api/reservations' @{ clientId = $clientId; roomId = '102'; checkIn = $ci; checkOut = $co; status = 'En attente'; totalAmount = 50000;
+    occupantFirstName = 'Smoke'; occupantLastName = "Annul$ts" } $T
+Check 'reservation a annuler creee' ($r2.Status -eq 201) "status=$($r2.Status) $($r2.Text)"
+Check '102 n est plus libre' (-not ((Call GET "/api/chambres/disponibles?from=$ci&to=$co" $null $T).Body | Where-Object { $_.number -eq '102' }))
+$c2 = Call POST "/api/reservations/$($r2.Body.id)/annulation" @{ reason = 'Changement de dates' } $T
+Check 'annulation -> statut Annulee' ($c2.Status -eq 200 -and $c2.Body.status -like 'Annul*') "status=$($c2.Status) $($c2.Text)"
+$inv2 = (Call GET "/api/factures?clientId=$clientId" $null $T).Body | Where-Object { [decimal]$_.net -eq 50000 } | Select-Object -First 1
+Check 'sa facture est ANNULEE' ($inv2.status -eq 'ANNULEE') "statut=$($inv2.status)"
+Check 'la chambre 102 redevient libre' ([bool]((Call GET "/api/chambres/disponibles?from=$ci&to=$co" $null $T).Body | Where-Object { $_.number -eq '102' }))
+Check 'annuler deux fois -> 409' ((Call POST "/api/reservations/$($r2.Body.id)/annulation" @{ reason = 'x' } $T).Status -eq 409)
+Check 'annuler une reservation deja payee -> 409' ((Call POST "/api/reservations/$resId/annulation" @{ reason = 'x' } $T).Status -eq 409)
+Check 'le client est prevenu de l annulation' ((((Call GET '/api/notifications?limit=200' $null $T).Body | Where-Object { $_.templateCode -eq 'RESERVATION_CANCELLATION' -and $_.referenceKey -eq "RES-$($r2.Body.id)-ANNULATION" }) | Measure-Object).Count -eq 2)
+
+Section 'Clients : historique et fidelite'
+$h = (Call GET "/api/clients/$clientId/historique" $null $T).Body
+Check 'historique : 2 reservations dont 1 annulee' ($h.reservations -eq 2 -and $h.cancelled -eq 1) "reservations=$($h.reservations) annulees=$($h.cancelled)"
+$f = (Call GET "/api/clients/$clientId/fidelite" $null $T).Body
+Check 'fidelite : nouveau client au niveau BRONZE' ($f.tier -eq 'BRONZE' -and $f.points -eq 0 -and $f.nextTier -eq 'ARGENT')
+$best = (Call GET '/api/clients' $null $T).Body | ForEach-Object { (Call GET "/api/clients/$($_.id)/fidelite" $null $T).Body } | Sort-Object points -Descending | Select-Object -First 1
+Check 'fidelite : un client avec des sejours passes a des points' ($best.points -gt 0) "max points=$($best.points) ($($best.clientName), $($best.tier))"
+Check 'client inconnu -> 404' ((Call GET '/api/clients/99999999/fidelite' $null $T).Status -eq 404)
+
+Section 'Utilisateurs : roles appliques par le serveur'
+$rec = "smokerec$ts"
+& mysql -u root -e "INSERT INTO mirador_utilisateurs.utilisateur (compte, psw, nom, prenom, code_groupe, statut) VALUES ('$rec', MD5('Rec-$ts'), 'SMOKE', 'Reception', 28, 'Actif'); INSERT INTO mirador_utilisateurs.app_user_profile (code_user, role_name) SELECT code_user, 'Reception' FROM mirador_utilisateurs.utilisateur WHERE compte = '$rec';" 2>$null
+$R = (Call POST '/api/auth/login' @{ username = $rec; password = "Rec-$ts" }).Body.token
+Check 'connexion d un compte Reception' ([bool]$R)
+Check 'Reception : liste des utilisateurs -> 403' ((Call GET '/api/security/users' $null $R).Status -eq 403)
+Check 'Reception : creer un employe -> 403' ((Call POST '/api/employees' @{ firstName = 'x' } $R).Status -eq 403)
+Check 'Reception : ecriture financiere -> 403' ((Call POST '/api/finances/transactions' @{ amount = 1 } $R).Status -eq 403)
+Check 'Reception : creer un client -> autorise' ((Call POST '/api/clients' @{ firstName = 'Rec'; lastName = "Smoke$ts"; clientType = 'Personne physique' } $R).Status -eq 201)
+Check 'Reception : lecture des factures -> autorisee' ((Call GET '/api/factures' $null $R).Status -eq 200)
+Check 'Reception : operation comptable (ecran Reception) -> pas bloquee' ((Call POST '/api/accounting/sqlite/operations' @{} $R).Status -ne 403)
+Check 'Reception : mouvement de stock (ecran Reception) -> pas bloque' ((Call POST '/api/stock/movements' @{} $R).Status -ne 403)
+Check 'Reception : changer son mot de passe -> pas bloque' ((Call POST '/api/security/change-password' @{ currentPassword = 'faux'; newPassword = 'x'; confirmPassword = 'x' } $R).Status -ne 403)
+Check 'Admin : liste des utilisateurs -> 200' ((Call GET '/api/security/users' $null $T).Status -eq 200)
+& mysql -u root -D mirador_utilisateurs -e "DELETE p FROM mirador_utilisateurs.app_user_profile p JOIN mirador_utilisateurs.utilisateur u ON u.code_user = p.code_user WHERE u.compte = '$rec'; DELETE FROM mirador_utilisateurs.utilisateur WHERE compte = '$rec';" 2>$null
 
 Section 'Nettoyage'
 Check 'supprimer la promotion de test' ((Call DELETE "/api/promotions/$promoId" $null $T).Status -eq 204)

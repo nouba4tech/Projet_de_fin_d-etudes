@@ -95,6 +95,29 @@ public class InternalReservationRepository {
         return result;
     }
 
+    public List<String> occupiedRoomsBetween(LocalDate from, LocalDate to) {
+        return jdbcTemplate.queryForList(
+                "SELECT DISTINCT o.code_chambre FROM occupation o "
+                        + "LEFT JOIN app_reservation_state ars ON ars.occupation_code = o.code "
+                        + "WHERE " + NOT_CANCELLED + " AND DATE(o.date_debut) < ? AND DATE(o.date_fin) > ?",
+                String.class, java.sql.Date.valueOf(to), java.sql.Date.valueOf(from));
+    }
+
+    public List<RemoteApi.ReservationInfo> byClient(long clientId) {
+        return jdbcTemplate.query(INFO_SELECT + " WHERE o.code_client = ? ORDER BY o.date_debut DESC", INFO_MAPPER, clientId);
+    }
+
+    /** Sets the status of one reservation and appends a note to its observation. */
+    public void cancel(long reservationId, String status, String note) {
+        jdbcTemplate.update("""
+                INSERT INTO app_reservation_state (occupation_code, status_label, total_amount, created_at)
+                VALUES (?, ?, 0, NOW())
+                ON DUPLICATE KEY UPDATE status_label = VALUES(status_label)
+                """, reservationId, status);
+        jdbcTemplate.update("UPDATE occupation SET observation = TRIM(CONCAT(COALESCE(observation, ''), ' ', ?)) WHERE code = ?",
+                note, reservationId);
+    }
+
     public List<RemoteApi.ReservationInfo> arrivals(LocalDate day) {
         return jdbcTemplate.query(INFO_SELECT + " WHERE " + NOT_CANCELLED + " AND DATE(o.date_debut) = ? ORDER BY o.code",
                 INFO_MAPPER, java.sql.Date.valueOf(day));

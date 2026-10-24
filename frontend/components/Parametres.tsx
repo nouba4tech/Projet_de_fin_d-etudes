@@ -899,7 +899,7 @@ const Parametres: React.FC = () => {
         location: cashRegisterForm.location,
         openingBalance: cashRegisterForm.openingBalance,
         currency: cashRegisterForm.currency,
-        status: cashRegisterForm.status,
+        status: cashRegisterForm.status as 'active' | 'inactive',
         responsiblePerson: cashRegisterForm.responsiblePerson
       };
 

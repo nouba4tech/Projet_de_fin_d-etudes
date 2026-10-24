@@ -1,4 +1,6 @@
 package com.mirador.hotel.service;
+import com.mirador.hotel.exception.BadRequestException;
+import com.mirador.hotel.exception.ConflictException;
 
 import com.mirador.hotel.dto.HotelDtos;
 import com.mirador.hotel.exception.ResourceNotFoundException;
@@ -37,7 +39,7 @@ public class RoomService {
         }
 
         if (roomRepository.exists(request.code())) {
-            throw new IllegalStateException("La chambre " + request.code() + " existe déjà.");
+            throw new ConflictException("La chambre " + request.code() + " existe déjà.");
         }
 
         try {
@@ -45,6 +47,8 @@ public class RoomService {
             roomRepository.create(request);
             LOGGER.info("Chambre créée avec succès: " + request.code());
             return getRoom(request.code());
+        } catch (ConflictException | BadRequestException | ResourceNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             LOGGER.severe("Erreur lors de la création de la chambre " + request.code() + ": " + e.getMessage());
             throw new RuntimeException("Impossible de créer la chambre: " + e.getMessage(), e);
@@ -56,6 +60,8 @@ public class RoomService {
         try {
             roomRepository.update(codeChambre, request);
             return getRoom(codeChambre);
+        } catch (ConflictException | BadRequestException | ResourceNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             LOGGER.severe("Erreur lors de la mise à jour de la chambre " + codeChambre + ": " + e.getMessage());
             throw new RuntimeException("Impossible de mettre à jour la chambre: " + e.getMessage(), e);
@@ -66,6 +72,8 @@ public class RoomService {
         getRoom(codeChambre);
         try {
             roomRepository.delete(codeChambre);
+        } catch (ConflictException | BadRequestException | ResourceNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             LOGGER.severe("Erreur lors de la suppression de la chambre " + codeChambre + ": " + e.getMessage());
             throw new RuntimeException("Impossible de supprimer la chambre: " + e.getMessage(), e);

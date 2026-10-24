@@ -1,5 +1,6 @@
 package com.mirador.hotel.repository;
 
+import java.util.Objects;
 import com.mirador.hotel.dto.PromotionDtos;
 import com.mirador.hotel.model.PromotionCalculator;
 import com.mirador.hotel.util.ValueUtils;
@@ -68,7 +69,7 @@ public class PromotionRepository {
             bind(ps, r);
             return ps;
         }, keys);
-        return keys.getKey().longValue();
+        return Objects.requireNonNull(keys.getKey(), "Identifiant non genere par la base").longValue();
     }
 
     public int update(long id, PromotionDtos.PromotionRequest r) {

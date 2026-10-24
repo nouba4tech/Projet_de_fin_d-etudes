@@ -1,5 +1,6 @@
 package com.mirador.hotel.repository;
 
+import java.util.Objects;
 import com.mirador.hotel.dto.ReviewDtos;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -58,7 +59,7 @@ public class ReviewRepository {
             ps.setBoolean(7, flagged);
             return ps;
         }, keys);
-        return keys.getKey().longValue();
+        return Objects.requireNonNull(keys.getKey(), "Identifiant non genere par la base").longValue();
     }
 
     public Optional<ReviewDtos.ReviewResponse> findById(long id) {

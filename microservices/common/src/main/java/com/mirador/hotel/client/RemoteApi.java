@@ -47,6 +47,7 @@ public class RemoteApi {
     private record StatusBody(String status) { }
     private record NameBody(String displayName) { }
     private record PromoBody(String code, BigDecimal amount) { }
+    private record ReasonBody(String reason) { }
 
     private final InternalApiClient http;
     private final String chambres;
@@ -159,6 +160,17 @@ public class RemoteApi {
                 new ParameterizedTypeReference<List<ReservationInfo>>() { });
     }
 
+    /** Rooms that have a non-cancelled reservation overlapping [from, to). Throws if reservations-service is down. */
+    public Set<String> occupiedRoomsBetween(LocalDate from, LocalDate to) {
+        return Set.copyOf(http.get(reservations, "/internal/reservations/occupied-rooms-between?from=" + from + "&to=" + to,
+                new ParameterizedTypeReference<List<String>>() { }));
+    }
+
+    public List<ReservationInfo> reservationsOfClient(long clientId) {
+        return http.get(reservations, "/internal/reservations/by-client/" + clientId,
+                new ParameterizedTypeReference<List<ReservationInfo>>() { });
+    }
+
     public Optional<ReservationInfo> reservation(long id) {
         return optional(() -> http.get(reservations, "/internal/reservations/" + id, ReservationInfo.class));
     }
@@ -198,6 +210,11 @@ public class RemoteApi {
     public InvoiceInfo registerPayment(String code, BigDecimal amount, String reference) {
         return http.post(facturation, "/internal/invoices/" + code + "/payments",
                 new PaymentBody(amount, reference), InvoiceInfo.class);
+    }
+
+    /** Cancels an unpaid invoice (409 when something was already paid). */
+    public InvoiceInfo cancelInvoice(String code, String reason) {
+        return http.post(facturation, "/internal/invoices/" + code + "/cancel", new ReasonBody(reason), InvoiceInfo.class);
     }
 
     public InvoiceInfo reversePayment(String code, BigDecimal amount, String reference) {

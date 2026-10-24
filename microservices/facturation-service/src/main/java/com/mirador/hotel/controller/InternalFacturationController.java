@@ -79,6 +79,14 @@ public class InternalFacturationController {
         return invoiceService.registerPayment(code, request.amount(), request.reference());
     }
 
+    public record CancelRequest(String reason) {
+    }
+
+    @PostMapping("/invoices/{code}/cancel")
+    public RemoteApi.InvoiceInfo cancel(@PathVariable String code, @RequestBody(required = false) CancelRequest request) {
+        return invoiceService.cancelInvoice(code, request == null ? null : request.reason());
+    }
+
     @PostMapping("/invoices/{code}/payments/reverse")
     public RemoteApi.InvoiceInfo reversePayment(@PathVariable String code, @RequestBody InvoiceDtos.PaymentRequest request) {
         return invoiceService.reversePayment(code, request.amount(), request.reference());

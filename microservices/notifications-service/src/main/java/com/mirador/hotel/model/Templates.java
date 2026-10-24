@@ -26,6 +26,11 @@ public final class Templates {
                 "Bonjour {{name}},\n\nNous avons bien recu votre paiement de {{amount}} FCFA ({{method}}) pour la facture "
                         + "{{invoice}}. Reference : {{reference}}.\n\nMerci de votre confiance.",
                 "Mirador Hotel : paiement de {{amount}} FCFA recu pour la facture {{invoice}} (ref {{reference}})."));
+        CATALOG.put("RESERVATION_CANCELLATION", new Template(
+                "Annulation de votre reservation n°{{reservationId}}",
+                "Bonjour {{name}},\n\nVotre reservation n°{{reservationId}} (chambre {{room}}, du {{checkIn}} au {{checkOut}}) "
+                        + "a ete annulee. Motif : {{reason}}.\n\nNous esperons vous accueillir prochainement.",
+                "Mirador Hotel : reservation n°{{reservationId}} annulee ({{reason}})."));
         CATALOG.put("ARRIVAL_REMINDER", new Template(
                 "Rappel : votre arrivee a l'Hotel Mirador",
                 "Bonjour {{name}},\n\nNous avons le plaisir de vous accueillir le {{checkIn}} (chambre {{room}}, "

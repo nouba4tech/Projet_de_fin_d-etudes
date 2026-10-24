@@ -1,4 +1,5 @@
 package com.mirador.hotel.service;
+import com.mirador.hotel.exception.ConflictException;
 
 import com.mirador.hotel.client.RemoteApi;
 import com.mirador.hotel.dto.HotelDtos;
@@ -57,7 +58,7 @@ public class ReservationService {
         validateDates(request.checkIn(), request.checkOut());
 
         if (!reservationRepository.isRoomAvailable(request.roomId(), request.checkIn(), request.checkOut(), null)) {
-            throw new IllegalStateException("La chambre " + request.roomId() + " n'est pas disponible sur cette periode.");
+            throw new ConflictException("La chambre " + request.roomId() + " n'est pas disponible sur cette periode.");
         }
 
         long reservationId = reservationRepository.create(request);
@@ -93,7 +94,7 @@ public class ReservationService {
         validateDates(request.checkIn(), request.checkOut());
 
         if (!reservationRepository.isRoomAvailable(request.roomId(), request.checkIn(), request.checkOut(), reservationId)) {
-            throw new IllegalStateException("La chambre " + request.roomId() + " n'est pas disponible sur cette periode.");
+            throw new ConflictException("La chambre " + request.roomId() + " n'est pas disponible sur cette periode.");
         }
 
         reservationRepository.update(reservationId, request);

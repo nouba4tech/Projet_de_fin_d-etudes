@@ -1,5 +1,6 @@
 package com.mirador.hotel.repository;
 
+import java.util.Objects;
 import com.mirador.hotel.model.Fournisseur;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -53,7 +54,7 @@ public class FournisseurRepository {
                 ps.setBigDecimal(4, fournisseur.getSolde());
                 return ps;
             }, keyHolder);
-            fournisseur.setCodeFournisseur(keyHolder.getKey().intValue());
+            fournisseur.setCodeFournisseur(Objects.requireNonNull(keyHolder.getKey(), "Identifiant non genere par la base").intValue());
         } else {
             jdbcTemplate.update(
                     "UPDATE fournisseur SET numero = ?, nom = ?, contact = ?, solde = ? WHERE code_fournisseur = ?",

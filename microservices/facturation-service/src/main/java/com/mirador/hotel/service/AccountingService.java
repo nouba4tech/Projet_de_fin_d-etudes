@@ -1,4 +1,5 @@
 package com.mirador.hotel.service;
+import com.mirador.hotel.exception.ConflictException;
 
 import com.mirador.hotel.dto.AccountingDashboardResponse;
 import com.mirador.hotel.dto.CaisseResponse;
@@ -91,7 +92,7 @@ public class AccountingService {
         validatePlanExists(request.numeroPlan());
 
         if (accountingRepository.accountExists(request.numcompte().trim())) {
-            throw new IllegalStateException("Le compte comptable " + request.numcompte() + " existe deja.");
+            throw new ConflictException("Le compte comptable " + request.numcompte() + " existe deja.");
         }
 
         accountingRepository.insertAccount(request);
@@ -111,12 +112,12 @@ public class AccountingService {
         getCompte(numcompte);
 
         if (accountingRepository.isAccountLinkedToCashRegister(numcompte)) {
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "Ce compte est rattache a une caisse et ne peut pas etre supprime.");
         }
 
         if (accountingRepository.countOperationsForAccount(numcompte) > 0) {
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "Ce compte possede des operations comptables et ne peut pas etre supprime.");
         }
 

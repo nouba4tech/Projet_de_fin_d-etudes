@@ -61,6 +61,17 @@ public class InternalReservationController {
         return repository.occupancy(from, to);
     }
 
+    @GetMapping("/occupied-rooms-between")
+    public List<String> occupiedRoomsBetween(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+                                             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return repository.occupiedRoomsBetween(from, to);
+    }
+
+    @GetMapping("/by-client/{clientId}")
+    public List<RemoteApi.ReservationInfo> byClient(@PathVariable long clientId) {
+        return repository.byClient(clientId);
+    }
+
     @GetMapping("/arrivals")
     public List<RemoteApi.ReservationInfo> arrivals(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {

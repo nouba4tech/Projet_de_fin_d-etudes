@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import api from '../services/api';
 import { ReservationStatus, Room, RoomStatus } from '../types';
 import { normalizeRole, readCurrentUser } from '../utils/accessControl';
+import RoomAvailabilityPanel from './RoomAvailabilityPanel';
 
 interface BookingsProps {
   rooms?: Room[];
@@ -156,14 +157,36 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
 
   const selectableRooms = useMemo(() => {
     const base = rooms.filter(room => room.status === RoomStatus.AVAILABLE);
-    if (editingReservation) {
-      const currentRoom = rooms.find(r => r.id === editingReservation.roomId);
+    // keep the room being edited, or the one picked in the availability search (free on its dates, maybe not today)
+    const keep = editingReservation?.roomId ?? formData.roomId;
+    if (keep) {
+      const currentRoom = rooms.find(r => r.id === keep);
       if (currentRoom && !base.some(r => r.id === currentRoom.id)) {
         return [...base, currentRoom];
       }
     }
     return base;
-  }, [rooms, editingReservation]);
+  }, [rooms, editingReservation, formData.roomId]);
+
+  const openBookingForRoom = (roomId: string, checkIn: string, checkOut: string) => {
+    setEditingReservation(null);
+    setFormData({ ...emptyFormData, roomId, checkIn, checkOut });
+    setShowAddModal(true);
+  };
+
+  // Real cancellation (reservations-service): the invoice is cancelled, the room freed and the client notified.
+  // Refused by the server when the invoice was already paid or the stay is over.
+  const handleCancel = async (reservation: ReservationDto) => {
+    const reason = window.prompt(`Motif de l'annulation de la réservation #${reservation.id} :`, '');
+    if (reason === null) return;
+    try {
+      await api.post(`/reservations/${reservation.id}/annulation`, { reason: reason.trim() || null });
+      showFlash('success', `Réservation #${reservation.id} annulée : facture annulée, chambre libérée, client prévenu.`);
+      await loadData();
+    } catch (error) {
+      showFlash('error', extractApiMessage(error, 'Impossible d\'annuler la réservation.'));
+    }
+  };
 
   const calculateTotalAmount = (roomId: string, checkIn: string, checkOut: string) => {
     const room = rooms.find(r => r.id === roomId);
@@ -303,6 +326,8 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
           {flash.text}
         </div>
       )}
+
+      <RoomAvailabilityPanel onBook={openBookingForRoom} />
 
       {/* Filtres */}
       <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
@@ -450,7 +475,7 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
                         )}
                         {reservation.status !== ReservationStatus.CANCELLED && (
                           <button
-                            onClick={() => handleStatusUpdate(reservation, ReservationStatus.CANCELLED)}
+                            onClick={() => handleCancel(reservation)}
                             className="text-red-400 hover:text-red-300 transition-colors"
                             title="Annuler"
                           >

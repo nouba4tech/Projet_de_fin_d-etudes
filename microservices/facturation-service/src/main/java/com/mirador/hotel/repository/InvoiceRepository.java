@@ -190,6 +190,13 @@ public class InvoiceRepository {
                 """, code, ARCHIVEE, user);
     }
 
+    public void setStatus(String code, String status) {
+        jdbcTemplate.update("""
+                INSERT INTO app_invoice_meta (code_facture, statut) VALUES (?, ?)
+                ON DUPLICATE KEY UPDATE statut = VALUES(statut)
+                """, code, status);
+    }
+
     public void addEvent(String code, String type, String detail) {
         jdbcTemplate.update("INSERT INTO app_invoice_event (code_facture, event_type, detail) VALUES (?, ?, ?)",
                 code, type, detail);

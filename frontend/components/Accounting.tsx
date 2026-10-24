@@ -2001,14 +2001,14 @@ const Accounting: React.FC = () => {
                 </tbody>
                 <tfoot className="bg-white/5 border-t border-gray-700/50">
                   <tr>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-white" colSpan="2">Totaux</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-white" colSpan={2}>Totaux</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-white">
                       {accounts.filter(a => a.type === 'Actif' || a.type === 'Charge').reduce((sum, a) => sum + a.balance, 0).toLocaleString('fr-FR')} {currencySymbol}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-white">
                       {accounts.filter(a => a.type === 'Passif' || a.type === 'Produit').reduce((sum, a) => sum + a.balance, 0).toLocaleString('fr-FR')} {currencySymbol}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-400" colSpan="2">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-400" colSpan={2}>
                       {accounts.filter(a => a.type === 'Actif' || a.type === 'Charge').reduce((sum, a) => sum + a.balance, 0) === 
                        accounts.filter(a => a.type === 'Passif' || a.type === 'Produit').reduce((sum, a) => sum + a.balance, 0) ? 
                        'Balance équilibrée ✓' : 'Balance déséquilibrée ✗'}

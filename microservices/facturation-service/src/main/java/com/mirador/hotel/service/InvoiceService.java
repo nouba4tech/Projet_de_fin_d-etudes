@@ -181,6 +181,25 @@ public class InvoiceService {
         return toInfo(require(code));
     }
 
+    /** Cancels an invoice that has not received any payment (idempotent). */
+    public RemoteApi.InvoiceInfo cancelInvoice(String code, String reason) {
+        InvoiceRow row = repository.findForUpdate(code)
+                .orElseThrow(() -> new ResourceNotFoundException("Facture introuvable : " + code));
+        if (InvoiceRepository.ANNULEE.equals(row.status())) {
+            return toInfo(row);
+        }
+        if (InvoiceRepository.ARCHIVEE.equals(row.status())) {
+            throw new ConflictException("La facture " + code + " est archivee : annulation impossible.");
+        }
+        if (row.totalPaid().signum() > 0) {
+            throw new ConflictException("La facture " + code + " a deja recu " + row.totalPaid().toPlainString()
+                    + " : un remboursement est necessaire avant toute annulation.");
+        }
+        repository.setStatus(code, InvoiceRepository.ANNULEE);
+        repository.addEvent(code, "CANCELLED", reason == null ? "" : reason);
+        return toInfo(repository.find(code).orElseThrow());
+    }
+
     /** Idempotent on {@code reference}: replaying the same payment does not count it twice. */
     public RemoteApi.InvoiceInfo registerPayment(String code, BigDecimal amount, String reference) {
         InvoiceRow row = repository.findForUpdate(code)

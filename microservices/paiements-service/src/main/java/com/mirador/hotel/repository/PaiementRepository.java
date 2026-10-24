@@ -1,5 +1,6 @@
 package com.mirador.hotel.repository;
 
+import java.util.Objects;
 import com.mirador.hotel.dto.PaymentDtos;
 import com.mirador.hotel.util.ValueUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -53,7 +54,7 @@ public class PaiementRepository {
             ps.setString(4, method);
             return ps;
         }, keys);
-        return keys.getKey().longValue();
+        return Objects.requireNonNull(keys.getKey(), "Identifiant non genere par la base").longValue();
     }
 
     public void finishPayment(long id, String status, String failureReason, Long clientId) {
@@ -91,7 +92,7 @@ public class PaiementRepository {
             ps.setString(2, type);
             return ps;
         }, keys);
-        return keys.getKey().longValue();
+        return Objects.requireNonNull(keys.getKey(), "Identifiant non genere par la base").longValue();
     }
 
     public void endSaga(long sagaId, String status) {

@@ -1,5 +1,6 @@
 package com.mirador.hotel.repository;
 
+import java.util.Objects;
 import com.mirador.hotel.dto.ParametresDtos;
 import com.mirador.hotel.util.ValueUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -375,7 +376,7 @@ public class SecurityRepository {
         sql.append("-- Genere le ").append(OffsetDateTime.now()).append("\n\n");
         sql.append("SET FOREIGN_KEY_CHECKS=0;\n\n");
 
-        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
+        try (Connection connection = Objects.requireNonNull(jdbcTemplate.getDataSource(), "Source de donnees absente").getConnection()) {
             String catalog = connection.getCatalog();
             List<String> tableNames = new java.util.ArrayList<>();
             try (ResultSet tablesRs = connection.getMetaData().getTables(catalog, null, "%", new String[]{"TABLE"})) {
