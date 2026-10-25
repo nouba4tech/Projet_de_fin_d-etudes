@@ -109,8 +109,8 @@ public class RemoteApi {
 
     // ------------------------------------------------------------------ reservations
     public List<ReservationInfo> arrivals(LocalDate date) {
-        return jdbcTemplate.query(RESERVATION_SELECT + " WHERE " + NOT_CANCELLED + " AND DATE(o.date_debut) = ? ORDER BY o.code",
-                RESERVATION_MAPPER, java.sql.Date.valueOf(date));
+        return jdbcTemplate.query(RESERVATION_SELECT + " WHERE " + NOT_CANCELLED + " AND o.date_debut >= ? AND o.date_debut < ? ORDER BY o.code",
+                RESERVATION_MAPPER, Timestamp.valueOf(date.atStartOfDay()), Timestamp.valueOf(date.plusDays(1).atStartOfDay()));
     }
 
     public Optional<ReservationInfo> reservation(long id) {

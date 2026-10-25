@@ -40,7 +40,7 @@ public class PromotionRepository {
     }
 
     public List<PromotionDtos.PromotionResponse> findAll(Boolean onlyCurrentlyValid) {
-        List<PromotionDtos.PromotionResponse> all = jdbcTemplate.query("SELECT * FROM promotion ORDER BY id DESC", MAPPER);
+        List<PromotionDtos.PromotionResponse> all = jdbcTemplate.query("SELECT * FROM promotion ORDER BY id DESC LIMIT 500", MAPPER);
         if (onlyCurrentlyValid == null) {
             return all;
         }

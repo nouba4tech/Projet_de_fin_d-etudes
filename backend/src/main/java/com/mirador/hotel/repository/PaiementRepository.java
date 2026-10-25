@@ -77,7 +77,7 @@ public class PaiementRepository {
             sql.append(" AND status = ?");
             args.add(status.trim().toUpperCase());
         }
-        sql.append(" ORDER BY id DESC");
+        sql.append(" ORDER BY id DESC LIMIT 500");
         return jdbcTemplate.query(sql.toString(), PAYMENT_MAPPER, args.toArray());
     }
 
