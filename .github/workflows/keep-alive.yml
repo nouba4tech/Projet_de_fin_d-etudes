@@ -1,0 +1,18 @@
+# Keeps the free Render backend awake: a free instance sleeps after 15 minutes without traffic and then takes
+# about 90 seconds to answer the next visitor. GitHub may delay scheduled runs by a few minutes, hence every 5 minutes.
+name: keep-alive
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping the backend
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 180 https://mirador-api-2gjt.onrender.com/api/chambres || true)
+          echo "backend answered HTTP $code"
