@@ -55,6 +55,21 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED, null);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiError> handleBadRequest(BadRequestException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, null);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiError> handleConflict(ConflictException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.CONFLICT, null);
+    }
+
+    @ExceptionHandler(RemoteServiceException.class)
+    public ResponseEntity<ApiError> handleRemoteService(RemoteServiceException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE, null);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGlobalException(Exception ex) {
         return buildErrorResponse("Une erreur inattendue est survenue : " + ex.getMessage(), 
