@@ -38,3 +38,30 @@ SET @ddl = IF(@index_exists = 0,
 PREPARE stmt FROM @ddl;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
+
+-- Reviews: the moderation list is ordered by (flagged, id) and filtered by status.
+SET @index_exists = (
+    SELECT COUNT(*) FROM information_schema.statistics
+    WHERE table_schema = 'mirador_avis'
+      AND table_name = 'avis'
+      AND index_name = 'idx_avis_flagged_id'
+);
+SET @ddl = IF(@index_exists = 0,
+    'CREATE INDEX idx_avis_flagged_id ON mirador_avis.avis (flagged, id)',
+    'SELECT 1');
+PREPARE stmt FROM @ddl;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SET @index_exists = (
+    SELECT COUNT(*) FROM information_schema.statistics
+    WHERE table_schema = 'mirador_avis'
+      AND table_name = 'avis'
+      AND index_name = 'idx_avis_status_flagged_id'
+);
+SET @ddl = IF(@index_exists = 0,
+    'CREATE INDEX idx_avis_status_flagged_id ON mirador_avis.avis (status, flagged, id)',
+    'SELECT 1');
+PREPARE stmt FROM @ddl;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;

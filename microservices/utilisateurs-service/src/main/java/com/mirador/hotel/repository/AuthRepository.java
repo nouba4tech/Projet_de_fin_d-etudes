@@ -26,6 +26,13 @@ public class AuthRepository {
     }
 
     public Optional<AuthUserRow> findByUsernameOrEmail(String identifier) {
+        // two lookups instead of "compte = ? OR p.email = ?": the OR across the join defeats both unique indexes
+        // and scans every user (seconds per login with a million accounts)
+        Optional<AuthUserRow> byAccount = findAuthUser("u.compte = ?", identifier.trim());
+        return byAccount.isPresent() ? byAccount : findAuthUser("p.email = ?", identifier.trim());
+    }
+
+    private Optional<AuthUserRow> findAuthUser(String condition, String value) {
         String sql = """
                 SELECT
                     u.code_user,
@@ -41,9 +48,10 @@ public class AuthRepository {
                 FROM utilisateur u
                 LEFT JOIN app_user_profile p ON p.code_user = u.code_user
                 LEFT JOIN groupe g ON g.code_groupe = u.code_groupe
-                WHERE u.compte = ? OR p.email = ?
+                WHERE %s
                 ORDER BY u.code_user
-                """;
+                LIMIT 1
+                """.formatted(condition);
 
         List<AuthUserRow> rows = jdbcTemplate.query(sql, (rs, rowNum) -> new AuthUserRow(
                 rs.getLong("code_user"),
@@ -56,8 +64,7 @@ public class AuthRepository {
                 rs.getInt("code_groupe"),
                 rs.getString("group_name"),
                 ValueUtils.coalesce(rs.getString("statut"), "Actif")),
-                identifier.trim(),
-                identifier.trim());
+                value);
 
         return rows.stream().findFirst();
     }

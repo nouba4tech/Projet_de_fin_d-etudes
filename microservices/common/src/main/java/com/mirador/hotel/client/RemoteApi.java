@@ -115,9 +115,13 @@ public class RemoteApi {
     }
 
     // ------------------------------------------------------------------ reservations-service
-    public Set<String> occupiedRoomsTodayOrDefault() {
+    /** Which of the given rooms are occupied today (ask only about the rooms being displayed). */
+    public Set<String> occupiedRoomsTodayOrDefault(Collection<String> roomCodes) {
+        if (roomCodes.isEmpty()) {
+            return Set.of();
+        }
         return orDefault("reservations-service",
-                () -> Set.copyOf(http.get(reservations, "/internal/reservations/occupied-rooms",
+                () -> Set.copyOf(http.post(reservations, "/internal/reservations/occupied-rooms", List.copyOf(roomCodes),
                         new ParameterizedTypeReference<List<String>>() { })),
                 Set.of());
     }

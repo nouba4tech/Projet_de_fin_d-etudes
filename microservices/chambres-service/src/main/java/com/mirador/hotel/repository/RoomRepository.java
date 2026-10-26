@@ -48,12 +48,14 @@ public class RoomRepository {
     }
 
     public List<HotelDtos.RoomResponse> findAll() {
-        Set<String> occupied = remoteApi.occupiedRoomsTodayOrDefault();
+        // occupancy is asked only for the page of rooms shown, never for the whole hotel
+        List<String> page = jdbcTemplate.queryForList("SELECT code_chambre FROM chambre ORDER BY code_chambre LIMIT 500", String.class);
+        Set<String> occupied = remoteApi.occupiedRoomsTodayOrDefault(page);
         return jdbcTemplate.query(ROOM_SELECT + " ORDER BY c.code_chambre LIMIT 500", (rs, rowNum) -> mapRoom(rs, occupied));
     }
 
     public Optional<HotelDtos.RoomResponse> findByCode(String codeChambre) {
-        Set<String> occupied = remoteApi.occupiedRoomsTodayOrDefault();
+        Set<String> occupied = remoteApi.occupiedRoomsTodayOrDefault(List.of(codeChambre.trim()));
         return jdbcTemplate.query(
                 ROOM_SELECT + " WHERE c.code_chambre = ?",
                 (rs, rowNum) -> mapRoom(rs, occupied),

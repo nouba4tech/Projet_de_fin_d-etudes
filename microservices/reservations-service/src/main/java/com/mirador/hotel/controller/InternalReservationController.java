@@ -30,9 +30,10 @@ public class InternalReservationController {
         this.repository = repository;
     }
 
-    @GetMapping("/occupied-rooms")
-    public List<String> occupiedRooms() {
-        return repository.occupiedRoomsOn(LocalDate.now());
+    /** Which of the given rooms are occupied today. */
+    @PostMapping("/occupied-rooms")
+    public List<String> occupiedRooms(@RequestBody List<String> roomCodes) {
+        return repository.occupiedRoomsOn(LocalDate.now(), roomCodes.stream().limit(500).toList());
     }
 
     @GetMapping("/count-by-room/{code}")
