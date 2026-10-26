@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test de charge 1 000 utilisateurs</title>
+<style>
+/* Une colonne de lecture (1000px max) : réponse à la demande, résultats chiffrés, graphiques légendés, analyse. */
+:root {
+  --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --ring: rgba(11,11,11,0.10);
+  --ok: #2a78d6; --sat: #eb6834; --good: #006300; --good-mark: #0ca30c; --critical: #d03b3b;
+  --tint: #eef4fc; --warn-tint: #fdf1ea;
+  --font: system-ui, -apple-system, "Segoe UI", sans-serif; --mono: ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
+    --ok: #3987e5; --sat: #d95926; --good: #0ca30c; --good-mark: #0ca30c; --critical: #e66767;
+    --tint: #16202c; --warn-tint: #2a1a12; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 15px/1.55 var(--font); padding: 32px max(16px, env(safe-area-inset-right, 0px)) 64px max(16px, env(safe-area-inset-left, 0px)); }
+main { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+h1 { font-size: clamp(26px, 4vw, 34px); line-height: 1.15; margin: 0; text-wrap: balance; }
+h2 { font-size: 21px; margin: 0; }
+h3 { font-size: 15.5px; margin: 0; }
+p { margin: 0; max-width: 70ch; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+header, section { display: flex; flex-direction: column; gap: 14px; }
+.lede { font-size: 17px; color: var(--ink-2); }
+.card { background: var(--surface); border: 1px solid var(--ring); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.alert { background: var(--warn-tint); border: 1px solid color-mix(in srgb, var(--sat) 35%, transparent); border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+.alert h3 { color: var(--sat); }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--ring); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tile .label { font-size: 12.5px; color: var(--ink-2); }
+.tile .value { font-size: 28px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.1; }
+.tile .sub { font-size: 12.5px; color: var(--muted); }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 99px; width: fit-content; }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill.ok { color: var(--good); background: color-mix(in srgb, var(--good-mark) 14%, transparent); }
+.pill.ko { color: var(--critical); background: color-mix(in srgb, var(--critical) 13%, transparent); }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--ink-2); padding: 8px 10px; border: 1px solid var(--grid); border-radius: 8px; width: fit-content; max-width: 100%; }
+.legend .t { font-weight: 600; color: var(--ink); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+.read { font-size: 14px; background: var(--tint); border-radius: 8px; padding: 10px 12px; }
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { fill: var(--muted); font: 12.5px var(--font); }
+.chart .lbl { fill: var(--ink-2); }
+.chart .val { fill: var(--ink); font-weight: 600; }
+.chart .axis-title { fill: var(--ink-2); font-weight: 600; }
+.tip { position: absolute; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--ring); box-shadow: 0 4px 16px rgba(0,0,0,.12); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; line-height: 1.45; white-space: nowrap; z-index: 5; }
+.bar:hover, .bar:focus { opacity: .8; outline: none; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--grid); }
+th { font-size: 12px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.bad { color: var(--critical); font-weight: 600; }
+td.goodv { color: var(--good); font-weight: 600; }
+ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+code, pre { font-family: var(--mono); font-size: 13px; }
+pre { margin: 0; background: var(--tint); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+.note { font-size: 13px; color: var(--ink-2); }
+@media (max-width: 760px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <span class="eyebrow">Hôtel Mirador · Apache JMeter 5.6.3 · 27 octobre 2026</span>
+    <h1>Test de charge : jusqu'à 1 000 utilisateurs simultanés</h1>
+    <p class="lede">Ce rapport mesure le comportement des 11 microservices de 10 à 1 000 utilisateurs simultanés, sur le portable de développement, avec 500 000 à 1 million de lignes dans chaque base. Au palier le plus élevé, les 1 000 utilisateurs arrivent en 10 secondes et sollicitent l'application pendant 60 secondes.</p>
+    <div class="card">
+      <h3>Scénario de chaque utilisateur virtuel</h3>
+      <p>Connexion une seule fois, puis en boucle : tableau de bord, chambres, clients, réservations, factures, paiements, promotions, validation d'un code promo, avis, notifications et personnel. Une pause de 0,3 à 1 seconde sépare deux écrans, comme une vraie personne qui lit.</p>
+    </div>
+  </header>
+
+  <section>
+    <h2>Le résultat en bref</h2>
+    <div class="tiles">
+      <div class="tile"><span class="label">Charge maximale sans aucune erreur</span><span class="value">100</span><span class="sub">utilisateurs, 22 ms en moyenne</span><span class="pill ok">Fluide</span></div>
+      <div class="tile"><span class="label">Requêtes en erreur à 500 utilisateurs</span><span class="value">37,5 %</span><span class="sub">2 129 requêtes envoyées</span><span class="pill ko">Saturé</span></div>
+      <div class="tile"><span class="label">Requêtes en erreur à 1 000 utilisateurs</span><span class="value">34,7 %</span><span class="sub">attente moyenne 18,4 s</span><span class="pill ko">Saturé</span></div>
+      <div class="tile"><span class="label">Connexions réussies à 1 000 utilisateurs</span><span class="value">1 000 / 1 000</span><span class="sub">0,2 s en moyenne</span><span class="pill ok">La connexion tient</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>De 10 à 1 000 utilisateurs</h2>
+    <div class="card">
+      <h3>Graphique 1 : part des requêtes en erreur</h3>
+      <div class="legend"><span class="t">Légende</span><span><i style="background:var(--ok)"></i>Système fluide</span><span><i style="background:var(--sat)"></i>Système saturé</span></div>
+      <div class="chart" id="c-err"></div>
+      <p class="read"><b>Comment lire :</b> jusqu'à 100 utilisateurs, aucune erreur (barres bleues à zéro). Dès 200 utilisateurs, une partie des requêtes échoue ; à 500 et 1 000, plus d'une requête sur trois.</p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Graphique 2 : requêtes réussies par seconde</h3>
+        <div class="legend"><span class="t">Légende</span><span><i style="background:var(--ok)"></i>Fluide</span><span><i style="background:var(--sat)"></i>Saturé</span></div>
+        <div class="chart" id="c-tp"></div>
+        <p class="read"><b>Comment lire :</b> le travail utile culmine à 137 requêtes réussies par seconde avec 100 utilisateurs. Au-delà, ajouter des utilisateurs <b>fait baisser</b> ce qui est réellement traité : la machine passe son temps à gérer l'attente.</p>
+      </div>
+      <div class="card">
+        <h3>Graphique 3 : temps de réponse moyen</h3>
+        <div class="legend"><span class="t">Légende</span><span><i style="background:var(--ok)"></i>Fluide</span><span><i style="background:var(--sat)"></i>Saturé</span></div>
+        <div class="chart" id="c-avg"></div>
+        <p class="read"><b>Comment lire :</b> en secondes. Jusqu'à 100 utilisateurs, la barre est invisible (0,02 s). À 1 000 utilisateurs, une requête attend en moyenne 18 secondes.</p>
+      </div>
+    </div>
+    <div class="card scroll">
+      <h3>Tableau détaillé</h3>
+      <table>
+        <thead><tr><th class="num">Utilisateurs</th><th class="num">Requêtes</th><th class="num">En erreur</th><th class="num">Temps moyen</th><th class="num">Temps médian</th><th class="num">95 % sous</th><th class="num">Réussies / seconde</th><th class="num">Connexions réussies</th></tr></thead>
+        <tbody id="t-levels"></tbody>
+      </table>
+      <p class="note">Mesures de 10 à 100 utilisateurs : 26 octobre (version optimisée). 200 et 300 : 26 octobre. 500 et 1 000 : 27 octobre. Même machine, mêmes données (0,5 à 1 million de lignes par base), même scénario.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ce qui tient et ce qui cède, à 1 000 utilisateurs</h2>
+    <div class="card">
+      <h3>Graphique 4 : requêtes réussies et en erreur par écran</h3>
+      <div class="legend"><span class="t">Légende</span><span><i style="background:var(--good-mark)"></i>Réussies</span><span><i style="background:var(--critical)"></i>En erreur</span></div>
+      <div class="chart" id="c-ep"></div>
+      <p class="read"><b>Comment lire :</b> la connexion et le tableau de bord réussissent à 100 %. Les écrans <b>Chambres, Clients et Réservations</b> concentrent les erreurs. Comme ils bloquent, les utilisateurs virtuels n'atteignent presque jamais les écrans suivants : les barres du bas sont très courtes.</p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Ce qui tient</h3>
+        <ul class="plain">
+          <li><b>La connexion</b> (1 000 sur 1 000, 0,2 s) : la recherche du compte utilise les index de la base.</li>
+          <li><b>Le tableau de bord</b> (100 %, moins d'une seconde) : ses chiffres sont calculés une fois par minute en arrière-plan.</li>
+          <li><b>Les 12 services</b> sont restés en marche du début à la fin, sans panne de mémoire.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Ce qui cède, et pourquoi</h3>
+        <ul class="plain">
+          <li>Pour s'afficher, <b>Chambres</b> demande au service Réservations quelles chambres sont occupées, <b>Clients</b> lui demande l'historique des séjours, et <b>Réservations</b> demande les noms aux services Clients et Chambres.</li>
+          <li>Sous la saturation, ces appels internes dépassent leurs délais : l'écran renvoie une erreur 500, ou l'attente dépasse 60 secondes.</li>
+          <li>Chaque requête bloquée occupe un fil d'exécution et une connexion à la base : la lenteur se propage d'un service à l'autre.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Pour tenir 1 000 utilisateurs sans erreur</h2>
+    <div class="card">
+      <p>À 100 utilisateurs, le système traite 137 requêtes par seconde, soit environ 1,4 requête par seconde et par utilisateur avec ce scénario. 1 000 utilisateurs produisent donc environ <b>1 370 requêtes par seconde</b>, soit <b>10 fois</b> la capacité mesurée sur ce portable. Les pistes, de la plus simple à la plus lourde :</p>
+      <ul class="plain">
+        <li><b>Un disjoncteur et des délais courts</b> sur les appels entre services (Resilience4j) : quand Réservations ralentit, Chambres et Clients s'affichent quand même, sans l'information qui manque, au lieu de renvoyer une erreur.</li>
+        <li><b>Un cache</b> pour les données lues très souvent par les autres services : occupation des chambres du jour, noms des clients.</li>
+        <li><b>Plusieurs exemplaires des services les plus sollicités</b> (Réservations, Chambres, Clients) derrière la passerelle.</li>
+        <li><b>Des machines séparées</b> : sur ce test, les 12 services, MySQL et JMeter se partagent le même processeur. Rien qu'en mettant la base et JMeter sur d'autres machines, la capacité augmenterait nettement.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Refaire ce test</h2>
+    <div class="card">
+      <p>Les microservices doivent tourner. Pour vérifier qu'ils sont tous démarrés (la commande doit afficher 12) :</p>
+      <pre>(8080..8091 | Where-Object { Get-NetTCPConnection -LocalPort $_ -State Listen -ErrorAction SilentlyContinue }).Count</pre>
+      <p>Puis lancer les paliers voulus :</p>
+      <pre>cd "C:\Users\NTS PRO SERVICES\Desktop\Mirador-hotel\microservices\performance"
+powershell -ExecutionPolicy Bypass -File .\run-performance.ps1 -Users 500,1000 -Duration 60</pre>
+      <p class="note">Les rapports détaillés de JMeter sont dans <code>resultats\2026-10-27_00-15\500-utilisateurs\index.html</code> et <code>…\1000-utilisateurs\index.html</code>.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+const L = [
+  {n:10, req:824, err:0, avg:21, med:19, p95:38, ok:14.0, login:"10 / 10"},
+  {n:50, req:4091, err:0, avg:17, med:15, p95:35, ok:68.7, login:"50 / 50"},
+  {n:100, req:8130, err:0, avg:22, med:18, p95:50, ok:136.9, login:"100 / 100"},
+  {n:200, req:1402, err:21.0, avg:9409, med:56, p95:30037, ok:11.6, login:"200 / 200"},
+  {n:300, req:3431, err:12.9, avg:5623, med:20, p95:30017, ok:30.0, login:"300 / 300"},
+  {n:500, req:2129, err:37.5, avg:15307, med:3516, p95:58868, ok:15.1, login:"500 / 500"},
+  {n:1000, req:3386, err:34.7, avg:18357, med:1040, p95:60013, ok:22.2, login:"1 000 / 1 000"}
+];
+const EP = [["Connexion",1000,0],["Tableau de bord",1002,0],["Chambres",1002,916],["Clients",263,210],["Réservations",64,48],["Factures",23,2],["Paiements",7,0],["Promotions",7,0],["Avis",7,0]];
+const NS = "http://www.w3.org/2000/svg";
+const nf = (v, d = 0) => v.toLocaleString("fr-FR", {maximumFractionDigits: d});
+const t = v => v >= 1000 ? nf(v / 1000, 1) + " s" : nf(v) + " ms";
+const colorOf = n => n <= 100 ? "var(--ok)" : "var(--sat)";
+function el(tag, a, p, txt) { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; if (p) p.appendChild(e); return e; }
+function tipFor(host) { const d = document.createElement("div"); d.className = "tip"; d.hidden = true; host.appendChild(d);
+  return { show(h, e) { d.innerHTML = h; d.hidden = false; const r = host.getBoundingClientRect(); let x = e.clientX - r.left + 12; d.style.left = "0px";
+      if (x + d.offsetWidth > r.width) x = Math.max(0, e.clientX - r.left - d.offsetWidth - 12); d.style.left = x + "px"; d.style.top = (e.clientY - r.top - 10) + "px"; },
+    hide() { d.hidden = true; } }; }
+function bind(node, tip, h) { node.setAttribute("tabindex", "0"); node.addEventListener("mousemove", e => tip.show(h, e)); node.addEventListener("mouseleave", () => tip.hide());
+  node.addEventListener("focus", () => { const b = node.getBoundingClientRect(); tip.show(h, {clientX: b.left + b.width / 2, clientY: b.top}); }); node.addEventListener("blur", () => tip.hide()); }
+function bar(p, x, y, w, h, c, horiz) { if (w <= 0 || h <= 0) return el("rect", {x, y, width: Math.max(w, 0), height: Math.max(h, 0), fill: c}, p);
+  const r = Math.min(4, horiz ? h / 2 : w / 2, horiz ? w : h);
+  const d = horiz ? `M${x},${y} H${x+w-r} Q${x+w},${y} ${x+w},${y+r} V${y+h-r} Q${x+w},${y+h} ${x+w-r},${y+h} H${x} Z`
+                  : `M${x},${y+h} V${y+r} Q${x},${y} ${x+r},${y} H${x+w-r} Q${x+w},${y} ${x+w},${y+r} V${y+h} Z`;
+  return el("path", {d, fill: c, class: "bar"}, p); }
+function columns(id, get, o) {
+  const host = document.getElementById(id), tip = tipFor(host);
+  const W = o.width || 640, H = 250, left = 50, right = 10, top = 24, bottom = 46, ph = H - top - bottom;
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": o.aria}, host);
+  const sy = v => top + ph - v / o.max * ph;
+  o.ticks.forEach(v => { el("line", {x1: left, x2: W - right, y1: sy(v), y2: sy(v), stroke: v ? "var(--grid)" : "var(--axis)"}, svg); el("text", {x: left - 8, y: sy(v) + 4, "text-anchor": "end"}, svg, o.tick(v)); });
+  const gw = (W - left - right) / L.length;
+  L.forEach((r, i) => { const v = get(r), bw = gw * 0.56, x = left + i * gw + (gw - bw) / 2, h = v / o.max * ph;
+    const b = bar(svg, x, sy(0) - h, bw, h, colorOf(r.n), false);
+    bind(b, tip, `<b>${nf(r.n)} utilisateurs</b><br>${nf(r.err, 1)} % en erreur<br>temps moyen : ${t(r.avg)}<br>${nf(r.ok, 1)} requêtes réussies / s`);
+    el("text", {x: x + bw / 2, y: sy(0) - h - 6, "text-anchor": "middle", class: "val"}, svg, o.label(v));
+    el("text", {x: x + bw / 2, y: H - bottom + 18, "text-anchor": "middle", class: "lbl"}, svg, nf(r.n)); });
+  el("text", {x: left + (W - left - right) / 2, y: H - 6, "text-anchor": "middle", class: "axis-title"}, svg, "Utilisateurs simultanés");
+}
+columns("c-err", r => r.err, {max: 40, ticks: [0, 10, 20, 30, 40], tick: v => v + " %", label: v => nf(v, 1) + " %", aria: "Part des requetes en erreur selon le nombre d'utilisateurs"});
+columns("c-tp", r => r.ok, {width: 420, max: 150, ticks: [0, 50, 100, 150], tick: v => String(v), label: v => nf(v), aria: "Requetes reussies par seconde selon le nombre d'utilisateurs"});
+columns("c-avg", r => r.avg / 1000, {width: 420, max: 20, ticks: [0, 5, 10, 15, 20], tick: v => v + " s", label: v => v < 1 ? "0,02" : nf(v, 1), aria: "Temps de reponse moyen en secondes selon le nombre d'utilisateurs"});
+
+(function () {
+  const host = document.getElementById("c-ep"), tip = tipFor(host);
+  const W = 720, rowH = 30, left = 130, right = 120, top = 6, H = top + EP.length * rowH + 40, max = 1100;
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Requetes reussies et en erreur par ecran a 1000 utilisateurs"}, host);
+  const sx = v => left + v / max * (W - left - right);
+  [0, 250, 500, 750, 1000].forEach(v => { el("line", {x1: sx(v), x2: sx(v), y1: top, y2: top + EP.length * rowH, stroke: v ? "var(--grid)" : "var(--axis)"}, svg); el("text", {x: sx(v), y: top + EP.length * rowH + 18, "text-anchor": "middle"}, svg, nf(v)); });
+  el("text", {x: left + (W - left - right) / 2, y: H - 4, "text-anchor": "middle", class: "axis-title"}, svg, "Nombre de requêtes");
+  EP.forEach(([name, n, err], i) => { const y = top + i * rowH + 6, ok = n - err;
+    el("text", {x: left - 12, y: y + 13, "text-anchor": "end", class: "lbl"}, svg, name);
+    const wOk = sx(ok) - sx(0), wErr = sx(n) - sx(ok);
+    if (ok > 0) bind(el("rect", {x: sx(0), y, width: Math.max(wOk - (err ? 1 : 0), 1), height: 18, fill: "var(--good-mark)", class: "bar"}, svg), tip, `<b>${name}</b><br>${nf(ok)} réussies sur ${nf(n)}`);
+    if (err > 0) bind(bar(svg, sx(ok) + (ok ? 1 : 0), y, Math.max(wErr - (ok ? 1 : 0), 1), 18, "var(--critical)", true), tip, `<b>${name}</b><br>${nf(err)} en erreur sur ${nf(n)}`);
+    el("text", {x: sx(n) + 8, y: y + 13, class: "val"}, svg, err ? `${nf(Math.round(100 * err / n))} % en erreur` : "100 % réussies"); });
+})();
+
+(function () {
+  const tb = document.getElementById("t-levels");
+  L.forEach(r => { const tr = document.createElement("tr");
+    tr.innerHTML = `<td class="num">${nf(r.n)}</td><td class="num">${nf(r.req)}</td><td class="num ${r.err ? "bad" : "goodv"}">${nf(r.err, 1)} %</td>
+      <td class="num">${t(r.avg)}</td><td class="num">${t(r.med)}</td><td class="num">${t(r.p95)}</td><td class="num">${nf(r.ok, 1)}</td><td class="num">${r.login}</td>`;
+    tb.appendChild(tr); });
+})();
+</script>
+</body>
+</html>

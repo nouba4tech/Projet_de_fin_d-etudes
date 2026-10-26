@@ -15,6 +15,9 @@ import java.util.Locale;
 @Repository
 public class DashboardRepository {
 
+    // the finance screen records income as "Entrée"; "Recette" is the older label
+    private static final String INCOME_TYPES = "('Recette', 'Entrée')";
+
     private final JdbcTemplate jdbcTemplate;
 
     public DashboardRepository(JdbcTemplate jdbcTemplate) {
@@ -58,12 +61,10 @@ public class DashboardRepository {
                 WHERE DATE(date_facture) = CURRENT_DATE()
                 """, BigDecimal.class);
 
-        BigDecimal financeRevenue = jdbcTemplate.queryForObject("""
-                SELECT COALESCE(SUM(amount_value), 0)
-                FROM app_finance_transaction
-                WHERE transaction_type = 'Recette'
-                  AND transaction_date = CURRENT_DATE()
-                """, BigDecimal.class);
+        BigDecimal financeRevenue = jdbcTemplate.queryForObject(
+                "SELECT COALESCE(SUM(amount_value), 0) FROM app_finance_transaction "
+                        + "WHERE transaction_type IN " + INCOME_TYPES + " AND transaction_date = CURRENT_DATE()",
+                BigDecimal.class);
 
         long safeTotalRooms = totalRooms == null ? 0L : totalRooms;
         long safeOccupiedRooms = occupiedRooms == null ? 0L : occupiedRooms;
@@ -101,7 +102,7 @@ public class DashboardRepository {
                     BigDecimal.class, iso);
 
             BigDecimal revFinance = jdbcTemplate.queryForObject(
-                    "SELECT COALESCE(SUM(amount_value), 0) FROM app_finance_transaction WHERE transaction_type = 'Recette' AND transaction_date = ?",
+                    "SELECT COALESCE(SUM(amount_value), 0) FROM app_finance_transaction WHERE transaction_type IN " + INCOME_TYPES + " AND transaction_date = ?",
                     BigDecimal.class, iso);
 
             BigDecimal totalRevenue = ValueUtils.bigDecimal(revFacture).add(ValueUtils.bigDecimal(revFinance));
