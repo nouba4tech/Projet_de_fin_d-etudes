@@ -49,7 +49,7 @@ public class RoomRepository {
 
     public List<HotelDtos.RoomResponse> findAll() {
         Set<String> occupied = remoteApi.occupiedRoomsTodayOrDefault();
-        return jdbcTemplate.query(ROOM_SELECT + " ORDER BY c.code_chambre", (rs, rowNum) -> mapRoom(rs, occupied));
+        return jdbcTemplate.query(ROOM_SELECT + " ORDER BY c.code_chambre LIMIT 500", (rs, rowNum) -> mapRoom(rs, occupied));
     }
 
     public Optional<HotelDtos.RoomResponse> findByCode(String codeChambre) {

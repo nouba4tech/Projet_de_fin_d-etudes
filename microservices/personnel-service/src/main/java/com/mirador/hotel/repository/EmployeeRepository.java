@@ -28,6 +28,7 @@ public class EmployeeRepository {
                        hire_date, salary_amount, status_label, role_name
                 FROM app_employee
                 ORDER BY id DESC
+                LIMIT 500
                 """, (rs, rowNum) -> new OperationsDtos.EmployeeResponse(
                 rs.getLong("id"),
                 rs.getString("first_name"),

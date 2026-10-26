@@ -49,7 +49,7 @@ public class ReservationRepository {
     }
 
     public List<HotelDtos.ReservationResponse> findAll() {
-        return enrich(jdbcTemplate.query(baseSelect() + " ORDER BY o.code DESC", (rs, rowNum) -> mapRaw(rs)));
+        return enrich(jdbcTemplate.query(baseSelect() + " ORDER BY o.code DESC LIMIT 500", (rs, rowNum) -> mapRaw(rs)));
     }
 
     public Optional<HotelDtos.ReservationResponse> findById(long reservationId) {
@@ -59,14 +59,14 @@ public class ReservationRepository {
 
     public List<HotelDtos.ReservationResponse> findByStatus(String status) {
         return enrich(jdbcTemplate.query(
-                baseSelect() + " WHERE COALESCE(ars.status_label, 'Confirmée') = ? ORDER BY o.code DESC",
+                baseSelect() + " WHERE COALESCE(ars.status_label, 'Confirmée') = ? ORDER BY o.code DESC LIMIT 500",
                 (rs, rowNum) -> mapRaw(rs),
                 status.trim()));
     }
 
     public List<HotelDtos.ReservationResponse> findByClient(long clientId) {
         return enrich(jdbcTemplate.query(
-                baseSelect() + " WHERE o.code_client = ? ORDER BY o.code DESC",
+                baseSelect() + " WHERE o.code_client = ? ORDER BY o.code DESC LIMIT 500",
                 (rs, rowNum) -> mapRaw(rs),
                 clientId));
     }
@@ -79,15 +79,15 @@ public class ReservationRepository {
                 WHERE o.code_chambre = ?
                   AND (? IS NULL OR o.code <> ?)
                   AND COALESCE(ars.status_label, 'Confirmée') NOT IN ('Annulée', 'Annulee', 'Cancelled')
-                  AND DATE(o.date_debut) < ?
-                  AND DATE(o.date_fin) > ?
+                  AND o.date_debut < ?
+                  AND o.date_fin >= ?
                 """,
                 Long.class,
                 roomId.trim(),
                 excludeReservationId,
                 excludeReservationId,
-                java.sql.Date.valueOf(checkOut),
-                java.sql.Date.valueOf(checkIn));
+                java.sql.Timestamp.valueOf(checkOut.atStartOfDay()),
+                java.sql.Timestamp.valueOf(checkIn.plusDays(1).atStartOfDay()));
 
         return total == null || total == 0;
     }

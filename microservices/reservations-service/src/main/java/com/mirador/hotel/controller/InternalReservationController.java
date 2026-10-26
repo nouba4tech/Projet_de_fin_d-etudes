@@ -50,6 +50,11 @@ public class InternalReservationController {
         return repository.clientStats();
     }
 
+    @GetMapping("/client-stats/by-ids")
+    public Map<String, RemoteApi.ClientStat> clientStatsByIds(@RequestParam List<Long> ids) {
+        return repository.clientStats(ids.stream().limit(500).toList());
+    }
+
     @GetMapping("/stats/today")
     public RemoteApi.ReservationStats statsToday() {
         return repository.statsToday();

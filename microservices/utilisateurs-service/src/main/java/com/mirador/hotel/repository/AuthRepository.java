@@ -180,6 +180,7 @@ public class AuthRepository {
                 LEFT JOIN app_user_profile p ON p.code_user = u.code_user
                 LEFT JOIN groupe g ON g.code_groupe = u.code_groupe
                 ORDER BY u.code_user DESC
+                LIMIT 500
                 """, (rs, rowNum) -> {
             String role = RoleAccess.resolveRole(rs.getInt("code_groupe"), rs.getString("group_name"), rs.getString("role_name"));
             return new AuthDtos.UserSummaryResponse(

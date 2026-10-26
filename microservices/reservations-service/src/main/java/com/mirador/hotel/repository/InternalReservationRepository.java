@@ -50,8 +50,9 @@ public class InternalReservationRepository {
         return jdbcTemplate.queryForList(
                 "SELECT DISTINCT o.code_chambre FROM occupation o "
                         + "LEFT JOIN app_reservation_state ars ON ars.occupation_code = o.code "
-                        + "WHERE " + NOT_CANCELLED + " AND DATE(o.date_debut) <= ? AND DATE(o.date_fin) > ?",
-                String.class, java.sql.Date.valueOf(day), java.sql.Date.valueOf(day));
+                        + "WHERE " + NOT_CANCELLED + " AND o.date_debut < ? AND o.date_fin >= ?",
+                String.class, java.sql.Timestamp.valueOf(day.plusDays(1).atStartOfDay()),
+                java.sql.Timestamp.valueOf(day.plusDays(1).atStartOfDay()));
     }
 
     public long countByRoom(String roomCode) {
@@ -74,15 +75,25 @@ public class InternalReservationRepository {
         return result;
     }
 
+    public Map<String, RemoteApi.ClientStat> clientStats(List<Long> clientIds) {
+        Map<String, RemoteApi.ClientStat> result = new LinkedHashMap<>();
+        if (clientIds.isEmpty()) return result;
+        String placeholders = String.join(",", java.util.Collections.nCopies(clientIds.size(), "?"));
+        jdbcTemplate.query("SELECT code_client, COUNT(*) AS total_stays, MAX(date_fin) AS last_stay FROM occupation WHERE code_client IN (" + placeholders + ") GROUP BY code_client",
+                rs -> result.put(String.valueOf(rs.getLong("code_client")), new RemoteApi.ClientStat(
+                        rs.getLong("total_stays"), DateTimeMapper.toLocalDate(rs.getDate("last_stay")))), clientIds.toArray());
+        return result;
+    }
+
     public RemoteApi.ReservationStats statsToday() {
         long occupied = occupiedRoomsOn(LocalDate.now()).size();
         Long pending = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM occupation o LEFT JOIN app_reservation_state ars ON ars.occupation_code = o.code "
-                        + "WHERE COALESCE(ars.status_label, 'Confirmée') = 'En attente' AND DATE(o.date_debut) >= CURRENT_DATE()",
+                        + "WHERE COALESCE(ars.status_label, 'Confirmée') = 'En attente' AND o.date_debut >= CURRENT_DATE()",
                 Long.class);
         Long active = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM occupation o LEFT JOIN app_reservation_state ars ON ars.occupation_code = o.code "
-                        + "WHERE " + NOT_CANCELLED + " AND DATE(o.date_fin) >= CURRENT_DATE()",
+                        + "WHERE " + NOT_CANCELLED + " AND o.date_fin >= CURRENT_DATE()",
                 Long.class);
         return new RemoteApi.ReservationStats(occupied, pending == null ? 0 : pending, active == null ? 0 : active);
     }
@@ -99,8 +110,9 @@ public class InternalReservationRepository {
         return jdbcTemplate.queryForList(
                 "SELECT DISTINCT o.code_chambre FROM occupation o "
                         + "LEFT JOIN app_reservation_state ars ON ars.occupation_code = o.code "
-                        + "WHERE " + NOT_CANCELLED + " AND DATE(o.date_debut) < ? AND DATE(o.date_fin) > ?",
-                String.class, java.sql.Date.valueOf(to), java.sql.Date.valueOf(from));
+                        + "WHERE " + NOT_CANCELLED + " AND o.date_debut < ? AND o.date_fin >= ?",
+                String.class, java.sql.Timestamp.valueOf(to.atStartOfDay()),
+                java.sql.Timestamp.valueOf(from.plusDays(1).atStartOfDay()));
     }
 
     public List<RemoteApi.ReservationInfo> byClient(long clientId) {
@@ -119,8 +131,9 @@ public class InternalReservationRepository {
     }
 
     public List<RemoteApi.ReservationInfo> arrivals(LocalDate day) {
-        return jdbcTemplate.query(INFO_SELECT + " WHERE " + NOT_CANCELLED + " AND DATE(o.date_debut) = ? ORDER BY o.code",
-                INFO_MAPPER, java.sql.Date.valueOf(day));
+        return jdbcTemplate.query(INFO_SELECT + " WHERE " + NOT_CANCELLED + " AND o.date_debut >= ? AND o.date_debut < ? ORDER BY o.code",
+                INFO_MAPPER, java.sql.Timestamp.valueOf(day.atStartOfDay()),
+                java.sql.Timestamp.valueOf(day.plusDays(1).atStartOfDay()));
     }
 
     public Optional<RemoteApi.ReservationInfo> findById(long id) {

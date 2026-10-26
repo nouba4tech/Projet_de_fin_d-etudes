@@ -73,7 +73,7 @@ public class ReviewRepository {
             sql.append(" WHERE status = ?");
             args.add(status.trim().toUpperCase());
         }
-        sql.append(" ORDER BY flagged DESC, id DESC");
+        sql.append(" ORDER BY flagged DESC, id DESC LIMIT 500");
         return jdbcTemplate.query(sql.toString(), MAPPER, args.toArray());
     }
 

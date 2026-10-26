@@ -32,15 +32,26 @@ public class ClientRepository {
     }
 
     public List<HotelDtos.ClientResponse> findAll() {
-        String sql = baseSelect() + " ORDER BY c.code_client DESC";
-        Map<Long, RemoteApi.ClientStat> stats = remoteApi.clientStatsOrDefault();
-        return jdbcTemplate.query(sql, (rs, rowNum) -> mapClient(rs, stats));
+        String sql = baseSelect() + " ORDER BY c.code_client DESC LIMIT 500";
+        List<HotelDtos.ClientResponse> clients = jdbcTemplate.query(sql, (rs, rowNum) -> mapClient(rs, Map.of()));
+        return withStats(clients);
     }
 
     public Optional<HotelDtos.ClientResponse> findById(long clientId) {
         String sql = baseSelect() + " WHERE c.code_client = ?";
-        Map<Long, RemoteApi.ClientStat> stats = remoteApi.clientStatsOrDefault();
-        return jdbcTemplate.query(sql, (rs, rowNum) -> mapClient(rs, stats), clientId).stream().findFirst();
+        List<HotelDtos.ClientResponse> clients = jdbcTemplate.query(sql, (rs, rowNum) -> mapClient(rs, Map.of()), clientId);
+        return withStats(clients).stream().findFirst();
+    }
+
+    private List<HotelDtos.ClientResponse> withStats(List<HotelDtos.ClientResponse> clients) {
+        Map<Long, RemoteApi.ClientStat> stats = remoteApi.clientStatsOrDefault(
+                clients.stream().map(HotelDtos.ClientResponse::id).toList());
+        return clients.stream().map(client -> {
+            RemoteApi.ClientStat stat = stats.getOrDefault(client.id(), new RemoteApi.ClientStat(0, null));
+            return new HotelDtos.ClientResponse(client.id(), client.firstName(), client.lastName(), client.fullName(),
+                    client.email(), client.phone(), client.idDocument(), client.address(), client.clientType(),
+                    client.companyName(), client.balance(), stat.totalStays(), stat.lastStay(), client.createdAt(), client.status());
+        }).toList();
     }
 
     public long create(HotelDtos.ClientRequest request) {

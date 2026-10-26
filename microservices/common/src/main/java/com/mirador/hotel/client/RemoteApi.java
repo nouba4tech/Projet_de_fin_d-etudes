@@ -142,6 +142,18 @@ public class RemoteApi {
         }, Map.of());
     }
 
+    public Map<Long, ClientStat> clientStatsOrDefault(Collection<Long> clientIds) {
+        if (clientIds.isEmpty()) return Map.of();
+        String ids = clientIds.stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(","));
+        return orDefault("reservations-service", () -> {
+            Map<String, ClientStat> raw = http.get(reservations, "/internal/reservations/client-stats/by-ids?ids=" + ids,
+                    new ParameterizedTypeReference<Map<String, ClientStat>>() { });
+            Map<Long, ClientStat> result = new HashMap<>();
+            raw.forEach((key, value) -> result.put(Long.valueOf(key), value));
+            return result;
+        }, Map.of());
+    }
+
     public ReservationStats reservationStatsOrDefault() {
         return orDefault("reservations-service",
                 () -> http.get(reservations, "/internal/reservations/stats/today", ReservationStats.class),
