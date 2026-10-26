@@ -27,7 +27,7 @@ public class ParametresRepository {
     public List<ParametresDtos.PersonnelResponse> findAllPersonnel(String status) {
         String sql = "SELECT id, first_name, last_name, email, phone, position_name, department_name, hire_date, salary_amount, status_label, role_name FROM app_employee";
         if (status != null) sql += " WHERE status_label = ?";
-        sql += " ORDER BY id DESC";
+        sql += " ORDER BY id DESC LIMIT 500";
 
         if (status != null) {
             return jdbcTemplate.query(sql, (rs, rowNum) -> mapPersonnel(rs), status);

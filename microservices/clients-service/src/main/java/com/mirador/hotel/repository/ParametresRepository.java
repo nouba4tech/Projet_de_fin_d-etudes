@@ -30,6 +30,7 @@ public class ParametresRepository {
                 FROM client c
                 LEFT JOIN app_client_profile p ON p.code_client = c.code_client
                 ORDER BY c.code_client DESC
+                LIMIT 500
                 """;
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             String displayName = ValueUtils.coalesce(rs.getString("nom_client"), "");

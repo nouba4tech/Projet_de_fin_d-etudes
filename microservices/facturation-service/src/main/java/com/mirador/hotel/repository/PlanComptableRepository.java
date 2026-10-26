@@ -1,6 +1,7 @@
 package com.mirador.hotel.repository;
 
 import com.mirador.hotel.model.PlanComptable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,14 +15,14 @@ public interface PlanComptableRepository extends JpaRepository<PlanComptable, Lo
 
     Optional<PlanComptable> findByCode(String code);
 
-    List<PlanComptable> findByType(String type);
+    List<PlanComptable> findByType(String type, Pageable page);
 
-    List<PlanComptable> findByClassName(String className);
+    List<PlanComptable> findByClassName(String className, Pageable page);
 
-    List<PlanComptable> findByStatus(String status);
+    List<PlanComptable> findByStatus(String status, Pageable page);
 
     @Query("SELECT a FROM PlanComptable a WHERE a.code LIKE %:search% OR a.name LIKE %:search%")
-    List<PlanComptable> findByCodeOrNameContaining(@Param("search") String search);
+    List<PlanComptable> findByCodeOrNameContaining(@Param("search") String search, Pageable page);
 
     @Query("SELECT a FROM PlanComptable a WHERE a.type = :type AND a.status = :status")
     List<PlanComptable> findByTypeAndStatus(@Param("type") String type, @Param("status") String status);

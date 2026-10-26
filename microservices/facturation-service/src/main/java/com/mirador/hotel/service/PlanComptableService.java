@@ -3,6 +3,9 @@ package com.mirador.hotel.service;
 import com.mirador.hotel.model.PlanComptable;
 import com.mirador.hotel.repository.PlanComptableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,11 +19,14 @@ import java.util.stream.Collectors;
 @Transactional
 public class PlanComptableService {
 
+    // account lists are bounded: the plan can hold up to millions of rows
+    private static final Pageable FIRST_PAGE = PageRequest.of(0, 500, Sort.by("code"));
+
     @Autowired
     private PlanComptableRepository planComptableRepository;
 
     public List<PlanComptable> getAllAccounts() {
-        return planComptableRepository.findAll();
+        return planComptableRepository.findAll(FIRST_PAGE).getContent();
     }
 
     public Optional<PlanComptable> getAccountById(@NonNull Long id) {
@@ -32,19 +38,19 @@ public class PlanComptableService {
     }
 
     public List<PlanComptable> getAccountsByType(String type) {
-        return planComptableRepository.findByType(type);
+        return planComptableRepository.findByType(type, FIRST_PAGE);
     }
 
     public List<PlanComptable> getAccountsByClass(String className) {
-        return planComptableRepository.findByClassName(className);
+        return planComptableRepository.findByClassName(className, FIRST_PAGE);
     }
 
     public List<PlanComptable> getAccountsByStatus(String status) {
-        return planComptableRepository.findByStatus(status);
+        return planComptableRepository.findByStatus(status, FIRST_PAGE);
     }
 
     public List<PlanComptable> searchAccounts(String search) {
-        return planComptableRepository.findByCodeOrNameContaining(search);
+        return planComptableRepository.findByCodeOrNameContaining(search, FIRST_PAGE);
     }
 
     public PlanComptable createAccount(PlanComptable account) {
@@ -127,7 +133,7 @@ public class PlanComptableService {
     }
 
     public List<PlanComptable> getActiveAccounts() {
-        return planComptableRepository.findByStatus("Actif");
+        return planComptableRepository.findByStatus("Actif", FIRST_PAGE);
     }
 
     public boolean accountExists(String code) {

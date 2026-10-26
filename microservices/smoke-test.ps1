@@ -260,7 +260,9 @@ $h = (Call GET "/api/clients/$clientId/historique" $null $T).Body
 Check 'historique : 2 reservations dont 1 annulee' ($h.reservations -eq 2 -and $h.cancelled -eq 1) "reservations=$($h.reservations) annulees=$($h.cancelled)"
 $f = (Call GET "/api/clients/$clientId/fidelite" $null $T).Body
 Check 'fidelite : nouveau client au niveau BRONZE' ($f.tier -eq 'BRONZE' -and $f.points -eq 0 -and $f.nextTier -eq 'ARGENT')
-$best = (Call GET '/api/clients' $null $T).Body | ForEach-Object { (Call GET "/api/clients/$($_.id)/fidelite" $null $T).Body } | Sort-Object points -Descending | Select-Object -First 1
+# the client list is capped (latest 500), so take clients with past stays straight from the reservations database
+$pastClients = Invoke-Db "select code_client from mirador_reservations.occupation where date_fin < current_date() group by code_client order by count(*) desc limit 5"
+$best = $pastClients | ForEach-Object { (Call GET "/api/clients/$_/fidelite" $null $T).Body } | Sort-Object points -Descending | Select-Object -First 1
 Check 'fidelite : un client avec des sejours passes a des points' ($best.points -gt 0) "max points=$($best.points) ($($best.clientName), $($best.tier))"
 Check 'client inconnu -> 404' ((Call GET '/api/clients/99999999/fidelite' $null $T).Status -eq 404)
 

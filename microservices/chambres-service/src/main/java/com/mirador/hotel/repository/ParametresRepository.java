@@ -113,7 +113,7 @@ public class ParametresRepository {
                 LEFT JOIN type_chambre t ON t.codetype = c.code_type
                 LEFT JOIN app_room_status arr ON arr.code_chambre = c.code_chambre
                 """ + (status != null ? " WHERE COALESCE(arr.status_label, 'Disponible') = ?" : "") +
-                " ORDER BY c.code_chambre";
+                " ORDER BY c.code_chambre LIMIT 500";
 
         if (status != null) {
             return jdbcTemplate.query(sql, (rs, rowNum) -> mapRoomResponse(rs), status);

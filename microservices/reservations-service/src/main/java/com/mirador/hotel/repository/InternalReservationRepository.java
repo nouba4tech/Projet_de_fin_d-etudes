@@ -4,6 +4,7 @@ import com.mirador.hotel.client.RemoteApi;
 import com.mirador.hotel.util.DateTimeMapper;
 import com.mirador.hotel.util.ValueUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -80,7 +81,7 @@ public class InternalReservationRepository {
         if (clientIds.isEmpty()) return result;
         String placeholders = String.join(",", java.util.Collections.nCopies(clientIds.size(), "?"));
         jdbcTemplate.query("SELECT code_client, COUNT(*) AS total_stays, MAX(date_fin) AS last_stay FROM occupation WHERE code_client IN (" + placeholders + ") GROUP BY code_client",
-                rs -> result.put(String.valueOf(rs.getLong("code_client")), new RemoteApi.ClientStat(
+                (RowCallbackHandler) rs -> result.put(String.valueOf(rs.getLong("code_client")), new RemoteApi.ClientStat(
                         rs.getLong("total_stays"), DateTimeMapper.toLocalDate(rs.getDate("last_stay")))), clientIds.toArray());
         return result;
     }
