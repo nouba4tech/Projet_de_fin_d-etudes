@@ -7,7 +7,7 @@
 - une facture par séjour commencé, et les recettes du restaurant, du bar et des services sur les 30 derniers jours ;
 - 4 chambres en nettoyage et 3 en maintenance.
 
-Toutes les dates sont relatives au jour du chargement. **Relancer le script le matin de la démo** remet le tableau de
+Toutes les dates sont relatives au jour du chargement. **Relancer le script le matin de la démo** remet le tableau
 de bord à jour : il supprime d'abord les données qu'il avait créées (marquées `DEMO-MIRADOR`, `DMO-…`, `DEMO-…`) puis
 les recrée autour de la nouvelle date. Les autres données ne sont pas touchées, sauf l'état de nettoyage et de
 maintenance des chambres, qui est réinitialisé.
