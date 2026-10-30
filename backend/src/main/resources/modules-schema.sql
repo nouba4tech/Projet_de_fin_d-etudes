@@ -1,4 +1,4 @@
--- Tables of the modules taken from the microservices (promotions, avis, notifications, facturation, paiements).
+-- Tables of the modules taken from the microservices (promotions, avis, notifications, facturation, paiements, planning).
 -- Copied from their schema.sql; run at startup by ModulesSchemaInitializer. Idempotent.
 
 CREATE TABLE IF NOT EXISTS promotion (
@@ -124,3 +124,15 @@ CREATE TABLE IF NOT EXISTS saga_step (
     INDEX idx_saga_step_exec (execution_id)
 );
 
+CREATE TABLE IF NOT EXISTS app_employee_planning (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    employee_id BIGINT NOT NULL,
+    shift_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    post_name VARCHAR(100) NOT NULL,
+    notes VARCHAR(255) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_planning_employee (employee_id),
+    INDEX idx_planning_date (shift_date)
+);

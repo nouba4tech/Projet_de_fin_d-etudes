@@ -38,6 +38,7 @@ public class SecurityConfig {
                     // modules taken from the microservices: same write rules as their SecurityConfig
                     writes(auth, new String[] {"/api/factures/**", "/api/paiements/**"}, ADMIN, COMPTABLE, RECEPTION);
                     writes(auth, new String[] {"/api/promotions/**", "/api/avis/**", "/api/notifications/**"}, ADMIN, RECEPTION);
+                    writes(auth, new String[] {"/api/planning/**"}, ADMIN);
                     auth.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

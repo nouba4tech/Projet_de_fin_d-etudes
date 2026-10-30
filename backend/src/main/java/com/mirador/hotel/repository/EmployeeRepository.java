@@ -116,6 +116,7 @@ public class EmployeeRepository {
     }
 
     public void delete(long employeeId) {
+        jdbcTemplate.update("DELETE FROM app_employee_planning WHERE employee_id = ?", employeeId);
         jdbcTemplate.update("DELETE FROM app_employee WHERE id = ?", employeeId);
     }
 }
