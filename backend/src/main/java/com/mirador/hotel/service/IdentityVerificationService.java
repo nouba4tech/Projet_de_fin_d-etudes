@@ -25,8 +25,8 @@ import java.util.regex.Pattern;
 /**
  * Identity check required before a booking: ID document front and back, plus a live selfie. The images are encrypted
  * before being stored, can only be read by Admin and Reception (each view is audited) and are erased once the
- * retention period is over. A check is "VERIFIEE" only when the faces match, the liveness test passed, the client
- * gave consent and the receptionist compared the photos; otherwise an administrator decides.
+ * retention period is over. The decision is automatic: "VERIFIEE" when the faces match and the liveness test passed
+ * (with the client's consent); otherwise an administrator decides.
  */
 @Service
 public class IdentityVerificationService {
@@ -57,9 +57,6 @@ public class IdentityVerificationService {
         if (!request.consent()) {
             throw new BadRequestException("Le consentement du client est obligatoire pour enregistrer ses documents.");
         }
-        if (!request.visualCheck()) {
-            throw new BadRequestException("Comparez vous-meme la photo de la piece et le selfie avant de continuer.");
-        }
         String documentType = request.documentType().trim().toUpperCase();
         if (!DOCUMENT_TYPES.contains(documentType)) {
             throw new BadRequestException("Type de piece inconnu : " + request.documentType());
@@ -82,7 +79,8 @@ public class IdentityVerificationService {
                 recto, verso, selfie, status, actor, LocalDate.now().plusDays(UNUSED_RETENTION_DAYS));
         audit.record(actor, "IDENTITE_VERIFICATION", "client:" + request.clientId(),
                 "verification #" + id + " " + status + ", distance=" + request.faceDistance()
-                        + ", vivacite=" + request.livenessPassed() + ", piece=" + documentType);
+                        + ", vivacite=" + request.livenessPassed() + ", piece=" + documentType
+                        + (request.visualCheck() ? ", controle visuel" : ""));
         return get(id);
     }
 

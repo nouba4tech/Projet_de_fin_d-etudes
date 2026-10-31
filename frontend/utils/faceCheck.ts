@@ -21,7 +21,6 @@ export const loadFaceApi = (): Promise<FaceApi> => {
       await faceapi.tf.ready();
       await Promise.all([
         faceapi.nets.ssdMobilenetv1.loadFromUri(MODELS_URL),
-        faceapi.nets.tinyFaceDetector.loadFromUri(MODELS_URL),
         faceapi.nets.faceLandmark68Net.loadFromUri(MODELS_URL),
         faceapi.nets.faceRecognitionNet.loadFromUri(MODELS_URL),
       ]);
@@ -41,14 +40,37 @@ const loadImage = (dataUrl: string) => new Promise<HTMLImageElement>((resolve, r
   image.src = dataUrl;
 });
 
+/**
+ * Copy of an image or video frame, brightened and with more contrast: faces lit from behind (window) or in a dim
+ * room are found far more often this way.
+ */
+const enhanced = (source: HTMLImageElement | HTMLVideoElement, brightness = 1.35, contrast = 1.15) => {
+  const width = source instanceof HTMLVideoElement ? source.videoWidth : source.naturalWidth;
+  const height = source instanceof HTMLVideoElement ? source.videoHeight : source.naturalHeight;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext('2d')!;
+  context.filter = `brightness(${brightness}) contrast(${contrast})`;
+  context.drawImage(source, 0, 0, width, height);
+  return canvas;
+};
+
+/** Largest face of an image: tried on the original, then on a brightened copy. */
+const detectFace = async (source: HTMLImageElement | HTMLVideoElement, withDescriptor: boolean) => {
+  const faceapi = await loadFaceApi();
+  const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.25 });
+  for (const input of [source, enhanced(source)]) {
+    const task = faceapi.detectSingleFace(input, options).withFaceLandmarks();
+    const result = withDescriptor ? await task.withFaceDescriptor() : await task;
+    if (result) return result;
+  }
+  return null;
+};
+
 /** Face descriptor of the largest face of an image, or null when no face is found. */
 export const describeFace = async (dataUrl: string): Promise<Float32Array | null> => {
-  const faceapi = await loadFaceApi();
-  const image = await loadImage(dataUrl);
-  const result = await faceapi
-    .detectSingleFace(image, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.3 }))
-    .withFaceLandmarks()
-    .withFaceDescriptor();
+  const result = await detectFace(await loadImage(dataUrl), true);
   return result ? result.descriptor : null;
 };
 
@@ -66,10 +88,8 @@ export const faceDistance = async (documentImage: string, selfieImage: string) =
  * null when no single face is visible.
  */
 export const headYaw = async (video: HTMLVideoElement): Promise<number | null> => {
-  const faceapi = await loadFaceApi();
-  const result = await faceapi
-    .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 }))
-    .withFaceLandmarks();
+  if (!video.videoWidth) return null;
+  const result = await detectFace(video, false);
   if (!result) return null;
   const points: Point[] = result.landmarks.positions;
   const leftCheek = points[0];

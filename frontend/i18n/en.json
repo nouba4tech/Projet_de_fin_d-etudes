@@ -1904,6 +1904,12 @@
 "Aucun client ne correspond à la recherche.": "No client matches the search.",
 "Choisissez la date de départ (après la date d'arrivée).": "Choose the departure date (after the arrival date).",
 "Recherche des chambres libres en cours…": "Searching free rooms…",
-"Choisissez un type de chambre.": "Choose a room type."
+"Choisissez un type de chambre.": "Choose a room type.",
+"Ouverture de la caméra…": "Opening the camera…",
+"Regardez la caméra.": "Look at the camera.",
+"Tournez légèrement la tête à gauche ou à droite…": "Turn your head slightly left or right…",
+"Visage non détecté : rapprochez-vous, face à la lumière (évitez une fenêtre derrière vous).": "Face not detected: come closer, facing the light (avoid a window behind you).",
+"Prendre la photo maintenant": "Take the photo now",
+"Selfie pris sans test de présence : un administrateur devra valider.": "Selfie taken without the liveness test: an administrator will have to validate."
 }
 }

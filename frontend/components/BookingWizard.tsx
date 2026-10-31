@@ -105,11 +105,13 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
   const [recto, setRecto] = useState<string | null>(null);
   const [verso, setVerso] = useState<string | null>(null);
   const [selfie, setSelfie] = useState<string | null>(null);
-  const [liveness, setLiveness] = useState<'idle' | 'loading' | 'center' | 'left' | 'right' | 'done' | 'failed'>('idle');
+  const [liveness, setLiveness] = useState<'idle' | 'loading' | 'center' | 'turn' | 'back' | 'done' | 'failed'>('idle');
+  /** false when the selfie was taken with the manual button, before the head-turn test was passed */
+  const [livenessPassed, setLivenessPassed] = useState(false);
+  const [manualCapture, setManualCapture] = useState(false);
   const [livenessHint, setLivenessHint] = useState('');
   const [comparison, setComparison] = useState<{ distance: number | null; note: string } | null>(null);
   const [consent, setConsent] = useState(false);
-  const [visualCheck, setVisualCheck] = useState(false);
   const [verification, setVerification] = useState<Verification | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -265,16 +267,21 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
     setComparison(null);
     setVerification(null);
     setLiveness('loading');
-    setLivenessHint('Chargement de la reconnaissance faciale…');
+    setLivenessPassed(false);
+    setManualCapture(false);
+    setLivenessHint('Ouverture de la caméra…');
     const run = ++livenessRun.current;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 640, height: 480 }, audio: false });
+      // the face models load while the camera opens
+      const models = loadFaceApi();
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
       }
-      await loadFaceApi();
+      setLivenessHint('Chargement de la reconnaissance faciale…');
+      await models;
     } catch (e) {
       stopCamera();
       setLiveness('failed');
@@ -284,46 +291,44 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
         : 'Reconnaissance faciale indisponible (connexion ?). Réessayez.');
       return;
     }
-    // challenge: face the camera, turn the head to one side, then to the other, then face the camera again
-    const steps: Array<{ phase: 'center' | 'left' | 'right'; hint: string; ok: (yaw: number) => boolean }> = [
-      { phase: 'center', hint: 'Regardez la caméra, visage bien éclairé.', ok: yaw => Math.abs(yaw) < 0.08 },
-      { phase: 'left', hint: 'Tournez lentement la tête d’un côté…', ok: yaw => Math.abs(yaw) > 0.16 },
-      { phase: 'right', hint: 'Tournez maintenant la tête de l’autre côté…', ok: () => false },
-      { phase: 'center', hint: 'Revenez face à la caméra.', ok: yaw => Math.abs(yaw) < 0.08 },
-    ];
-    let index = 0;
-    let firstSide = 0;
-    const deadline = Date.now() + 45000;
-    while (run === livenessRun.current && index < steps.length) {
-      if (Date.now() > deadline) {
-        stopCamera();
-        setLiveness('failed');
-        setLivenessHint('');
-        setError('Test de présence non réussi à temps. Recommencez.');
-        return;
-      }
-      const current = steps[index];
-      setLiveness(current.phase);
-      setLivenessHint(current.hint);
+    // short challenge: a face in front of the camera, one head turn (either side), back to the camera: about 3 s
+    const hints = {
+      center: 'Regardez la caméra.',
+      turn: 'Tournez légèrement la tête à gauche ou à droite…',
+      back: 'Revenez face à la caméra.',
+    } as const;
+    let phase: 'center' | 'turn' | 'back' = 'center';
+    const started = Date.now();
+    while (run === livenessRun.current) {
+      if (Date.now() - started > 6000) setManualCapture(true);
       const yaw = videoRef.current ? await headYaw(videoRef.current).catch(() => null) : null;
+      if (run !== livenessRun.current) return;
       if (yaw === null) {
-        setLivenessHint('Aucun visage détecté : placez-vous face à la caméra.');
-      } else if (index === 1 && current.ok(yaw)) {
-        firstSide = Math.sign(yaw);
-        index += 1;
-      } else if (index === 2 && Math.sign(yaw) === -firstSide && Math.abs(yaw) > 0.16) {
-        index += 1;
-      } else if (index !== 1 && index !== 2 && current.ok(yaw)) {
-        index += 1;
+        setLiveness(phase);
+        setLivenessHint('Visage non détecté : rapprochez-vous, face à la lumière (évitez une fenêtre derrière vous).');
+      } else {
+        if (phase === 'center' && Math.abs(yaw) < 0.15) phase = 'turn';
+        else if (phase === 'turn' && Math.abs(yaw) > 0.09) phase = 'back';
+        else if (phase === 'back' && Math.abs(yaw) < 0.08) break;
+        setLiveness(phase);
+        setLivenessHint(hints[phase]);
       }
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise(resolve => setTimeout(resolve, 60));
     }
     if (run !== livenessRun.current || !videoRef.current) return;
+    await takeSelfie(true);
+  };
+
+  /** passed: the head-turn test succeeded; otherwise an administrator will have to validate the identity */
+  const takeSelfie = async (passed: boolean) => {
+    if (!videoRef.current || !videoRef.current.videoWidth) return;
     const frame = captureFrame(videoRef.current);
     stopCamera();
+    setManualCapture(false);
     setSelfie(await compressImage(frame, 960, 0.88));
+    setLivenessPassed(passed);
     setLiveness('done');
-    setLivenessHint('Présence vérifiée, selfie pris.');
+    setLivenessHint(passed ? 'Présence vérifiée, selfie pris.' : 'Selfie pris sans test de présence : un administrateur devra valider.');
   };
 
   useEffect(() => {
@@ -349,13 +354,12 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
     if (!documentNumber.trim()) return setError('Saisissez le numéro de la pièce.');
     if (!recto || !verso) return setError('Ajoutez le recto et le verso de la pièce.');
     if (!selfie || liveness !== 'done') return setError('Faites le test de présence pour prendre le selfie.');
-    if (!visualCheck) return setError('Comparez vous-même la photo de la pièce avec le selfie.');
     if (!consent) return setError('Le consentement du client est obligatoire.');
     setBusy(true);
     try {
       const response = await api.post<Verification>('/identity-verifications', {
         clientId: client.id, documentType, documentNumber: documentNumber.trim(), recto, verso, selfie,
-        faceDistance: comparison?.distance ?? null, livenessPassed: true, consent, visualCheck,
+        faceDistance: comparison?.distance ?? null, livenessPassed, consent, visualCheck: false,
       });
       setVerification(response.data);
     } catch (e) {
@@ -364,6 +368,17 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
       setBusy(false);
     }
   };
+
+  // automatic check: sent as soon as the documents, the selfie, the face comparison and the consent are there
+  useEffect(() => {
+    if (step !== 2 || busy || verification || error) return;
+    if (!consent || documentNumber.trim().length < 5 || !recto || !verso || !selfie || liveness !== 'done') return;
+    if (!comparison || comparison.note === 'Comparaison des visages…') return;
+    // waits for the end of typing of the document number
+    const timer = window.setTimeout(() => void submitIdentity(), 1500);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, consent, documentNumber, recto, verso, selfie, liveness, comparison, verification]);
 
   const decide = async (decision: 'VERIFIEE' | 'REJETEE') => {
     if (!verification) return;
@@ -676,11 +691,17 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
                     <span className="absolute inset-0 flex items-center justify-center text-xs text-gray-400 px-3 text-center">La caméra s'ouvre au lancement du test</span>
                   )}
                 </div>
-                <button type="button" onClick={() => void startLiveness()} disabled={busy || ['loading', 'center', 'left', 'right'].includes(liveness)}
+                <button type="button" onClick={() => void startLiveness()} disabled={busy || ['loading', 'center', 'turn', 'back'].includes(liveness)}
                   className="mt-2 w-full bg-white/10 hover:bg-white/20 disabled:opacity-50 text-white px-3 py-2 rounded-lg text-sm">
                   {liveness === 'done' ? 'Reprendre le selfie' : 'Lancer le test de présence'}
                 </button>
-                {livenessHint && <p className="mt-1 text-xs text-sky-300">{livenessHint}</p>}
+                {manualCapture && ['center', 'turn', 'back'].includes(liveness) && (
+                  <button type="button" onClick={() => void takeSelfie(false)}
+                    className="mt-2 w-full bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg text-sm">
+                    Prendre la photo maintenant
+                  </button>
+                )}
+                {livenessHint && <p className="mt-1 text-sm text-sky-300">{livenessHint}</p>}
               </div>
             </div>
 
@@ -694,10 +715,6 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
 
             <div className="space-y-2 text-sm">
               <label className="flex items-start gap-2 text-gray-300">
-                <input type="checkbox" className="mt-1" checked={visualCheck} onChange={e => setVisualCheck(e.target.checked)} />
-                J'ai comparé moi-même la photo de la pièce avec le visage du client.
-              </label>
-              <label className="flex items-start gap-2 text-gray-300">
                 <input type="checkbox" className="mt-1" checked={consent} onChange={e => setConsent(e.target.checked)} />
                 Le client a été informé et accepte : ses documents servent uniquement à vérifier son identité pour cette réservation,
                 sont conservés chiffrés et supprimés 30 jours après la fin du séjour.
@@ -710,7 +727,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
                 {verification.status === 'VERIFIEE' && `Identité vérifiée (vérification n°${verification.id}).`}
                 {verification.status === 'REJETEE' && 'Identité rejetée : la réservation est impossible.'}
                 {verification.status !== 'VERIFIEE' && (
-                  <button type="button" onClick={() => { setVerification(null); setSelfie(null); setLiveness('idle'); setLivenessHint(''); setComparison(null); }}
+                  <button type="button" onClick={() => { setVerification(null); setSelfie(null); setLiveness('idle'); setLivenessPassed(false); setLivenessHint(''); setComparison(null); }}
                     className="block mt-2 underline text-xs">Refaire la vérification</button>
                 )}
                 {verification.status === 'A_REVOIR' && (
