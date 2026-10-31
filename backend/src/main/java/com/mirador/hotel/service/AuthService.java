@@ -20,10 +20,12 @@ public class AuthService {
 
     private final AuthRepository authRepository;
     private final JwtUtils jwtUtils;
+    private final LoginAttemptGuard loginAttemptGuard;
 
-    public AuthService(AuthRepository authRepository, JwtUtils jwtUtils) {
+    public AuthService(AuthRepository authRepository, JwtUtils jwtUtils, LoginAttemptGuard loginAttemptGuard) {
         this.authRepository = authRepository;
         this.jwtUtils = jwtUtils;
+        this.loginAttemptGuard = loginAttemptGuard;
     }
 
     public AuthDtos.AuthResponse register(AuthDtos.RegisterRequest request) {
@@ -60,11 +62,19 @@ public class AuthService {
 
     @Transactional(readOnly = false)
     public AuthDtos.AuthResponse login(AuthDtos.LoginRequest request) {
+        loginAttemptGuard.checkNotLocked(request.username());
         AuthRepository.AuthUserRow user = authRepository.findByUsernameOrEmail(request.username())
-                .orElseThrow(() -> new InvalidCredentialsException("Identifiants invalides."));
-
-        if (!PasswordUtils.matches(request.password(), user.passwordHash())) {
+                .filter(found -> PasswordUtils.matches(request.password(), found.passwordHash()))
+                .orElse(null);
+        if (user == null) {
+            loginAttemptGuard.recordFailure(request.username());
             throw new InvalidCredentialsException("Identifiants invalides.");
+        }
+        loginAttemptGuard.recordSuccess(request.username());
+
+        // accounts created before BCrypt: replace their MD5 hash now that the password is known
+        if (PasswordUtils.needsUpgrade(user.passwordHash())) {
+            authRepository.updatePassword(user.id(), request.password());
         }
 
         if (!isActive(user.status())) {
