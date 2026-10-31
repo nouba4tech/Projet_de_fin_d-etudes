@@ -87,6 +87,7 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
   const [reservations, setReservations] = useState<ReservationDto[]>([]);
   const [clients, setClients] = useState<ClientDto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [clientsState, setClientsState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [submitting, setSubmitting] = useState(false);
   const [flash, setFlash] = useState<FlashState>(null);
 
@@ -104,20 +105,34 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
     setFlash({ tone, text });
   };
 
-  const loadData = async () => {
+  // Clients and reservations load separately: the reservation list is heavy on a slow connection, and the
+  // client dropdown of the form must not wait for it.
+  const loadClients = async () => {
+    setClientsState('loading');
+    try {
+      const response = await api.get<ClientDto[]>('/clients');
+      setClients(Array.isArray(response.data) ? response.data : []);
+      setClientsState('ready');
+    } catch (error) {
+      setClientsState('error');
+      showFlash('error', extractApiMessage(error, 'Impossible de charger les clients.'));
+    }
+  };
+
+  const loadReservations = async () => {
     setLoading(true);
     try {
-      const [clientsResponse, reservationsResponse] = await Promise.all([
-        api.get<ClientDto[]>('/clients'),
-        api.get<ReservationDto[]>('/reservations')
-      ]);
-      setClients(Array.isArray(clientsResponse.data) ? clientsResponse.data : []);
-      setReservations(Array.isArray(reservationsResponse.data) ? reservationsResponse.data : []);
+      const response = await api.get<ReservationDto[]>('/reservations');
+      setReservations(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       showFlash('error', extractApiMessage(error, 'Impossible de charger les réservations.'));
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadData = async () => {
+    await Promise.all([loadClients(), loadReservations()]);
   };
 
   useEffect(() => {
@@ -182,7 +197,7 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
     try {
       await api.post(`/reservations/${reservation.id}/annulation`, { reason: reason.trim() || null });
       showFlash('success', `Réservation #${reservation.id} annulée : facture annulée, chambre libérée, client prévenu.`);
-      await loadData();
+      await loadReservations();
     } catch (error) {
       showFlash('error', extractApiMessage(error, 'Impossible d\'annuler la réservation.'));
     }
@@ -241,7 +256,7 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
       setShowAddModal(false);
       setEditingReservation(null);
       setFormData(emptyFormData);
-      await loadData();
+      await loadReservations();
     } catch (error) {
       showFlash('error', extractApiMessage(error, 'Erreur lors de l\'enregistrement de la réservation.'));
     } finally {
@@ -289,7 +304,7 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
       }
 
       showFlash('success', 'Statut de la réservation mis à jour.');
-      await loadData();
+      await loadReservations();
     } catch (error) {
       showFlash('error', extractApiMessage(error, 'Erreur lors de la mise à jour du statut.'));
     }
@@ -512,7 +527,9 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
                     onChange={(e) => handleClientChange(e.target.value)}
                     className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">Sélectionner un client</option>
+                    <option value="">
+                      {clientsState === 'loading' ? 'Chargement des clients...' : clientsState === 'error' ? 'Clients indisponibles' : 'Sélectionner un client'}
+                    </option>
                     {clientsSorted.map(client => (
                       <option key={client.id} value={String(client.id)} className="bg-[#050714]">
                         {client.clientType === 'Personne morale'
