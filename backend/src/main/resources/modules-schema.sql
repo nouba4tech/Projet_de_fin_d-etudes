@@ -136,3 +136,39 @@ CREATE TABLE IF NOT EXISTS app_employee_planning (
     INDEX idx_planning_employee (employee_id),
     INDEX idx_planning_date (shift_date)
 );
+
+-- Identity check required before a booking: ID document (front/back) and live selfie, stored encrypted (AES-GCM)
+-- by DocumentCipher, never served from a public URL, and erased after purge_after.
+CREATE TABLE IF NOT EXISTS app_identity_verification (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    client_id BIGINT NOT NULL,
+    document_type VARCHAR(30) NOT NULL,
+    document_number VARCHAR(60) NOT NULL,
+    recto_enc MEDIUMBLOB NULL,
+    verso_enc MEDIUMBLOB NULL,
+    selfie_enc MEDIUMBLOB NULL,
+    face_distance DECIMAL(6,4) NULL,
+    liveness_passed TINYINT(1) NOT NULL DEFAULT 0,
+    status VARCHAR(20) NOT NULL,
+    consent_at DATETIME NOT NULL,
+    checked_by VARCHAR(120) NOT NULL,
+    decided_by VARCHAR(120) NULL,
+    decided_at DATETIME NULL,
+    reservation_id BIGINT NULL,
+    purge_after DATE NOT NULL,
+    purged_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_identity_client (client_id),
+    INDEX idx_identity_purge (purge_after)
+);
+
+-- Sensitive operations: identity checks, document views, decisions, purges, booking attempts.
+CREATE TABLE IF NOT EXISTS app_security_audit (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    actor VARCHAR(120) NOT NULL,
+    action VARCHAR(60) NOT NULL,
+    target VARCHAR(120) NULL,
+    details VARCHAR(500) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_audit_created (created_at)
+);

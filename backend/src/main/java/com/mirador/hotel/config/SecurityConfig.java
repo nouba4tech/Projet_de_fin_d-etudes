@@ -39,6 +39,10 @@ public class SecurityConfig {
                     writes(auth, new String[] {"/api/factures/**", "/api/paiements/**"}, ADMIN, COMPTABLE, RECEPTION);
                     writes(auth, new String[] {"/api/promotions/**", "/api/avis/**", "/api/notifications/**"}, ADMIN, RECEPTION);
                     writes(auth, new String[] {"/api/planning/**"}, ADMIN);
+                    // identity documents: never public, reads included; decisions and audit trail for Admin only
+                    auth.requestMatchers(HttpMethod.POST, "/api/identity-verifications/*/decision").hasAuthority(ADMIN);
+                    auth.requestMatchers("/api/identity-verifications/audit").hasAuthority(ADMIN);
+                    auth.requestMatchers("/api/identity-verifications/**").hasAnyAuthority(ADMIN, RECEPTION);
                     auth.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

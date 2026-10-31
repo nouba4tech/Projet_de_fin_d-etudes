@@ -8,6 +8,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 public final class HotelDtos {
 
@@ -115,7 +116,13 @@ public final class HotelDtos {
 
             String occupantAddress,
 
-            String observation) {
+            String observation,
+
+            /** Identity check (IdentityVerificationService) required to create a booking; ignored on update. */
+            Long identityVerificationId,
+
+            /** Extra services (autre_service) added to the booking invoice. */
+            List<Long> serviceIds) {
     }
 
     public record ReservationResponse(
@@ -134,7 +141,8 @@ public final class HotelDtos {
             String occupantIdDocument,
             String occupantPhone,
             String roomType,
-            String clientName) {
+            String clientName,
+            String invoiceCode) {
     }
 
     public record AvailabilityResponse(

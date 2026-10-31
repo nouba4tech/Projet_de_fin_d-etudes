@@ -3,6 +3,7 @@ import api from '../services/api';
 import { ReservationStatus, Room, RoomStatus } from '../types';
 import { normalizeRole, readCurrentUser } from '../utils/accessControl';
 import RoomAvailabilityPanel from './RoomAvailabilityPanel';
+import BookingWizard from './BookingWizard';
 
 interface BookingsProps {
   rooms?: Room[];
@@ -92,6 +93,8 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
   const [flash, setFlash] = useState<FlashState>(null);
 
   const [showAddModal, setShowAddModal] = useState(false);
+  // new bookings: 4-step wizard with the identity check; the modal below only edits
+  const [showWizard, setShowWizard] = useState(false);
   const [editingReservation, setEditingReservation] = useState<ReservationDto | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('Tous');
@@ -183,11 +186,9 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
     return base;
   }, [rooms, editingReservation, formData.roomId]);
 
-  const openBookingForRoom = (roomId: string, checkIn: string, checkOut: string) => {
-    setEditingReservation(null);
-    setFormData({ ...emptyFormData, roomId, checkIn, checkOut });
+  const openBookingForRoom = (_roomId: string, _checkIn: string, _checkOut: string) => {
     setFlash(null);
-    setShowAddModal(true);
+    setShowWizard(true);
   };
 
   // Real cancellation (reservations-service): the invoice is cancelled, the room freed and the client notified.
@@ -322,7 +323,7 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
         </div>
 
         <button
-          onClick={() => { setFlash(null); setShowAddModal(true); }}
+          onClick={() => { setFlash(null); setShowWizard(true); }}
           className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -512,6 +513,15 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
       </div>
 
       {/* Modal d'ajout/modification */}
+      {showWizard && (
+        <BookingWizard
+          clients={clients}
+          onClose={() => setShowWizard(false)}
+          onCreated={() => { showFlash('success', 'Réservation créée avec succès.'); void loadReservations(); }}
+          onClientCreated={client => setClients(prev => [...prev, client as ClientDto])}
+        />
+      )}
+
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-[#050714] border border-white/10 rounded-2xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">

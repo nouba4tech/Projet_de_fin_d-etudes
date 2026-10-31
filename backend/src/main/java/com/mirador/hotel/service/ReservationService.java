@@ -1,6 +1,7 @@
 package com.mirador.hotel.service;
 
 import com.mirador.hotel.dto.HotelDtos;
+import com.mirador.hotel.exception.ConflictException;
 import com.mirador.hotel.exception.ResourceNotFoundException;
 import com.mirador.hotel.repository.ReservationRepository;
 import org.springframework.stereotype.Service;
@@ -14,9 +15,12 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final IdentityVerificationService identityVerificationService;
 
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              IdentityVerificationService identityVerificationService) {
         this.reservationRepository = reservationRepository;
+        this.identityVerificationService = identityVerificationService;
     }
 
     @Transactional(readOnly = true)
@@ -49,14 +53,18 @@ public class ReservationService {
                 reservationRepository.isRoomAvailable(roomId, checkIn, checkOut, excludeId));
     }
 
+    /** A booking needs a verified identity check of the client (ID document + live selfie), used only once. */
     public HotelDtos.ReservationResponse createReservation(HotelDtos.ReservationRequest request) {
         validateDates(request.checkIn(), request.checkOut());
+        identityVerificationService.requireUsable(request.identityVerificationId(), request.clientId());
 
         if (!reservationRepository.isRoomAvailable(request.roomId(), request.checkIn(), request.checkOut(), null)) {
-            throw new IllegalStateException("La chambre " + request.roomId() + " n'est pas disponible sur cette periode.");
+            throw new ConflictException("La chambre " + request.roomId() + " n'est pas disponible sur cette periode.");
         }
 
         long reservationId = reservationRepository.create(request);
+        identityVerificationService.attachToReservation(
+                request.identityVerificationId(), request.clientId(), reservationId, request.checkOut());
         return getReservation(reservationId);
     }
 
@@ -65,7 +73,7 @@ public class ReservationService {
         validateDates(request.checkIn(), request.checkOut());
 
         if (!reservationRepository.isRoomAvailable(request.roomId(), request.checkIn(), request.checkOut(), reservationId)) {
-            throw new IllegalStateException("La chambre " + request.roomId() + " n'est pas disponible sur cette periode.");
+            throw new ConflictException("La chambre " + request.roomId() + " n'est pas disponible sur cette periode.");
         }
 
         reservationRepository.update(reservationId, request);

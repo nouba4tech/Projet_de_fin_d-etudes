@@ -99,9 +99,21 @@ public class ReservationRepository {
                 request.checkIn(),
                 request.checkOut(),
                 request.totalAmount());
+        List<ExtraService> services = findServices(request.serviceIds());
+        for (ExtraService service : services) {
+            totalAmount = totalAmount.add(service.price());
+        }
 
         String invoiceCode = generateInvoiceCode();
         insertInvoice(invoiceCode, request.clientId(), totalAmount);
+        for (ExtraService service : services) {
+            jdbcTemplate.update("""
+                    INSERT INTO detail_facture (code_facture, service, reference, pu, libelle, qte, total, date_detail)
+                    VALUES (?, 'SERVICE', ?, ?, ?, 1, ?, ?)
+                    """,
+                    invoiceCode, service.id(), service.price(), service.label(), service.price(),
+                    Timestamp.valueOf(LocalDateTime.now()));
+        }
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -162,6 +174,8 @@ public class ReservationRepository {
             invoiceCode = generateInvoiceCode();
             insertInvoice(invoiceCode, request.clientId(), totalAmount);
         } else {
+            // the extra services chosen at booking time stay on the invoice and in the booking amount
+            totalAmount = totalAmount.add(servicesTotal(invoiceCode));
             updateInvoice(invoiceCode, request.clientId(), totalAmount);
         }
 
@@ -218,7 +232,8 @@ public class ReservationRepository {
                     occ.numero_identite AS occupant_id_document,
                     occ.telephone AS occupant_phone,
                     tc.libelle AS room_type,
-                    c.nom_client AS client_name
+                    c.nom_client AS client_name,
+                    o.code_facture AS invoice_code
                 FROM occupation o
                 LEFT JOIN app_reservation_state ars ON ars.occupation_code = o.code
                 LEFT JOIN client c ON c.code_client = o.code_client
@@ -303,6 +318,32 @@ public class ReservationRepository {
         return ValueUtils.bigDecimal(roomRate).multiply(BigDecimal.valueOf(nights));
     }
 
+    private record ExtraService(long id, String label, BigDecimal price) {
+    }
+
+    private List<ExtraService> findServices(List<Long> serviceIds) {
+        if (serviceIds == null || serviceIds.isEmpty()) {
+            return List.of();
+        }
+        List<Long> ids = serviceIds.stream().filter(java.util.Objects::nonNull).distinct().toList();
+        String placeholders = String.join(",", java.util.Collections.nCopies(ids.size(), "?"));
+        List<ExtraService> services = jdbcTemplate.query(
+                "SELECT code_service, libelle, prix_service FROM autre_service WHERE code_service IN (" + placeholders + ")",
+                (rs, i) -> new ExtraService(rs.getLong("code_service"), rs.getString("libelle"),
+                        ValueUtils.bigDecimal(rs.getBigDecimal("prix_service"))),
+                ids.toArray());
+        if (services.size() != ids.size()) {
+            throw new com.mirador.hotel.exception.BadRequestException("Service supplementaire introuvable.");
+        }
+        return services;
+    }
+
+    private BigDecimal servicesTotal(String invoiceCode) {
+        return ValueUtils.bigDecimal(jdbcTemplate.queryForObject(
+                "SELECT COALESCE(SUM(total), 0) FROM detail_facture WHERE code_facture = ? AND service = 'SERVICE'",
+                BigDecimal.class, invoiceCode));
+    }
+
     private String generateInvoiceCode() {
         return "RS" + System.currentTimeMillis();
     }
@@ -372,7 +413,8 @@ public class ReservationRepository {
                 ValueUtils.trimToNull(rs.getString("occupant_id_document")),
                 ValueUtils.trimToNull(rs.getString("occupant_phone")),
                 ValueUtils.coalesce(rs.getString("room_type"), "Standard"),
-                ValueUtils.coalesce(rs.getString("client_name"), "Client"));
+                ValueUtils.coalesce(rs.getString("client_name"), "Client"),
+                ValueUtils.trimToNull(rs.getString("invoice_code")));
     }
 
     private record ReservationInternalRow(

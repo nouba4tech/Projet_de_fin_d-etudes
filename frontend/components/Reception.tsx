@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { normalizeRole, readCurrentUser } from '../utils/accessControl';
 import { FaDownload } from 'react-icons/fa';
 import { openInvoiceWindow } from '../utils/invoiceTemplate';
+import BookingWizard from './BookingWizard';
 
 
 interface Booking {
@@ -271,6 +272,8 @@ const Reception: React.FC = () => {
   const [visits, setVisits] = useState<Visit[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
+  // new bookings go through the 4-step wizard (identity check required); the inline form only edits
+  const [showBookingWizard, setShowBookingWizard] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Form states
@@ -1527,7 +1530,7 @@ const Reception: React.FC = () => {
                             occupantAddress: '',
                             observation: ''
                           });
-                          setShowBookingForm(true);
+                          setShowBookingWizard(true);
                         }}
                         className="relative group bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 transform hover:scale-105"
                       >
@@ -1539,6 +1542,9 @@ const Reception: React.FC = () => {
                 </div>
 
                 {showBookingForm && <div className="p-8">{renderBookingForm()}</div>}
+                {showBookingWizard && (
+                  <BookingWizard onClose={() => setShowBookingWizard(false)} onCreated={() => void fetchData()} />
+                )}
                 
                 <div className="overflow-x-auto">
                   <table className="w-full">
@@ -2500,7 +2506,7 @@ const Reception: React.FC = () => {
                               occupantAddress: '',
                               observation: ''
                             });
-                            setShowBookingForm(true);
+                            setShowBookingWizard(true);
                             setActiveTab('hebergement');
                           }}
                           className="flex-1 bg-green-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors"
