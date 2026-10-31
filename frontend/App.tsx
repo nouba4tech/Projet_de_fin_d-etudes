@@ -5,6 +5,7 @@ import { INITIAL_ROOMS, ICONS } from './constants';
 import api from './services/api';
 import { FeatureKey, canAccessFeature, readCurrentUser } from './utils/accessControl';
 import { AppSettingsProvider } from './contexts/AppSettingsContext';
+import { LanguageProvider, LanguageSwitcher } from './i18n/LanguageContext';
 import { mapBackendRoomsToFrontend, mapBackendRoomToFrontend } from './utils/roomMapper';
 
 const Auth = lazy(() => import('./components/Auth'));
@@ -274,6 +275,9 @@ const MiradorSidebar: React.FC<{ theme: Theme; isOpen: boolean; onClose: () => v
             <p className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{displayName}</p>
           </div>
         </div>
+        <div className="mb-3 flex justify-center sm:hidden">
+          <LanguageSwitcher dark={isDark} />
+        </div>
         <button
           onClick={handleLogout}
           className={`w-full flex items-center justify-center gap-3 py-3 rounded-xl transition-all font-bold text-sm border ${
@@ -458,6 +462,9 @@ const MainLayout: React.FC<{
                   </button>
                 </form>
               </div>
+              <div className="hidden sm:block">
+                <LanguageSwitcher dark={theme === 'dark'} />
+              </div>
               <button
                 onClick={onToggleTheme}
                 className={`w-10 h-10 rounded-full border flex items-center justify-center transition-colors shadow-sm ${
@@ -557,24 +564,25 @@ const DEFAULT_STATS: DashboardStats = {
   roomsCleaning: 0
 };
 
+// French and English words: in English the button labels are translated (i18n/domTranslator)
 const BUTTON_ICON_RULES: Array<{ icon: string; keywords: string[] }> = [
-  { icon: 'delete', keywords: ['supprimer', 'effacer'] },
-  { icon: 'edit', keywords: ['modifier', 'editer'] },
-  { icon: 'save', keywords: ['enregistrer', 'sauvegarder'] },
-  { icon: 'validate', keywords: ['valider', 'confirmer'] },
-  { icon: 'close', keywords: ['fermer', 'annuler'] },
-  { icon: 'add', keywords: ['nouveau', 'nouvelle', 'ajouter', 'creer'] },
-  { icon: 'view', keywords: ['voir', 'details', 'detail'] },
-  { icon: 'print', keywords: ['imprimer'] },
+  { icon: 'delete', keywords: ['supprimer', 'effacer', 'delete', 'remove'] },
+  { icon: 'edit', keywords: ['modifier', 'editer', 'edit'] },
+  { icon: 'save', keywords: ['enregistrer', 'sauvegarder', 'save'] },
+  { icon: 'validate', keywords: ['valider', 'confirmer', 'validate', 'confirm'] },
+  { icon: 'close', keywords: ['fermer', 'annuler', 'close', 'cancel'] },
+  { icon: 'add', keywords: ['nouveau', 'nouvelle', 'ajouter', 'creer', 'new', 'add', 'create'] },
+  { icon: 'view', keywords: ['voir', 'details', 'detail', 'view'] },
+  { icon: 'print', keywords: ['imprimer', 'print'] },
   { icon: 'email', keywords: ['email'] },
-  { icon: 'search', keywords: ['rechercher', 'recherche'] },
-  { icon: 'pay', keywords: ['payer', 'paiement'] },
-  { icon: 'transfer', keywords: ['transferer', 'transfert'] },
+  { icon: 'search', keywords: ['rechercher', 'recherche', 'search'] },
+  { icon: 'pay', keywords: ['payer', 'paiement', 'pay'] },
+  { icon: 'transfer', keywords: ['transferer', 'transfert', 'transfer'] },
   { icon: 'export', keywords: ['exporter', 'export'] },
-  { icon: 'status', keywords: ['statut'] },
-  { icon: 'previous', keywords: ['precedent'] },
-  { icon: 'next', keywords: ['suivant'] },
-  { icon: 'read', keywords: ['lire'] }
+  { icon: 'status', keywords: ['statut', 'status'] },
+  { icon: 'previous', keywords: ['precedent', 'previous'] },
+  { icon: 'next', keywords: ['suivant', 'next'] },
+  { icon: 'read', keywords: ['lire', 'read'] }
 ];
 
 const normalizeButtonText = (value: string): string =>
@@ -753,6 +761,7 @@ const App: React.FC = () => {
   );
 
   return (
+    <LanguageProvider>
     <AppSettingsProvider>
       <Router>
         <Routes>
@@ -797,6 +806,7 @@ const App: React.FC = () => {
         </Routes>
       </Router>
     </AppSettingsProvider>
+    </LanguageProvider>
   );
 };
 
