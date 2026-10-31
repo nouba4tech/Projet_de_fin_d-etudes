@@ -488,7 +488,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
     <div className="fixed inset-0 z-50 bg-[#050714] overflow-y-auto">
       <div className="min-h-full w-full max-w-7xl mx-auto px-4 sm:px-10 py-6 sm:py-8 flex flex-col">
         <div className="flex items-start justify-between gap-4 mb-6">
-          <h3 className="text-3xl font-bold text-white">Nouvelle réservation</h3>
+          <h3 className="text-2xl font-semibold text-white">Nouvelle réservation</h3>
           <span className="text-sm text-gray-400 mt-2">Étape {Math.min(step + 1, 4)} / 4</span>
         </div>
 
@@ -505,9 +505,9 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
 
         {step === 0 && (
           <div className="space-y-5">
-            <div className="flex gap-2" role="radiogroup">
+            <div className="inline-flex rounded-lg border border-white/10 p-0.5" role="radiogroup">
               {(['existing', 'new'] as const).map(mode => (
-                <label key={mode} className={`flex-1 cursor-pointer text-center rounded-lg border px-3 py-2 text-sm ${clientMode === mode ? 'border-blue-500 bg-blue-500/15 text-white' : 'border-white/10 text-gray-400'}`}>
+                <label key={mode} className={`cursor-pointer rounded-md px-4 py-1.5 text-sm font-normal ${clientMode === mode ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}>
                   <input type="radio" className="sr-only" checked={clientMode === mode} onChange={() => { setClientMode(mode); setError(null); }} />
                   {mode === 'existing' ? 'Client existant' : 'Nouveau client'}
                 </label>
@@ -516,21 +516,22 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
             {clientMode === 'existing' ? (
               <div className="space-y-3">
                 <input className={inputClass} placeholder="Rechercher par nom, téléphone ou e-mail" value={clientSearch} onChange={e => setClientSearch(e.target.value)} />
-                <p className="text-sm text-gray-400">{filteredClients.length} client{filteredClients.length > 1 ? 's' : ''}</p>
-                <div role="radiogroup" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[52vh] overflow-y-auto pr-1">
+                <p className="text-xs text-gray-500">{filteredClients.length} client{filteredClients.length > 1 ? 's' : ''}</p>
+                <div role="radiogroup" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 max-h-[55vh] overflow-y-auto pr-1">
                   {filteredClients.map(c => {
                     const selected = String(c.id) === clientId;
                     return (
-                      <label key={c.id} className={`cursor-pointer rounded-xl border p-4 transition-colors ${selected ? 'border-blue-500 bg-blue-500/15' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}>
+                      <label key={c.id} className={`cursor-pointer rounded-lg border px-3 py-2 font-normal transition-colors ${selected ? 'border-blue-500 bg-blue-500/15' : 'border-white/5 bg-white/[0.03] hover:bg-white/[0.07]'}`}>
                         <input type="radio" name="wizard-client" className="sr-only" checked={selected} onChange={() => setClientId(String(c.id))} />
                         <span className="flex items-center justify-between gap-2">
-                          <span className="text-base font-semibold text-white truncate">
+                          <span className="text-sm font-medium text-white truncate">
                             {c.clientType === 'Personne morale' ? c.companyName || 'Société' : `${c.lastName ?? ''} ${c.firstName ?? ''}`.trim()}
                           </span>
                           {c.clientType === 'Personne morale' && <span className="text-[10px] rounded bg-amber-500/20 text-amber-200 px-1.5 py-0.5">Société</span>}
                         </span>
-                        <span className="block text-sm text-gray-300 mt-1">{c.phone || 'Pas de téléphone'}</span>
-                        <span className="block text-sm text-gray-400 truncate">{c.email || "Pas d'e-mail"}</span>
+                        <span className="block text-xs font-normal text-gray-400 truncate mt-0.5">
+                          {[c.phone, c.email].filter(Boolean).join(' · ') || 'Pas de contact'}
+                        </span>
                       </label>
                     );
                   })}
@@ -774,19 +775,19 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
 
         </div>
 
-        <div className="sticky bottom-0 bg-[#050714] pt-4 pb-2 flex flex-col-reverse sm:flex-row gap-3 mt-6 border-t border-white/10">
+        <div className="sticky bottom-0 bg-[#050714] py-3 flex flex-wrap items-center justify-end gap-2 mt-6 border-t border-white/10">
           {result ? (
-            <button type="button" onClick={onClose} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold">Terminer</button>
+            <button type="button" onClick={onClose} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-semibold">Terminer</button>
           ) : (
             <>
-              <button type="button" onClick={() => { stopCamera(); onClose(); }} className="sm:flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-xl font-bold">Annuler</button>
+              <button type="button" onClick={() => { stopCamera(); onClose(); }} className="mr-auto bg-white/5 hover:bg-white/10 text-gray-300 px-5 py-2 rounded-lg text-sm font-semibold">Annuler</button>
               {step > 0 && (
-                <button type="button" onClick={goBack} disabled={busy} className="sm:flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-bold">Retour</button>
+                <button type="button" onClick={goBack} disabled={busy} className="bg-white/10 hover:bg-white/20 text-white px-5 py-2 rounded-lg text-sm font-semibold">Retour</button>
               )}
-              {step === 0 && <button type="button" onClick={() => void submitStep1()} disabled={busy} className="sm:flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3 rounded-xl font-bold">{busy ? 'Enregistrement…' : 'Continuer'}</button>}
-              {step === 1 && <button type="button" onClick={submitStep2} disabled={busy} className="sm:flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3 rounded-xl font-bold">Continuer</button>}
-              {step === 2 && <button type="button" onClick={() => void submitIdentity()} disabled={busy} className="sm:flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3 rounded-xl font-bold">{busy ? 'Envoi…' : 'Continuer'}</button>}
-              {step === 3 && <button type="button" onClick={() => void confirm()} disabled={busy} className="sm:flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white py-3 rounded-xl font-bold">{busy ? 'Validation…' : paymentMethod === 'ARRIVEE' ? 'Confirmer la réservation' : `Payer ${fcfa(totalAmount)} et confirmer`}</button>}
+              {step === 0 && <button type="button" onClick={() => void submitStep1()} disabled={busy} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-semibold">{busy ? 'Enregistrement…' : 'Continuer'}</button>}
+              {step === 1 && <button type="button" onClick={submitStep2} disabled={busy} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-semibold">Continuer</button>}
+              {step === 2 && <button type="button" onClick={() => void submitIdentity()} disabled={busy} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-semibold">{busy ? 'Envoi…' : 'Continuer'}</button>}
+              {step === 3 && <button type="button" onClick={() => void confirm()} disabled={busy} className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-semibold">{busy ? 'Validation…' : paymentMethod === 'ARRIVEE' ? 'Confirmer la réservation' : `Payer ${fcfa(totalAmount)} et confirmer`}</button>}
             </>
           )}
         </div>
