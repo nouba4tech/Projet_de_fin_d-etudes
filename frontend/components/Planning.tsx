@@ -26,30 +26,44 @@ const iso = (d: Date): string => {
   return copy.toISOString().slice(0, 10);
 };
 
-const mondayOf = (d: Date): Date => {
-  const copy = new Date(d);
-  const day = (copy.getDay() + 6) % 7; // Monday = 0
-  copy.setDate(copy.getDate() - day);
-  copy.setHours(0, 0, 0, 0);
-  return copy;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const startOfToday = (): Date => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+};
+
+/**
+ * The schedule never shows past days: it shows 7-day periods starting today (today..+6, +7..+13...).
+ * Returns the start of the period holding {@code d}, or today for a past date.
+ */
+const periodStartOf = (d: Date): Date => {
+  const today = startOfToday();
+  const day = new Date(d);
+  day.setHours(0, 0, 0, 0);
+  const daysAhead = Math.round((day.getTime() - today.getTime()) / DAY_MS);
+  const start = new Date(today);
+  start.setDate(start.getDate() + Math.max(0, Math.floor(daysAhead / 7)) * 7);
+  return start;
 };
 
 const hhmm = (t: string): string => t.slice(0, 5);
 
-// The week and the employee shown are kept for the session: coming back to the page shows them again
-// instead of jumping back to the current week, where shifts saved for another week are not listed.
+// The period and the employee shown are kept for the session: coming back to the page shows them again
+// instead of jumping back to today's period, where shifts saved for a later one are not listed.
 const VIEW_KEY = 'mirador-planning-view';
 
 const readView = (): { weekStart: Date; employeeFilter: string } => {
   try {
     const saved = JSON.parse(sessionStorage.getItem(VIEW_KEY) ?? 'null');
     if (saved && /^\d{4}-\d{2}-\d{2}$/.test(saved.weekStart)) {
-      return { weekStart: mondayOf(new Date(`${saved.weekStart}T00:00:00`)), employeeFilter: String(saved.employeeFilter ?? '') };
+      return { weekStart: periodStartOf(new Date(`${saved.weekStart}T00:00:00`)), employeeFilter: String(saved.employeeFilter ?? '') };
     }
   } catch {
     // unreadable or blocked storage: start on the current week
   }
-  return { weekStart: mondayOf(new Date()), employeeFilter: '' };
+  return { weekStart: startOfToday(), employeeFilter: '' };
 };
 
 const Planning: React.FC = () => {
@@ -140,8 +154,8 @@ const Planning: React.FC = () => {
       }
       setFormOpen(false);
       setFlash({ tone: 'success', text: editing ? 'Creneau mis a jour.' : 'Creneau ajoute.' });
-      // show the week of the saved shift: changing the week reloads it
-      const savedWeek = mondayOf(new Date(`${form.date}T00:00:00`));
+      // show the period of the saved shift: changing the period reloads it
+      const savedWeek = periodStartOf(new Date(`${form.date}T00:00:00`));
       if (iso(savedWeek) !== iso(weekStart)) setWeekStart(savedWeek);
       else await load();
     } catch (error) {
@@ -165,10 +179,11 @@ const Planning: React.FC = () => {
   const shiftWeek = (delta: number) => {
     const next = new Date(weekStart);
     next.setDate(next.getDate() + delta * 7);
-    setWeekStart(next);
+    setWeekStart(periodStartOf(next));
   };
 
   const todayIso = iso(new Date());
+  const showingToday = iso(weekStart) === todayIso;
 
   return (
     <div className="space-y-8">
@@ -192,8 +207,8 @@ const Planning: React.FC = () => {
 
       <Panel>
         <div className="mb-6 flex flex-wrap items-center gap-3">
-          <button className={smallButton} onClick={() => shiftWeek(-1)}>&larr; Semaine precedente</button>
-          <button className={smallButton} onClick={() => setWeekStart(mondayOf(new Date()))}>Cette semaine</button>
+          <button className={`${smallButton} disabled:cursor-not-allowed disabled:opacity-40`} disabled={showingToday} onClick={() => shiftWeek(-1)}>&larr; Semaine precedente</button>
+          <button className={smallButton} disabled={showingToday} onClick={() => setWeekStart(startOfToday())}>Aujourd&apos;hui</button>
           <button className={smallButton} onClick={() => shiftWeek(1)}>Semaine suivante &rarr;</button>
           <span className="text-sm text-white/60">
             {days[0].toLocaleDateString('fr-FR')} - {days[6].toLocaleDateString('fr-FR')}
@@ -212,7 +227,7 @@ const Planning: React.FC = () => {
               <div key={key} className={`rounded-2xl border p-4 ${key === todayIso ? 'border-sky-500/50 bg-sky-500/5' : 'border-slate-700/60 bg-[#10182b]'}`}>
                 <div className="mb-3 flex items-center justify-between">
                   <h4 className="text-sm font-semibold capitalize text-white">{day.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'short' })}</h4>
-                  <button className="text-xs text-sky-300 hover:text-sky-200" onClick={() => openCreate(key)}>+ ajouter</button>
+                  <button className="text-xs text-sky-300 hover:text-sky-200" onClick={() => openCreate(key)}>Ajouter</button>
                 </div>
                 <ul className="space-y-2">
                   {items.map((s) => (
@@ -249,7 +264,7 @@ const Planning: React.FC = () => {
                 </select>
               </Field>
             </div>
-            <Field label="Date"><input required type="date" value={form.date} onChange={(e) => setForm((p) => ({ ...p, date: e.target.value }))} className={inputClass} /></Field>
+            <Field label="Date"><input required type="date" min={editing ? undefined : todayIso} value={form.date} onChange={(e) => setForm((p) => ({ ...p, date: e.target.value }))} className={inputClass} /></Field>
             <Field label="Poste"><input required value={form.post} onChange={(e) => setForm((p) => ({ ...p, post: e.target.value }))} placeholder="Reception, Bar, Housekeeping..." className={inputClass} /></Field>
             <Field label="Debut"><input required type="time" value={form.startTime} onChange={(e) => setForm((p) => ({ ...p, startTime: e.target.value }))} className={inputClass} /></Field>
             <Field label="Fin"><input required type="time" value={form.endTime} onChange={(e) => setForm((p) => ({ ...p, endTime: e.target.value }))} className={inputClass} /></Field>
