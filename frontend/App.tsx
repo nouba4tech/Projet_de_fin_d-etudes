@@ -248,6 +248,7 @@ const MiradorSidebar: React.FC<{ theme: Theme; isOpen: boolean; onClose: () => v
         <SidebarItem to="/security" label="Sécurité" icon={ICONS.Security} allowed={canAccessFeature(currentUser, 'security')} theme={theme} />
         <SidebarItem to="/settings" label="Gestion des paramètres" icon={ICONS.Settings} allowed={canAccessFeature(currentUser, 'settings')} theme={theme} />
         <SidebarItem to="/reception" label="Réception" icon={ICONS.Reception} allowed={canAccessFeature(currentUser, 'reception')} theme={theme} />
+        <SidebarItem to="/bookings" label="Réservations" icon={ICONS.Bookings} allowed={canAccessFeature(currentUser, 'bookings')} theme={theme} />
         <SidebarItem to="/bar" label="Bar" icon={ICONS.Bar} allowed={canAccessFeature(currentUser, 'bar')} theme={theme} />
         <SidebarItem to="/restaurant" label="Restaurant" icon={ICONS.Restaurant} allowed={canAccessFeature(currentUser, 'restaurant')} theme={theme} />
         <SidebarItem to="/accounting" label="Gestion comptable" icon={ICONS.Accounting} allowed={canAccessFeature(currentUser, 'accounting')} theme={theme} />
