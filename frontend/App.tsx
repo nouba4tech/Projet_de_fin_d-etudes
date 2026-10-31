@@ -238,8 +238,8 @@ const MiradorSidebar: React.FC<{ theme: Theme; isOpen: boolean; onClose: () => v
           </svg>
         </button>
         <div className="p-8 pb-10 flex flex-col items-center">
-          <div className="w-36 h-36 flex items-center justify-center overflow-hidden">
-          <img src="/assets/logo_mirador_transparent_cropped.png" alt="Mirador Hotel" className="w-full h-full object-contain" />
+          <div className="w-48 flex items-center justify-center overflow-hidden rounded-xl shadow-lg shadow-black/30">
+          <img src="/assets/mirador-logo.jpg" alt="Mirador Hotel" className="w-full h-auto object-contain" />
         </div>
       </div>
 

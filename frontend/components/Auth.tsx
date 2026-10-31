@@ -181,8 +181,8 @@ const Auth: React.FC = () => {
       <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-8 sm:px-6">
       <div className="w-full max-w-xl">
         <header className="mb-6 flex items-center justify-center gap-4 sm:gap-5">
-          <div className="flex h-20 w-32 shrink-0 items-center justify-center overflow-visible sm:h-24 sm:w-40">
-            <img src="/assets/logo_mirador_transparent_cropped.png" alt="Mirador Logo" className="h-full w-full object-contain" />
+          <div className="flex w-32 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-lg shadow-black/30 sm:w-40">
+            <img src="/assets/mirador-logo.jpg" alt="Mirador Logo" className="h-auto w-full object-contain" />
           </div>
           <div className="min-w-0 text-left">
             <p className="inline-flex rounded-full border border-sky-300/20 bg-sky-400/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-100/80">Gestion hoteliere</p>

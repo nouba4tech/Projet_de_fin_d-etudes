@@ -2,7 +2,7 @@
 // Restaurant, ...) so every generated invoice looks the same: hotel logo, a real HTML
 // table for the line items, and consistent Mirador branding.
 
-export const HOTEL_LOGO_SRC = '/assets/logo_mirador_transparent_cropped.png';
+export const HOTEL_LOGO_SRC = '/assets/mirador-logo.jpg';
 export const HOTEL_NAVY = '#0b1f3a';
 export const HOTEL_ORANGE = '#f97316';
 
