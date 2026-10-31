@@ -136,7 +136,14 @@
 "{0} libre · dès {1}/nuit": "{0} free · from {1}/night",
 "{0} libres · dès {1}/nuit": "{0} free · from {1}/night",
 "{0} clients": "{0} clients",
-"{0} client": "{0} client"
+"{0} client": "{0} client",
+"Mis à jour le {0} · {1} réservations enregistrées": "Updated on {0} · {1} bookings recorded",
+"Mis à jour le {0} · {1} réservation enregistrée": "Updated on {0} · {1} booking recorded",
+"{0} résultats": "{0} results",
+"{0} résultat": "{0} result",
+"N° {0} · {1} FCFA": "No. {0} · {1} FCFA",
+"au {0} · {1} nuits": "to {0} · {1} nights",
+"au {0} · {1} nuit": "to {0} · {1} night"
 },
 "texts": {
 "(commandes restaurant payées).": "(paid restaurant orders).",
@@ -1910,6 +1917,20 @@
 "Tournez légèrement la tête à gauche ou à droite…": "Turn your head slightly left or right…",
 "Visage non détecté : rapprochez-vous, face à la lumière (évitez une fenêtre derrière vous).": "Face not detected: come closer, facing the light (avoid a window behind you).",
 "Prendre la photo maintenant": "Take the photo now",
-"Selfie pris sans test de présence : un administrateur devra valider.": "Selfie taken without the liveness test: an administrator will have to validate."
+"Selfie pris sans test de présence : un administrateur devra valider.": "Selfie taken without the liveness test: an administrator will have to validate.",
+"Les réservations de l'hôtel": "Hotel bookings",
+"Créez une réservation en quatre étapes, trouvez une chambre libre et suivez les séjours de vos clients. L'identité de chaque client est vérifiée avant la confirmation.": "Create a booking in four steps, find a free room and follow your guests' stays. Each client's identity is checked before confirmation.",
+"Voir les chambres libres": "See free rooms",
+"Rechercher une réservation": "Search for a booking",
+"Liste des réservations": "Booking list",
+"Dans cette page": "On this page",
+"Créer une réservation": "Create a booking",
+"En chiffres": "In figures",
+"Bon à savoir": "Good to know",
+"La pièce d'identité et le selfie du client sont chiffrés, consultables uniquement par l'administration et la réception, puis supprimés 30 jours après le séjour.": "The client's ID document and selfie are encrypted, viewable only by management and reception, then deleted 30 days after the stay.",
+"Nom du client, numéro de réservation…": "Client name, booking number…",
+"tout afficher": "show all",
+"Particulier": "Individual",
+"Vous êtes ici": "You are here"
 }
 }
