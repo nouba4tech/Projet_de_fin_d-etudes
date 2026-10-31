@@ -35,8 +35,8 @@ const startOfToday = (): Date => {
 };
 
 /**
- * The schedule never shows past days: it shows 7-day periods starting today (today..+6, +7..+13...).
- * Returns the start of the period holding {@code d}, or today for a past date.
+ * The schedule shows 7-day periods counted from today (..., -7..-1, today..+6, +7..+13, ...): it opens on
+ * today and the previous periods show the past shifts. Returns the start of the period holding {@code d}.
  */
 const periodStartOf = (d: Date): Date => {
   const today = startOfToday();
@@ -44,7 +44,7 @@ const periodStartOf = (d: Date): Date => {
   day.setHours(0, 0, 0, 0);
   const daysAhead = Math.round((day.getTime() - today.getTime()) / DAY_MS);
   const start = new Date(today);
-  start.setDate(start.getDate() + Math.max(0, Math.floor(daysAhead / 7)) * 7);
+  start.setDate(start.getDate() + Math.floor(daysAhead / 7) * 7);
   return start;
 };
 
@@ -207,8 +207,8 @@ const Planning: React.FC = () => {
 
       <Panel>
         <div className="mb-6 flex flex-wrap items-center gap-3">
-          <button className={`${smallButton} disabled:cursor-not-allowed disabled:opacity-40`} disabled={showingToday} onClick={() => shiftWeek(-1)}>&larr; Semaine precedente</button>
-          <button className={smallButton} disabled={showingToday} onClick={() => setWeekStart(startOfToday())}>Aujourd&apos;hui</button>
+          <button className={smallButton} onClick={() => shiftWeek(-1)}>&larr; Semaine precedente</button>
+          <button className={`${smallButton} disabled:cursor-not-allowed disabled:opacity-40`} disabled={showingToday} onClick={() => setWeekStart(startOfToday())}>Aujourd&apos;hui</button>
           <button className={smallButton} onClick={() => shiftWeek(1)}>Semaine suivante &rarr;</button>
           <span className="text-sm text-white/60">
             {days[0].toLocaleDateString('fr-FR')} - {days[6].toLocaleDateString('fr-FR')}
@@ -223,11 +223,14 @@ const Planning: React.FC = () => {
           {days.map((day) => {
             const key = iso(day);
             const items = (byDay[key] ?? []).slice().sort((a, b) => a.startTime.localeCompare(b.startTime));
+            const past = key < todayIso;
             return (
-              <div key={key} className={`rounded-2xl border p-4 ${key === todayIso ? 'border-sky-500/50 bg-sky-500/5' : 'border-slate-700/60 bg-[#10182b]'}`}>
+              <div key={key} className={`rounded-2xl border p-4 ${key === todayIso ? 'border-sky-500/50 bg-sky-500/5' : 'border-slate-700/60 bg-[#10182b]'} ${past ? 'opacity-70' : ''}`}>
                 <div className="mb-3 flex items-center justify-between">
                   <h4 className="text-sm font-semibold capitalize text-white">{day.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'short' })}</h4>
-                  <button className="text-xs text-sky-300 hover:text-sky-200" onClick={() => openCreate(key)}>Ajouter</button>
+                  {past
+                    ? <span className="text-xs text-white/40">Passe</span>
+                    : <button className="text-xs text-sky-300 hover:text-sky-200" onClick={() => openCreate(key)}>Ajouter</button>}
                 </div>
                 <ul className="space-y-2">
                   {items.map((s) => (
@@ -238,10 +241,12 @@ const Planning: React.FC = () => {
                       </div>
                       <p className="mt-1 text-white/80">{s.employeeName}</p>
                       {s.notes ? <p className="text-xs text-white/45">{s.notes}</p> : null}
-                      <div className="mt-2 flex gap-2">
-                        <button className={smallButton} onClick={() => openEdit(s)}>Modifier</button>
-                        <button className={smallButton} onClick={() => void remove(s)}>Supprimer</button>
-                      </div>
+                      {past ? null : (
+                        <div className="mt-2 flex gap-2">
+                          <button className={smallButton} onClick={() => openEdit(s)}>Modifier</button>
+                          <button className={smallButton} onClick={() => void remove(s)}>Supprimer</button>
+                        </div>
+                      )}
                     </li>
                   ))}
                   {items.length === 0 ? <li className="text-xs text-white/35">Aucun creneau</li> : null}
