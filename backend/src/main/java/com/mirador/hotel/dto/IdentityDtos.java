@@ -41,6 +41,10 @@ public final class IdentityDtos {
             boolean visualCheck) {
     }
 
+    /** Result of the face check run in the background by the browser, sent once it is known. */
+    public record ResultRequest(BigDecimal faceDistance, boolean livenessPassed, String note) {
+    }
+
     public record DecisionRequest(
             @NotBlank(message = "La decision est obligatoire (VERIFIEE ou REJETEE)")
             String decision,

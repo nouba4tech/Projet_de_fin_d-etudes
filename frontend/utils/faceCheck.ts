@@ -128,3 +128,33 @@ export const captureFrame = (video: HTMLVideoElement): string => {
   canvas.getContext('2d')!.drawImage(video, 0, 0);
   return canvas.toDataURL('image/jpeg', 0.9);
 };
+
+/** The server fails a check without result after 5 minutes; the browser gives up a little before. */
+const BACKGROUND_LIMIT_MS = 4.5 * 60 * 1000;
+const running = new Set<number>();
+
+/**
+ * Compares the ID photo with the selfie in the background and sends the result to the server, which settles the
+ * check and e-mails the client. Not tied to any screen: it keeps going when the booking window is closed.
+ */
+export const runBackgroundCheck = (
+  verificationId: number,
+  documentImage: string,
+  selfieImage: string,
+  livenessPassed: boolean,
+  send: (result: { faceDistance: number | null; livenessPassed: boolean; note: string | null }) => Promise<unknown>,
+) => {
+  if (running.has(verificationId)) return;
+  running.add(verificationId);
+  const timeout = new Promise<null>(resolve => window.setTimeout(() => resolve(null), BACKGROUND_LIMIT_MS));
+  void Promise.race([faceDistance(documentImage, selfieImage), timeout])
+    .then(result => {
+      if (!result) return send({ faceDistance: null, livenessPassed, note: 'comparaison trop longue' });
+      const note = result.distance !== null ? null
+        : !result.documentFace ? 'aucun visage sur la piece' : 'aucun visage sur le selfie';
+      return send({ faceDistance: result.distance, livenessPassed, note });
+    })
+    .catch(() => send({ faceDistance: null, livenessPassed, note: 'reconnaissance faciale indisponible' }))
+    .catch(() => undefined)
+    .finally(() => running.delete(verificationId));
+};

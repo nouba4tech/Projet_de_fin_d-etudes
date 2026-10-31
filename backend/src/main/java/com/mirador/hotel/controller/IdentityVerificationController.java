@@ -59,6 +59,11 @@ public class IdentityVerificationController {
                 .body(image);
     }
 
+    @PostMapping("/{id}/result")
+    public IdentityDtos.VerificationResponse result(@PathVariable long id, @RequestBody IdentityDtos.ResultRequest request) {
+        return service.submitResult(id, request);
+    }
+
     @PostMapping("/{id}/decision")
     public IdentityDtos.VerificationResponse decide(@PathVariable long id, @Valid @RequestBody IdentityDtos.DecisionRequest request) {
         return service.decide(id, request);

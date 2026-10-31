@@ -1931,6 +1931,12 @@
 "Nom du client, numéro de réservation…": "Client name, booking number…",
 "tout afficher": "show all",
 "Particulier": "Individual",
-"Vous êtes ici": "You are here"
+"Vous êtes ici": "You are here",
+"Dès que tout est rempli, cliquez sur Continuer : la vérification se poursuit en arrière-plan (5 minutes au plus) pendant que vous terminez la réservation. Le client reçoit un e-mail indiquant si sa vérification a réussi ou non.": "Once everything is filled in, click Continue: the check goes on in the background (5 minutes at most) while you finish the booking. The client receives an e-mail saying whether the check succeeded or not.",
+"Prenez le selfie du client (test de présence ou photo).": "Take the client's selfie (liveness test or photo).",
+"Les visages ne correspondent pas : l'identité est rejetée. Reprenez le selfie ou la photo de la pièce.": "The faces do not match: the identity is rejected. Retake the selfie or the document photo.",
+"Vérification en cours (résultat envoyé par e-mail)": "Check in progress (result sent by e-mail)",
+"Vérification en cours : le client recevra le résultat par e-mail": "Check in progress: the client will receive the result by e-mail",
+"Vérifiée": "Verified"
 }
 }

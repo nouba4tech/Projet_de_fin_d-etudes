@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import api from '../services/api';
 import { ReservationStatus } from '../types';
-import { normalizeRole, readCurrentUser } from '../utils/accessControl';
 import {
-  FACE_MATCH_THRESHOLD, captureFrame, compressImage, faceDistance, headYaw, loadFaceApi, similarityPercent,
+  FACE_MATCH_THRESHOLD, captureFrame, compressImage, faceDistance, headYaw, loadFaceApi, runBackgroundCheck,
+  similarityPercent,
 } from '../utils/faceCheck';
 
 /**
@@ -26,7 +26,7 @@ export type WizardClient = {
 
 type FreeRoom = { id: string; number: string; type: string; price: number; status: string; capacity: number | null };
 type ExtraService = { id: string; code: string; name: string; price: number; status: string };
-type Verification = { id: number; status: 'VERIFIEE' | 'A_REVOIR' | 'REJETEE'; faceDistance: number | null; faceMatch: boolean; livenessPassed: boolean };
+type Verification = { id: number; status: 'EN_COURS' | 'VERIFIEE' | 'A_REVOIR' | 'REJETEE'; faceDistance: number | null; faceMatch: boolean; livenessPassed: boolean };
 type CreatedReservation = { id: number; totalAmount: number; invoiceCode: string | null; roomId: string; checkIn: string; checkOut: string };
 
 interface BookingWizardProps {
@@ -79,7 +79,6 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
       .catch(() => setLoadedClients([]));
   }, [givenClients]);
   const clients = useMemo(() => givenClients ?? loadedClients ?? [], [givenClients, loadedClients]);
-  const isAdmin = normalizeRole(readCurrentUser()?.role) === 'Admin';
   const [step, setStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -348,49 +347,41 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
     return () => { cancelled = true; };
   }, [recto, selfie, comparison]);
 
+  /**
+   * Saves the documents and goes on to payment right away. The face comparison carries on in the background
+   * (5 minutes at most); the client gets an e-mail with the result.
+   */
   const submitIdentity = async () => {
     setError(null);
     if (!client) return setError('Client manquant.');
     if (!documentNumber.trim()) return setError('Saisissez le numéro de la pièce.');
     if (!recto || !verso) return setError('Ajoutez le recto et le verso de la pièce.');
-    if (!selfie || liveness !== 'done') return setError('Faites le test de présence pour prendre le selfie.');
+    if (!selfie || liveness !== 'done') return setError('Prenez le selfie du client (test de présence ou photo).');
     if (!consent) return setError('Le consentement du client est obligatoire.');
+    if (verification && verification.status !== 'REJETEE') {
+      setStep(3);
+      return;
+    }
     setBusy(true);
     try {
+      const known = comparison?.distance ?? null;
       const response = await api.post<Verification>('/identity-verifications', {
         clientId: client.id, documentType, documentNumber: documentNumber.trim(), recto, verso, selfie,
-        faceDistance: comparison?.distance ?? null, livenessPassed, consent, visualCheck: false,
+        faceDistance: known, livenessPassed, consent, visualCheck: false,
       });
-      setVerification(response.data);
+      const saved = response.data;
+      setVerification(saved);
+      if (saved.status === 'EN_COURS') {
+        runBackgroundCheck(saved.id, recto, selfie, livenessPassed,
+          result => api.post(`/identity-verifications/${saved.id}/result`, result));
+      }
+      if (saved.status === 'REJETEE') {
+        setError("Les visages ne correspondent pas : l'identité est rejetée. Reprenez le selfie ou la photo de la pièce.");
+        return;
+      }
+      setStep(3);
     } catch (e) {
       setError(apiMessage(e, "Impossible d'enregistrer la vérification d'identité."));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  // automatic check: sent as soon as the documents, the selfie, the face comparison and the consent are there
-  useEffect(() => {
-    if (step !== 2 || busy || verification || error) return;
-    if (!consent || documentNumber.trim().length < 5 || !recto || !verso || !selfie || liveness !== 'done') return;
-    if (!comparison || comparison.note === 'Comparaison des visages…') return;
-    // waits for the end of typing of the document number
-    const timer = window.setTimeout(() => void submitIdentity(), 1500);
-    return () => window.clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, consent, documentNumber, recto, verso, selfie, liveness, comparison, verification]);
-
-  const decide = async (decision: 'VERIFIEE' | 'REJETEE') => {
-    if (!verification) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const response = await api.post<Verification>(`/identity-verifications/${verification.id}/decision`, {
-        decision, comment: decision === 'VERIFIEE' ? 'Validation manuelle à la réception' : 'Identité non concordante',
-      });
-      setVerification(response.data);
-    } catch (e) {
-      setError(apiMessage(e, 'Décision impossible.'));
     } finally {
       setBusy(false);
     }
@@ -721,27 +712,13 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
               </label>
             </div>
 
-            {verification && (
-              <div className={`rounded-xl border p-3 text-sm ${verification.status === 'VERIFIEE' ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200'
-                : verification.status === 'REJETEE' ? 'border-red-500/30 bg-red-500/10 text-red-200' : 'border-amber-500/30 bg-amber-500/10 text-amber-100'}`}>
-                {verification.status === 'VERIFIEE' && `Identité vérifiée (vérification n°${verification.id}).`}
-                {verification.status === 'REJETEE' && 'Identité rejetée : la réservation est impossible.'}
-                {verification.status !== 'VERIFIEE' && (
-                  <button type="button" onClick={() => { setVerification(null); setSelfie(null); setLiveness('idle'); setLivenessPassed(false); setLivenessHint(''); setComparison(null); }}
-                    className="block mt-2 underline text-xs">Refaire la vérification</button>
-                )}
-                {verification.status === 'A_REVOIR' && (
-                  <>
-                    La vérification automatique n'est pas concluante : un administrateur doit valider l'identité.
-                    {isAdmin && (
-                      <span className="flex gap-2 mt-2">
-                        <button type="button" onClick={() => void decide('VERIFIEE')} disabled={busy} className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg">Valider l'identité</button>
-                        <button type="button" onClick={() => void decide('REJETEE')} disabled={busy} className="bg-red-600 text-white px-3 py-1.5 rounded-lg">Rejeter</button>
-                      </span>
-                    )}
-                  </>
-                )}
-              </div>
+            <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-3 text-sm text-sky-100">
+              Dès que tout est rempli, cliquez sur Continuer : la vérification se poursuit en arrière-plan (5 minutes au plus)
+              pendant que vous terminez la réservation. Le client reçoit un e-mail indiquant si sa vérification a réussi ou non.
+            </div>
+            {verification?.status === 'REJETEE' && (
+              <button type="button" onClick={() => { setVerification(null); setSelfie(null); setLiveness('idle'); setLivenessPassed(false); setLivenessHint(''); setComparison(null); setError(null); }}
+                className="underline text-sm text-gray-300">Refaire la vérification</button>
             )}
             <p className="text-[11px] text-gray-500">
               La pièce et le selfie ne prouvent pas à eux seuls l'identité : en cas de doute, demandez la pièce originale à l'arrivée.
@@ -754,7 +731,9 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
             <div className="text-sm bg-white/5 border border-white/10 rounded-xl p-4 space-y-1">
               <div className="flex justify-between"><span className="text-gray-400">Client</span><span className="text-white">{clientName}</span></div>
               <div className="flex justify-between"><span className="text-gray-400">Contact</span><span className="text-white">{client?.email || client?.phone || '—'}</span></div>
-              <div className="flex justify-between"><span className="text-gray-400">Identité</span><span className="text-emerald-300">Vérifiée · {DOCUMENT_TYPES.find(d => d.value === documentType)?.label} {documentNumber}</span></div>
+              <div className="flex justify-between"><span className="text-gray-400">Identité</span><span className={verification?.status === 'VERIFIEE' ? 'text-emerald-300' : 'text-sky-300'}>
+                {verification?.status === 'VERIFIEE' ? 'Vérifiée' : 'Vérification en cours (résultat envoyé par e-mail)'} · {DOCUMENT_TYPES.find(d => d.value === documentType)?.label} {documentNumber}
+              </span></div>
               <div className="flex justify-between"><span className="text-gray-400">Personnes</span><span className="text-white">{stay.guests}</span></div>
             </div>
             {summary}
@@ -785,6 +764,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
             <div className="text-sm bg-white/5 border border-white/10 rounded-xl p-4 space-y-1">
               <div className="flex justify-between gap-4"><span className="text-gray-400">Paiement</span><span className="text-white text-right">{result.payment}</span></div>
               <div className="flex justify-between gap-4"><span className="text-gray-400">Confirmation</span><span className="text-white text-right">{result.notification}</span></div>
+              <div className="flex justify-between gap-4"><span className="text-gray-400">Identité</span><span className="text-white text-right">{verification?.status === 'VERIFIEE' ? 'Vérifiée' : 'Vérification en cours : le client recevra le résultat par e-mail'}</span></div>
               <div className="flex justify-between gap-4"><span className="text-gray-400">Facture</span><span className="text-white text-right">{result.reservation.invoiceCode ?? '—'}</span></div>
             </div>
           </div>
@@ -805,9 +785,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
               )}
               {step === 0 && <button type="button" onClick={() => void submitStep1()} disabled={busy} className="sm:flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3 rounded-xl font-bold">{busy ? 'Enregistrement…' : 'Continuer'}</button>}
               {step === 1 && <button type="button" onClick={submitStep2} disabled={busy} className="sm:flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3 rounded-xl font-bold">Continuer</button>}
-              {step === 2 && (verification?.status === 'VERIFIEE'
-                ? <button type="button" onClick={() => { setError(null); setStep(3); }} className="sm:flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold">Continuer</button>
-                : <button type="button" onClick={() => void submitIdentity()} disabled={busy || !!verification} className="sm:flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3 rounded-xl font-bold">{busy ? 'Envoi…' : "Valider l'identité"}</button>)}
+              {step === 2 && <button type="button" onClick={() => void submitIdentity()} disabled={busy} className="sm:flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3 rounded-xl font-bold">{busy ? 'Envoi…' : 'Continuer'}</button>}
               {step === 3 && <button type="button" onClick={() => void confirm()} disabled={busy} className="sm:flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white py-3 rounded-xl font-bold">{busy ? 'Validation…' : paymentMethod === 'ARRIVEE' ? 'Confirmer la réservation' : `Payer ${fcfa(totalAmount)} et confirmer`}</button>}
             </>
           )}

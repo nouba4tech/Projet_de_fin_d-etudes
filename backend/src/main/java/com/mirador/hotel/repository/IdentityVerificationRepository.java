@@ -21,6 +21,8 @@ import java.util.Optional;
 @Repository
 public class IdentityVerificationRepository {
 
+    /** Saved while the face check still runs in the background (5 minutes at most). */
+    public static final String PENDING = "EN_COURS";
     public static final String VERIFIED = "VERIFIEE";
     public static final String TO_REVIEW = "A_REVOIR";
     public static final String REJECTED = "REJETEE";
@@ -119,6 +121,41 @@ public class IdentityVerificationRepository {
         };
         return jdbcTemplate.query("SELECT " + column + " AS doc FROM app_identity_verification WHERE id = ?",
                 (rs, i) -> rs.getBytes("doc"), id).stream().filter(Objects::nonNull).findFirst();
+    }
+
+    public void recordResult(long id, BigDecimal faceDistance, boolean livenessPassed, String status) {
+        jdbcTemplate.update("""
+                UPDATE app_identity_verification
+                SET face_distance = ?, liveness_passed = ?, status = ?, decided_by = 'automatique', decided_at = ?
+                WHERE id = ? AND status = ?
+                """, faceDistance, livenessPassed, status, Timestamp.valueOf(LocalDateTime.now()), id, PENDING);
+    }
+
+    /** Checks still running after the allowed delay (counted by the database clock, like created_at). */
+    public List<Long> findPendingOlderThan(int minutes) {
+        return jdbcTemplate.queryForList("""
+                SELECT id FROM app_identity_verification
+                WHERE status = ? AND created_at < NOW() - INTERVAL ? MINUTE
+                """, Long.class, PENDING, minutes);
+    }
+
+    public record ClientContact(String name, String email, String phone) {
+    }
+
+    public Optional<ClientContact> findClientContact(long clientId) {
+        return jdbcTemplate.query("""
+                SELECT COALESCE(NULLIF(nom_client, ''), nom, 'Client') AS name, email, COALESCE(numero, contact) AS phone
+                FROM client WHERE code_client = ?
+                """, (rs, i) -> new ClientContact(rs.getString("name"), rs.getString("email"), rs.getString("phone")),
+                clientId).stream().findFirst();
+    }
+
+    /** A booking made while the check was running goes back to "En attente" when the check fails. */
+    public void putReservationOnHold(long reservationId) {
+        jdbcTemplate.update("""
+                UPDATE app_reservation_state SET status_label = 'En attente'
+                WHERE occupation_code = ? AND status_label = 'Confirmée'
+                """, reservationId);
     }
 
     public void decide(long id, String status, String decidedBy) {

@@ -31,6 +31,17 @@ public final class Templates {
                 "Bonjour {{name}},\n\nVotre reservation n°{{reservationId}} (chambre {{room}}, du {{checkIn}} au {{checkOut}}) "
                         + "a ete annulee. Motif : {{reason}}.\n\nNous esperons vous accueillir prochainement.",
                 "Mirador Hotel : reservation n°{{reservationId}} annulee ({{reason}})."));
+        CATALOG.put("IDENTITY_VERIFIED", new Template(
+                "Votre identite est verifiee - Hotel Mirador",
+                "Bonjour {{name}},\n\nLa verification de votre identite pour votre reservation a l'Hotel Mirador a reussi.\n"
+                        + "Aucune autre demarche n'est necessaire.\n\nA tres bientot.",
+                "Mirador Hotel : votre verification d'identite a reussi."));
+        CATALOG.put("IDENTITY_FAILED", new Template(
+                "Verification d'identite non aboutie - Hotel Mirador",
+                "Bonjour {{name}},\n\nLa verification de votre identite pour votre reservation a l'Hotel Mirador n'a pas abouti "
+                        + "({{reason}}).\nVotre reservation reste en attente : merci de presenter votre piece d'identite originale "
+                        + "a la reception.\n\nL'equipe de l'Hotel Mirador.",
+                "Mirador Hotel : verification d'identite non aboutie ({{reason}}). Presentez votre piece a la reception."));
         CATALOG.put("ARRIVAL_REMINDER", new Template(
                 "Rappel : votre arrivee a l'Hotel Mirador",
                 "Bonjour {{name}},\n\nNous avons le plaisir de vous accueillir le {{checkIn}} (chambre {{room}}, "
