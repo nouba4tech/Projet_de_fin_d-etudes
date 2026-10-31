@@ -566,6 +566,7 @@ const DEFAULT_STATS: DashboardStats = {
 
 // French and English words: in English the button labels are translated (i18n/domTranslator)
 const BUTTON_ICON_RULES: Array<{ icon: string; keywords: string[] }> = [
+  { icon: 'refresh', keywords: ['rafraichir', 'actualiser', 'recharger', 'reessayer', 'refresh', 'reload', 'try again'] },
   { icon: 'delete', keywords: ['supprimer', 'effacer', 'delete', 'remove'] },
   { icon: 'edit', keywords: ['modifier', 'editer', 'edit'] },
   { icon: 'save', keywords: ['enregistrer', 'sauvegarder', 'save'] },
@@ -597,6 +598,11 @@ const resolveButtonIcon = (button: HTMLButtonElement): string | null => {
   const label = normalizeButtonText(button.textContent ?? '');
   if (!label) {
     return null;
+  }
+
+  // "+ Enregistrer une visite", "+ New booking": the leading + means creating something
+  if (label.startsWith('+')) {
+    return 'add';
   }
 
   const matchedRule = BUTTON_ICON_RULES.find(rule => (
