@@ -149,6 +149,15 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
     });
   }, [clients]);
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case ReservationStatus.CONFIRMED: return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+      case ReservationStatus.PENDING: return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+      case ReservationStatus.CANCELLED: return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+      default: return 'bg-white/5 text-gray-400 border-gray-500/20';
+    }
+  };
+
   const filteredReservations = useMemo(() => {
     return reservations.filter(reservation => {
       const client = clients.find(c => c.id === reservation.clientId);
@@ -304,231 +313,279 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
     }
   };
 
-  const statusTag = (status: string) => {
-    switch (status) {
-      case ReservationStatus.CONFIRMED: return 'gv-tag gv-tag--success';
-      case ReservationStatus.PENDING: return 'gv-tag gv-tag--warning';
-      case ReservationStatus.CANCELLED: return 'gv-tag gv-tag--error';
-      default: return 'gv-tag gv-tag--info';
-    }
-  };
-  const countByStatus = (status: string) => reservations.filter(r => r.status === status).length;
-  const scrollTo = (id: string) => (event: React.MouseEvent) => {
-    event.preventDefault();
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-  const filterAndShow = (status: string) => (event: React.MouseEvent) => {
-    setFilterStatus(status);
-    scrollTo('liste-reservations')(event);
-  };
-  const updatedAt = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-
-  // Page laid out like the French government sites (info.gouv.fr): see the "gv" styles in index.css
   return (
-    <div className="gv-page -m-4 md:-m-10 min-h-full">
-      <div className="gv-container">
-        <nav className="gv-breadcrumb" aria-label="Vous êtes ici">
-          <a href="#/dashboard">Accueil</a> <span aria-hidden="true">›</span>{' '}
-          <a href="#/reception">Réception</a> <span aria-hidden="true">›</span>{' '}
-          <span aria-current="page">Réservations</span>
-        </nav>
-
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_260px] gap-10 xl:gap-14">
-          <div className="min-w-0">
-            <h1 className="gv-h1">Les réservations de l'hôtel</h1>
-            <div className="gv-rule" />
-            <p className="gv-meta">Mis à jour le {updatedAt} · {reservations.length} réservation{reservations.length > 1 ? 's' : ''} enregistrée{reservations.length > 1 ? 's' : ''}</p>
-            <p className="gv-lead">
-              Créez une réservation en quatre étapes, trouvez une chambre libre et suivez les séjours de vos clients.
-              L'identité de chaque client est vérifiée avant la confirmation.
-            </p>
-
-            <div id="nouvelle-reservation" className="flex flex-wrap gap-3">
-              <button type="button" className="gv-btn" onClick={() => { setFlash(null); setShowWizard(true); }}>
-                Nouvelle réservation
-              </button>
-              <a href="#/bookings" className="gv-btn gv-btn--secondary" onClick={scrollTo('chambres-libres')}>
-                Voir les chambres libres
-              </a>
-            </div>
-
-            {flash && (
-              <div role="status" className={`gv-alert mt-6 ${flash.tone === 'success' ? 'gv-alert--success' : flash.tone === 'info' ? 'gv-alert--info' : 'gv-alert--error'}`}>
-                {flash.text}
-              </div>
-            )}
-
-            <section id="chambres-libres" className="gv-section">
-              <RoomAvailabilityPanel onBook={openBookingForRoom} />
-            </section>
-
-            <section id="recherche" className="gv-section">
-              <h2 className="gv-h2">Rechercher une réservation</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="gv-label" htmlFor="booking-search">Recherche</label>
-                  <input
-                    id="booking-search"
-                    type="text"
-                    placeholder="Nom du client, numéro de réservation…"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="gv-input"
-                  />
-                </div>
-                <div>
-                  <label className="gv-label" htmlFor="booking-status">Statut</label>
-                  <select id="booking-status" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="gv-input">
-                    <option value="Tous">Tous</option>
-                    <option value={ReservationStatus.PENDING}>En attente</option>
-                    <option value={ReservationStatus.CONFIRMED}>Confirmée</option>
-                    <option value={ReservationStatus.CANCELLED}>Annulée</option>
-                  </select>
-                </div>
-              </div>
-            </section>
-
-            <section id="liste-reservations" className="gv-section">
-              <h2 className="gv-h2">Liste des réservations</h2>
-              <p className="gv-mention mb-4">
-                {loading ? 'Chargement des réservations...' : `${filteredReservations.length} résultat${filteredReservations.length > 1 ? 's' : ''}`}
-                {filterStatus !== 'Tous' && !loading && (
-                  <> · statut « {filterStatus} » · <a href="#/bookings" className="gv-link" onClick={(e) => { e.preventDefault(); setFilterStatus('Tous'); }}>tout afficher</a></>
-                )}
-              </p>
-              <div className="gv-table-wrap">
-                <table className="gv-table">
-                  <thead>
-                    <tr>
-                      <th className="hidden 2xl:table-cell">N°</th>
-                      <th>Client</th>
-                      <th className="hidden 2xl:table-cell">Type</th>
-                      <th className="hidden 2xl:table-cell">Occupant</th>
-                      <th>Chambre</th>
-                      <th>Dates</th>
-                      <th className="hidden 2xl:table-cell">Montant</th>
-                      <th>Statut</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loading ? (
-                      <tr><td colSpan={9} className="text-center py-10">Chargement des réservations...</td></tr>
-                    ) : filteredReservations.length === 0 ? (
-                      <tr><td colSpan={9} className="text-center py-10">Aucune réservation trouvée.</td></tr>
-                    ) : filteredReservations.map((reservation) => {
-                      const client = clients.find(c => c.id === reservation.clientId);
-                      const room = rooms.find(r => r.id === reservation.roomId);
-                      const checkInDate = new Date(reservation.checkIn);
-                      const checkOutDate = new Date(reservation.checkOut);
-                      const nights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24));
-                      const clientTypeLabel = reservation.clientType || client?.clientType || 'Personne physique';
-                      const clientDisplayName = clientTypeLabel === 'Personne morale'
-                        ? reservation.companyName || client?.companyName || reservation.clientName
-                        : reservation.clientName || `${client?.firstName || ''} ${client?.lastName || ''}`.trim();
-
-                      return (
-                        <tr key={reservation.id}>
-                          <td className="hidden 2xl:table-cell whitespace-nowrap">{reservation.id}</td>
-                          <td>
-                            <div className="gv-strong">{clientDisplayName}</div>
-                            {client?.email && <div className="gv-mention">{client.email}</div>}
-                            <div className="gv-mention 2xl:hidden">
-                              N° {reservation.id} · {Number(reservation.totalAmount || 0).toLocaleString('fr-FR')} FCFA
-                            </div>
-                          </td>
-                          <td className="hidden 2xl:table-cell">
-                            <span className="gv-tag gv-tag--neutral">{clientTypeLabel === 'Personne morale' ? 'Société' : 'Particulier'}</span>
-                            {clientTypeLabel === 'Personne morale' && <div className="gv-mention mt-1">Paie pour l'occupant</div>}
-                          </td>
-                          <td className="hidden 2xl:table-cell">
-                            <div>{reservation.occupantFirstName} {reservation.occupantLastName}</div>
-                            {reservation.occupantPhone && <div className="gv-mention">{reservation.occupantPhone}</div>}
-                            {reservation.occupantIdDocument && <div className="gv-mention">{reservation.occupantIdDocument}</div>}
-                          </td>
-                          <td className="whitespace-nowrap">
-                            <div className="gv-strong">Chambre {room?.number || reservation.roomId}</div>
-                            <div className="gv-mention">{room?.type || reservation.roomType}</div>
-                          </td>
-                          <td className="whitespace-nowrap">
-                            <div>{checkInDate.toLocaleDateString('fr-FR')}</div>
-                            <div className="gv-mention">au {checkOutDate.toLocaleDateString('fr-FR')} · {nights} nuit{nights > 1 ? 's' : ''}</div>
-                          </td>
-                          <td className="hidden 2xl:table-cell whitespace-nowrap gv-strong">
-                            {Number(reservation.totalAmount || 0).toLocaleString('fr-FR')} FCFA
-                          </td>
-                          <td><span className={statusTag(reservation.status)}>{reservation.status}</span></td>
-                          <td>
-                            <div className="flex gap-2">
-                              {isAdmin && (
-                                <button type="button" onClick={() => handleEdit(reservation)} className="gv-icon-btn" title="Modifier" aria-label="Modifier">
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                  </svg>
-                                </button>
-                              )}
-                              {reservation.status === ReservationStatus.PENDING && (
-                                <button type="button" onClick={() => handleStatusUpdate(reservation, ReservationStatus.CONFIRMED)} className="gv-icon-btn gv-icon-btn--ok" title="Confirmer" aria-label="Confirmer">
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                  </svg>
-                                </button>
-                              )}
-                              {reservation.status !== ReservationStatus.CANCELLED && (
-                                <button type="button" onClick={() => handleCancel(reservation)} className="gv-icon-btn gv-icon-btn--danger" title="Annuler" aria-label="Annuler">
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                  </svg>
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          </div>
-
-          <aside className="lg:pt-2">
-            <div className="lg:sticky lg:top-6">
-              <div className="gv-aside-block">
-                <h2 className="gv-aside-title">Dans cette page</h2>
-                <ul className="space-y-3">
-                  <li><a href="#/bookings" className="gv-link" onClick={scrollTo('nouvelle-reservation')}>Créer une réservation</a></li>
-                  <li><a href="#/bookings" className="gv-link" onClick={scrollTo('chambres-libres')}>Chambres libres sur une période</a></li>
-                  <li><a href="#/bookings" className="gv-link" onClick={scrollTo('recherche')}>Rechercher une réservation</a></li>
-                  <li><a href="#/bookings" className="gv-link" onClick={scrollTo('liste-reservations')}>Liste des réservations</a></li>
-                </ul>
-              </div>
-
-              <div className="gv-aside-block">
-                <h2 className="gv-aside-title">En chiffres</h2>
-                {[
-                  { label: 'Toutes', status: 'Tous', value: reservations.length },
-                  { label: 'En attente', status: ReservationStatus.PENDING, value: countByStatus(ReservationStatus.PENDING) },
-                  { label: 'Confirmées', status: ReservationStatus.CONFIRMED, value: countByStatus(ReservationStatus.CONFIRMED) },
-                  { label: 'Annulées', status: ReservationStatus.CANCELLED, value: countByStatus(ReservationStatus.CANCELLED) },
-                ].map(stat => (
-                  <a key={stat.label} href="#/bookings" className="gv-stat" onClick={filterAndShow(stat.status)}>
-                    <span>{stat.label}</span>
-                    <strong>{loading ? '…' : stat.value}</strong>
-                  </a>
-                ))}
-              </div>
-
-              <div className="gv-aside-block">
-                <h2 className="gv-aside-title">Bon à savoir</h2>
-                <p className="gv-text">
-                  La pièce d'identité et le selfie du client sont chiffrés, consultables uniquement par l'administration
-                  et la réception, puis supprimés 30 jours après le séjour.
-                </p>
-              </div>
-            </div>
-          </aside>
+    <div className="space-y-6 sm:space-y-8">
+      {/* En-tête */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white mb-2">Gestion des Réservations</h2>
+          <p className="text-gray-400 font-medium">Suivi complet des réservations de vos clients</p>
         </div>
+
+        <button
+          onClick={() => { setFlash(null); setShowWizard(true); }}
+          className="w-full sm:w-auto justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Nouvelle Réservation
+        </button>
+      </div>
+
+      {flash && (
+        <div className={`rounded-xl px-4 py-3 text-sm border ${
+          flash.tone === 'success'
+            ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-300'
+            : flash.tone === 'info'
+              ? 'border-sky-500/25 bg-sky-500/10 text-sky-300'
+              : 'border-rose-500/25 bg-rose-500/10 text-rose-300'
+        }`}>
+          {flash.text}
+        </div>
+      )}
+
+      <RoomAvailabilityPanel onBook={openBookingForRoom} />
+
+      {/* Filtres */}
+      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Recherche</label>
+            <input
+              type="text"
+              placeholder="Nom du client, ID réservation..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Statut</label>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="Tous">Tous</option>
+              <option value={ReservationStatus.PENDING}>En attente</option>
+              <option value={ReservationStatus.CONFIRMED}>Confirmée</option>
+              <option value={ReservationStatus.CANCELLED}>Annulée</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Tableau des réservations */}
+      <div className="hidden md:block bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-white/5 border-b border-white/10">
+              <tr>
+                <th className="hidden px-4 lg:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider lg:table-cell">ID</th>
+                <th className="px-4 lg:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Client</th>
+                <th className="hidden px-4 lg:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider xl:table-cell">Type</th>
+                <th className="hidden px-4 lg:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider xl:table-cell">Payeur</th>
+                <th className="hidden px-4 lg:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider xl:table-cell">Occupant</th>
+                <th className="px-4 lg:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Chambre</th>
+                <th className="px-4 lg:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Dates</th>
+                <th className="hidden px-4 lg:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider lg:table-cell">Nuitées</th>
+                <th className="hidden px-4 lg:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider lg:table-cell">Montant</th>
+                <th className="px-4 lg:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Statut</th>
+                <th className="px-4 lg:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/10">
+              {loading ? (
+                <tr>
+                  <td colSpan={11} className="px-6 py-10 text-center text-sm text-gray-400">Chargement des réservations...</td>
+                </tr>
+              ) : filteredReservations.length === 0 ? (
+                <tr>
+                  <td colSpan={11} className="px-6 py-10 text-center text-sm text-gray-400">Aucune réservation trouvée.</td>
+                </tr>
+              ) : filteredReservations.map((reservation) => {
+                const client = clients.find(c => c.id === reservation.clientId);
+                const room = rooms.find(r => r.id === reservation.roomId);
+                const checkInDate = new Date(reservation.checkIn);
+                const checkOutDate = new Date(reservation.checkOut);
+                const nights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24));
+                const clientTypeLabel = reservation.clientType || client?.clientType || 'Personne physique';
+                const clientDisplayName = clientTypeLabel === 'Personne morale'
+                  ? reservation.companyName || client?.companyName || reservation.clientName
+                  : reservation.clientName || `${client?.firstName || ''} ${client?.lastName || ''}`.trim();
+                const payorLabel = clientTypeLabel === 'Personne morale'
+                  ? reservation.companyName || client?.companyName || 'Société (payeur)'
+                  : `${reservation.occupantFirstName || ''} ${reservation.occupantLastName || ''}`.trim();
+
+                return (
+                  <tr key={reservation.id} className="hover:bg-white/5 transition-colors">
+                    <td className="hidden px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-400 lg:table-cell">
+                      #{reservation.id}
+                    </td>
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-white">{clientDisplayName}</div>
+                      <div className="text-xs text-gray-400">{client?.email}</div>
+                      <div className="mt-1 text-[11px] text-gray-400 lg:hidden">
+                        {clientTypeLabel} · {nights} nuitée{nights > 1 ? 's' : ''} · {Number(reservation.totalAmount || 0).toLocaleString('fr-FR')} FCFA
+                      </div>
+                    </td>
+                    <td className="hidden px-4 lg:px-6 py-4 whitespace-nowrap xl:table-cell">
+                      <span className="px-2 py-1 rounded-full border border-white/10 text-xs text-gray-200 bg-white/5">
+                        {clientTypeLabel}
+                      </span>
+                      {(reservation.companyName || client?.companyName) && (
+                        <div className="text-[11px] text-gray-400 mt-1">{reservation.companyName || client?.companyName}</div>
+                      )}
+                    </td>
+                    <td className="hidden px-4 lg:px-6 py-4 whitespace-nowrap xl:table-cell">
+                      <div className="text-sm font-medium text-white">{payorLabel}</div>
+                      {clientTypeLabel === 'Personne morale' && (
+                        <div className="text-[11px] text-gray-400">Paie pour l'occupant</div>
+                      )}
+                    </td>
+                    <td className="hidden px-4 lg:px-6 py-4 whitespace-nowrap xl:table-cell">
+                      <div className="text-sm font-medium text-white">{reservation.occupantFirstName} {reservation.occupantLastName}</div>
+                      <div className="text-xs text-gray-400">{reservation.occupantPhone}</div>
+                      <div className="text-[11px] text-gray-400">{reservation.occupantIdDocument}</div>
+                    </td>
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                      Chambre {room?.number || reservation.roomId} ({room?.type || reservation.roomType})
+                    </td>
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                      <div>{checkInDate.toLocaleDateString('fr-FR')}</div>
+                      <div className="text-xs text-gray-400">au {checkOutDate.toLocaleDateString('fr-FR')}</div>
+                    </td>
+                    <td className="hidden px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-300 lg:table-cell">
+                      {nights} nuitée{nights > 1 ? 's' : ''}
+                    </td>
+                    <td className="hidden px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium text-green-400 lg:table-cell">
+                      {Number(reservation.totalAmount || 0).toLocaleString('fr-FR')} FCFA
+                    </td>
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(reservation.status)}`}>
+                        {reservation.status}
+                      </span>
+                    </td>
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
+                        {isAdmin && (
+                          <button
+                            onClick={() => handleEdit(reservation)}
+                            className="text-blue-400 hover:text-blue-300 transition-colors"
+                            title="Modifier"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                        )}
+                        {reservation.status === ReservationStatus.PENDING && (
+                          <button
+                            onClick={() => handleStatusUpdate(reservation, ReservationStatus.CONFIRMED)}
+                            className="text-green-400 hover:text-green-300 transition-colors"
+                            title="Confirmer"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </button>
+                        )}
+                        {reservation.status !== ReservationStatus.CANCELLED && (
+                          <button
+                            onClick={() => handleCancel(reservation)}
+                            className="text-red-400 hover:text-red-300 transition-colors"
+                            title="Annuler"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      {/* Téléphones : une carte par réservation à la place du tableau */}
+      <div className="md:hidden space-y-3">
+        {loading ? (
+          <p className="text-center text-sm text-gray-400 py-8">Chargement des réservations...</p>
+        ) : filteredReservations.length === 0 ? (
+          <p className="text-center text-sm text-gray-400 py-8">Aucune réservation trouvée.</p>
+        ) : filteredReservations.map((reservation) => {
+          const client = clients.find(c => c.id === reservation.clientId);
+          const room = rooms.find(r => r.id === reservation.roomId);
+          const checkInDate = new Date(reservation.checkIn);
+          const checkOutDate = new Date(reservation.checkOut);
+          const nights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24));
+          const clientTypeLabel = reservation.clientType || client?.clientType || 'Personne physique';
+          const clientDisplayName = clientTypeLabel === 'Personne morale'
+            ? reservation.companyName || client?.companyName || reservation.clientName
+            : reservation.clientName || `${client?.firstName || ''} ${client?.lastName || ''}`.trim();
+          return (
+            <div key={reservation.id} className="bg-white/5 border border-white/10 rounded-xl p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-white truncate">{clientDisplayName}</p>
+                  <p className="text-xs text-blue-400">#{reservation.id}</p>
+                </div>
+                <span className={`shrink-0 px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(reservation.status)}`}>
+                  {reservation.status}
+                </span>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
+                <div>
+                  <p className="text-[11px] uppercase text-gray-500">Chambre</p>
+                  <p className="text-gray-200">{room?.number || reservation.roomId} <span className="text-gray-400">({room?.type || reservation.roomType})</span></p>
+                </div>
+                <div>
+                  <p className="text-[11px] uppercase text-gray-500">Montant</p>
+                  <p className="text-green-400 font-medium">{Number(reservation.totalAmount || 0).toLocaleString('fr-FR')} FCFA</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-[11px] uppercase text-gray-500">Séjour</p>
+                  <p className="text-gray-200">
+                    {checkInDate.toLocaleDateString('fr-FR')} → {checkOutDate.toLocaleDateString('fr-FR')}
+                    <span className="text-gray-400"> · {nights} nuitée{nights > 1 ? 's' : ''}</span>
+                  </p>
+                </div>
+                {(reservation.occupantFirstName || reservation.occupantLastName) && (
+                  <div className="col-span-2">
+                    <p className="text-[11px] uppercase text-gray-500">Occupant</p>
+                    <p className="text-gray-200">{reservation.occupantFirstName} {reservation.occupantLastName}</p>
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {isAdmin && (
+                  <button type="button" onClick={() => handleEdit(reservation)}
+                    className="flex-1 min-w-[96px] rounded-lg border border-blue-500/40 px-3 py-2 text-sm font-semibold text-blue-300">
+                    Modifier
+                  </button>
+                )}
+                {reservation.status === ReservationStatus.PENDING && (
+                  <button type="button" onClick={() => handleStatusUpdate(reservation, ReservationStatus.CONFIRMED)}
+                    className="flex-1 min-w-[96px] rounded-lg border border-emerald-500/40 px-3 py-2 text-sm font-semibold text-emerald-300">
+                    Confirmer
+                  </button>
+                )}
+                {reservation.status !== ReservationStatus.CANCELLED && (
+                  <button type="button" onClick={() => handleCancel(reservation)}
+                    className="flex-1 min-w-[96px] rounded-lg border border-rose-500/40 px-3 py-2 text-sm font-semibold text-rose-300">
+                    Annuler
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Modal d'ajout/modification */}
@@ -543,7 +600,7 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
 
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#050714] border border-white/10 rounded-2xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#050714] border border-white/10 rounded-2xl p-5 sm:p-8 max-w-2xl w-full mx-3 sm:mx-4 max-h-[90vh] overflow-y-auto">
             <h3 className="text-2xl font-bold text-white mb-6">
               {editingReservation ? 'Modifier la réservation' : 'Nouvelle réservation'}
             </h3>

@@ -44,47 +44,53 @@ const RoomAvailabilityPanel: React.FC<{ onBook: (roomId: string, checkIn: string
   };
 
   const nights = Math.max(0, Math.round((new Date(to).getTime() - new Date(from).getTime()) / 86400000));
+  const input = 'w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500';
+
   return (
-    <div>
-      <h2 className="gv-h2">Chambres libres sur une période</h2>
-      <form onSubmit={search} className="grid grid-cols-1 gap-6 md:grid-cols-4 md:items-end">
+    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-6">
+      <h3 className="mb-4 text-lg font-bold text-white">Chambres libres sur une période</h3>
+      <form onSubmit={search} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
         <label className="block">
-          <span className="gv-label">Arrivée</span>
-          <input type="date" required value={from} onChange={(e) => setFrom(e.target.value)} className="gv-input" />
+          <span className="mb-2 block text-sm font-medium text-gray-400">Arrivée</span>
+          <input type="date" required value={from} onChange={(e) => setFrom(e.target.value)} className={input} />
         </label>
         <label className="block">
-          <span className="gv-label">Départ</span>
-          <input type="date" required min={from} value={to} onChange={(e) => setTo(e.target.value)} className="gv-input" />
+          <span className="mb-2 block text-sm font-medium text-gray-400">Départ</span>
+          <input type="date" required min={from} value={to} onChange={(e) => setTo(e.target.value)} className={input} />
         </label>
         <label className="block">
-          <span className="gv-label">Personnes (optionnel)</span>
-          <input type="number" min={1} value={capacity} onChange={(e) => setCapacity(e.target.value)} className="gv-input" />
+          <span className="mb-2 block text-sm font-medium text-gray-400">Personnes (optionnel)</span>
+          <input type="number" min={1} value={capacity} onChange={(e) => setCapacity(e.target.value)} className={input} />
         </label>
-        <button type="submit" disabled={searching} className="gv-btn">
+        <button type="submit" disabled={searching} className="rounded-xl bg-blue-600 px-6 py-2.5 font-bold text-white transition-all hover:bg-blue-700 disabled:opacity-50">
           {searching ? 'Recherche...' : 'Rechercher'}
         </button>
       </form>
 
-      {error ? <div role="alert" className="gv-alert gv-alert--error mt-6">{error}</div> : null}
+      {error ? <p className="mt-4 text-sm text-rose-300">{error}</p> : null}
 
       {rooms ? (
         rooms.length === 0 ? (
-          <div role="status" className="gv-alert gv-alert--info mt-6">Aucune chambre libre sur cette période.</div>
+          <p className="mt-4 text-sm text-amber-300">Aucune chambre libre sur cette période.</p>
         ) : (
-          <div className="mt-6">
-            <p className="gv-mention mb-4">{rooms.length} chambre(s) libre(s) pour {nights} nuit(s)</p>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-5">
+            <p className="mb-3 text-sm text-gray-400">{rooms.length} chambre(s) libre(s) pour {nights} nuit(s) :</p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {rooms.map((room) => (
-                <div key={room.id} className="gv-card flex flex-col">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className="gv-h3">Chambre {room.number}</span>
-                    {room.capacity ? <span className="gv-mention">{room.capacity} pers.</span> : null}
+                <div key={room.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-bold text-white">Chambre {room.number}</span>
+                    {room.capacity ? <span className="text-xs text-gray-400">{room.capacity} pers.</span> : null}
                   </div>
-                  <p className="gv-mention">{room.type}</p>
-                  <p className="gv-text mt-2">
+                  <p className="text-sm text-gray-400">{room.type}</p>
+                  <p className="mt-1 text-sm text-green-400">
                     {formatMoney(room.price)} / nuit{nights > 0 && room.price > 0 ? ` · ${formatMoney(room.price * nights)}` : ''}
                   </p>
-                  <button type="button" onClick={() => onBook(room.id, from, to)} className="gv-btn gv-btn--secondary gv-btn--small mt-4 self-start">
+                  <button
+                    type="button"
+                    onClick={() => onBook(room.id, from, to)}
+                    className="mt-3 w-full rounded-lg border border-blue-500/40 px-3 py-1.5 text-sm font-semibold text-blue-300 transition hover:bg-blue-500/10"
+                  >
                     Réserver
                   </button>
                 </div>
