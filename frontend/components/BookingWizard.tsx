@@ -466,21 +466,24 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
   );
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2">
-      <div className="bg-[#050714] border border-white/10 rounded-2xl p-5 sm:p-8 max-w-3xl w-full max-h-[94vh] overflow-y-auto">
-        <div className="flex items-start justify-between gap-4 mb-5">
-          <h3 className="text-2xl font-bold text-white">Nouvelle réservation</h3>
-          <span className="text-xs text-gray-400 mt-2">Étape {Math.min(step + 1, 4)} / 4</span>
+    // full screen: the whole page is used so that every piece of information stays readable
+    <div className="fixed inset-0 z-50 bg-[#050714] overflow-y-auto">
+      <div className="min-h-full w-full max-w-7xl mx-auto px-4 sm:px-10 py-6 sm:py-8 flex flex-col">
+        <div className="flex items-start justify-between gap-4 mb-6">
+          <h3 className="text-3xl font-bold text-white">Nouvelle réservation</h3>
+          <span className="text-sm text-gray-400 mt-2">Étape {Math.min(step + 1, 4)} / 4</span>
         </div>
 
-        <ol className="grid grid-cols-4 gap-2 mb-6">
+        <ol className="grid grid-cols-4 gap-3 mb-8">
           {STEPS.map((label, index) => (
             <li key={label} className="text-center">
-              <div className={`h-1.5 rounded-full mb-2 ${index < step || result ? 'bg-emerald-500' : index === step ? 'bg-blue-500' : 'bg-white/10'}`} />
-              <span className={`text-[11px] leading-tight block ${index === step ? 'text-white font-semibold' : 'text-gray-500'}`}>{index + 1}. {label}</span>
+              <div className={`h-2 rounded-full mb-2 ${index < step || result ? 'bg-emerald-500' : index === step ? 'bg-blue-500' : 'bg-white/10'}`} />
+              <span className={`text-xs sm:text-sm leading-tight block ${index === step ? 'text-white font-semibold' : 'text-gray-500'}`}>{index + 1}. {label}</span>
             </li>
           ))}
         </ol>
+
+        <div className="flex-1">
 
         {step === 0 && (
           <div className="space-y-5">
@@ -495,14 +498,26 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
             {clientMode === 'existing' ? (
               <div className="space-y-3">
                 <input className={inputClass} placeholder="Rechercher par nom, téléphone ou e-mail" value={clientSearch} onChange={e => setClientSearch(e.target.value)} />
-                <select className={inputClass} value={clientId} onChange={e => setClientId(e.target.value)} size={6}>
-                  {filteredClients.map(c => (
-                    <option key={c.id} value={String(c.id)} className="bg-[#050714]">
-                      {c.clientType === 'Personne morale' ? `${c.companyName || 'Société'} (PM)` : `${c.lastName ?? ''} ${c.firstName ?? ''}`.trim()}
-                      {c.phone ? ` · ${c.phone}` : ''}
-                    </option>
-                  ))}
-                </select>
+                <p className="text-sm text-gray-400">{filteredClients.length} client{filteredClients.length > 1 ? 's' : ''}</p>
+                <div role="radiogroup" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[52vh] overflow-y-auto pr-1">
+                  {filteredClients.map(c => {
+                    const selected = String(c.id) === clientId;
+                    return (
+                      <label key={c.id} className={`cursor-pointer rounded-xl border p-4 transition-colors ${selected ? 'border-blue-500 bg-blue-500/15' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}>
+                        <input type="radio" name="wizard-client" className="sr-only" checked={selected} onChange={() => setClientId(String(c.id))} />
+                        <span className="flex items-center justify-between gap-2">
+                          <span className="text-base font-semibold text-white truncate">
+                            {c.clientType === 'Personne morale' ? c.companyName || 'Société' : `${c.lastName ?? ''} ${c.firstName ?? ''}`.trim()}
+                          </span>
+                          {c.clientType === 'Personne morale' && <span className="text-[10px] rounded bg-amber-500/20 text-amber-200 px-1.5 py-0.5">Société</span>}
+                        </span>
+                        <span className="block text-sm text-gray-300 mt-1">{c.phone || 'Pas de téléphone'}</span>
+                        <span className="block text-sm text-gray-400 truncate">{c.email || "Pas d'e-mail"}</span>
+                      </label>
+                    );
+                  })}
+                  {filteredClients.length === 0 && <p className="text-gray-400 text-sm">Aucun client ne correspond à la recherche.</p>}
+                </div>
                 {client && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm bg-white/5 border border-white/10 rounded-xl p-4">
                     <span className="text-gray-400">Nom : <span className="text-white">{clientName}</span></span>
@@ -748,7 +763,9 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
 
         {error && <div className="mt-5 rounded-xl px-4 py-3 text-sm border bg-red-500/10 border-red-500/30 text-red-200">{error}</div>}
 
-        <div className="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+        </div>
+
+        <div className="sticky bottom-0 bg-[#050714] pt-4 pb-2 flex flex-col-reverse sm:flex-row gap-3 mt-6 border-t border-white/10">
           {result ? (
             <button type="button" onClick={onClose} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold">Terminer</button>
           ) : (

@@ -134,7 +134,9 @@
 "Identité vérifiée (vérification n°{0}).": "Identity verified (check no. {0}).",
 "Client enregistré (n°{0}).": "Client saved (no. {0}).",
 "{0} libre · dès {1}/nuit": "{0} free · from {1}/night",
-"{0} libres · dès {1}/nuit": "{0} free · from {1}/night"
+"{0} libres · dès {1}/nuit": "{0} free · from {1}/night",
+"{0} clients": "{0} clients",
+"{0} client": "{0} client"
 },
 "texts": {
 "(commandes restaurant payées).": "(paid restaurant orders).",
@@ -1896,6 +1898,9 @@
 "La vérification automatique n'est pas concluante : un administrateur doit valider l'identité.": "The automatic check is not conclusive: an administrator must validate the identity.",
 "Le paiement est enregistré par la réception après encaissement ; un échec annule automatiquement l'opération.": "The payment is recorded by reception after collection; a failure cancels the operation automatically.",
 "À régler à l'arrivée": "To be paid on arrival",
-"Aucun contact pour la confirmation": "No contact for the confirmation"
+"Aucun contact pour la confirmation": "No contact for the confirmation",
+"Pas de téléphone": "No phone",
+"Pas d'e-mail": "No e-mail",
+"Aucun client ne correspond à la recherche.": "No client matches the search."
 }
 }
