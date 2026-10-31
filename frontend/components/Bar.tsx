@@ -772,7 +772,7 @@ const Bar: React.FC = () => {
               onClick={() => setDraftOrder({...draftOrder, items: [...draftOrder.items, { menuItemId: '', quantity: 1, unitPrice: 0 }]})}
               className="text-blue-400 hover:text-blue-300 font-medium text-sm flex items-center gap-1"
             >
-              + Ajouter un article
+              Ajouter un article
             </button>
           </div>
           

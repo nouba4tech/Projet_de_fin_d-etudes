@@ -566,6 +566,8 @@ const DEFAULT_STATS: DashboardStats = {
 
 // French and English words: in English the button labels are translated (i18n/domTranslator)
 const BUTTON_ICON_RULES: Array<{ icon: string; keywords: string[] }> = [
+  { icon: 'booking', keywords: ['nouvelle reservation', 'new booking'] },
+  { icon: 'add', keywords: ['enregistrer une visite', 'record a visit'] },
   { icon: 'refresh', keywords: ['rafraichir', 'actualiser', 'recharger', 'reessayer', 'refresh', 'reload', 'try again'] },
   { icon: 'delete', keywords: ['supprimer', 'effacer', 'delete', 'remove'] },
   { icon: 'edit', keywords: ['modifier', 'editer', 'edit'] },

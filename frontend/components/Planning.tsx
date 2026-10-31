@@ -36,11 +36,28 @@ const mondayOf = (d: Date): Date => {
 
 const hhmm = (t: string): string => t.slice(0, 5);
 
+// The week and the employee shown are kept for the session: coming back to the page shows them again
+// instead of jumping back to the current week, where shifts saved for another week are not listed.
+const VIEW_KEY = 'mirador-planning-view';
+
+const readView = (): { weekStart: Date; employeeFilter: string } => {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(VIEW_KEY) ?? 'null');
+    if (saved && /^\d{4}-\d{2}-\d{2}$/.test(saved.weekStart)) {
+      return { weekStart: mondayOf(new Date(`${saved.weekStart}T00:00:00`)), employeeFilter: String(saved.employeeFilter ?? '') };
+    }
+  } catch {
+    // unreadable or blocked storage: start on the current week
+  }
+  return { weekStart: mondayOf(new Date()), employeeFilter: '' };
+};
+
 const Planning: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [shifts, setShifts] = useState<Shift[]>([]);
-  const [employeeFilter, setEmployeeFilter] = useState('');
-  const [weekStart, setWeekStart] = useState<Date>(mondayOf(new Date()));
+  const [initialView] = useState(readView);
+  const [employeeFilter, setEmployeeFilter] = useState(initialView.employeeFilter);
+  const [weekStart, setWeekStart] = useState<Date>(initialView.weekStart);
   const [loading, setLoading] = useState(true);
   const [flash, setFlash] = useState<Flash>(null);
 
@@ -76,6 +93,14 @@ const Planning: React.FC = () => {
   }, []);
 
   useEffect(() => { void load(); }, [load]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(VIEW_KEY, JSON.stringify({ weekStart: iso(weekStart), employeeFilter }));
+    } catch {
+      // the view is then simply not remembered
+    }
+  }, [weekStart, employeeFilter]);
 
   const byDay = useMemo(() => {
     const map: Record<string, Shift[]> = {};
@@ -115,7 +140,10 @@ const Planning: React.FC = () => {
       }
       setFormOpen(false);
       setFlash({ tone: 'success', text: editing ? 'Creneau mis a jour.' : 'Creneau ajoute.' });
-      await load();
+      // show the week of the saved shift: changing the week reloads it
+      const savedWeek = mondayOf(new Date(`${form.date}T00:00:00`));
+      if (iso(savedWeek) !== iso(weekStart)) setWeekStart(savedWeek);
+      else await load();
     } catch (error) {
       setFlash({ tone: 'error', text: apiErrorMessage(error, "Impossible d'enregistrer le creneau.") });
     } finally {

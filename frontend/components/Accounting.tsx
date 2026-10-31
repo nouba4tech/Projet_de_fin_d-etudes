@@ -1763,10 +1763,10 @@ const Accounting: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <button type="button" onClick={() => { setTransferForm({ date: todayInput, fromRegister: '', toRegister: '', amount: '', reason: '', requestedBy: currentUserName }); setApiError('Formulaire nouveau transfert pret.'); }} className="px-4 py-2 border border-gray-600/50 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5 transition-colors">
-                  + Nouveau transfert
+                  Nouveau transfert
                 </button>
                 <button type="button" onClick={exportTransfers} className="px-4 py-2 border border-gray-600/50 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5 transition-colors">
-                  + Exporter
+                  Exporter
                 </button>
               </div>
               <div className="flex items-center space-x-2">
@@ -1898,13 +1898,13 @@ const Accounting: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <button type="button" onClick={() => showDetails(`Balance generee avec ${accounts.length} comptes actifs dans la vue courante.`)} className="px-4 py-2 border border-gray-600/50 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5 transition-colors">
-                  + Générer balance
+                  Générer balance
                 </button>
                 <button type="button" onClick={exportBalance} className="px-4 py-2 border border-gray-600/50 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5 transition-colors">
-                  + Exporter CSV
+                  Exporter CSV
                 </button>
                 <button type="button" onClick={() => window.print()} className="px-4 py-2 border border-gray-600/50 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5 transition-colors">
-                  + Imprimer
+                  Imprimer
                 </button>
               </div>
               <div className="flex items-center space-x-2">

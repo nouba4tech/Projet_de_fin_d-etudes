@@ -226,7 +226,7 @@ const Rooms: React.FC<RoomsProps> = ({ rooms, onUpdateStatus, onCreateRoom, onUp
             onClick={() => setShowCreateForm((visible) => !visible)}
             className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700"
           >
-            + Nouvelle chambre
+            Nouvelle chambre
           </button>
 
           <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10">

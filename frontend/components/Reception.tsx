@@ -1532,7 +1532,7 @@ const Reception: React.FC = () => {
                         className="relative group bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 transform hover:scale-105"
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300 -z-10"></div>
-                        <span className="relative">+ Nouvelle réservation</span>
+                        <span className="relative">Nouvelle réservation</span>
                       </button>
                     )}
                   </div>
@@ -1658,7 +1658,7 @@ const Reception: React.FC = () => {
                     onClick={() => setShowVisitForm(true)}
                     className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-orange-500/30 transition-all duration-300 transform hover:scale-105"
                   >
-                    + Enregistrer une visite
+                    Enregistrer une visite
                   </button>
                 )}
               </div>
@@ -1889,7 +1889,7 @@ const Reception: React.FC = () => {
                     onClick={() => setShowServiceForm(true)}
                     className="bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300 transform hover:scale-105"
                   >
-                    + Nouveau service
+                    Nouveau service
                   </button>
                 )}
               </div>
