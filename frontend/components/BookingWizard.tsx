@@ -101,6 +101,12 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
   // ---- step 3: identity ----
   const [documentType, setDocumentType] = useState('CNI');
   const [documentNumber, setDocumentNumber] = useState('');
+  /** step 3 field the receptionist still has to fill in: shown in red and brought into view */
+  const [missingField, setMissingField] = useState<'number' | 'documents' | 'selfie' | 'consent' | null>(null);
+  const numberRef = useRef<HTMLInputElement | null>(null);
+  const documentsRef = useRef<HTMLDivElement | null>(null);
+  const selfieRef = useRef<HTMLParagraphElement | null>(null);
+  const consentRef = useRef<HTMLLabelElement | null>(null);
   const [recto, setRecto] = useState<string | null>(null);
   const [verso, setVerso] = useState<string | null>(null);
   const [selfie, setSelfie] = useState<string | null>(null);
@@ -239,6 +245,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
 
   const submitStep2 = () => {
     setError(null);
+    if (!documentNumber && client?.idDocument) setDocumentNumber(client.idDocument);
     if (!stay.checkOut || nights < 1) return setError("Choisissez la date de départ (après la date d'arrivée).");
     if (!room) return setError(freeRooms === null ? 'Recherche des chambres libres en cours…' : 'Choisissez un type de chambre.');
     setStep(2);
@@ -354,10 +361,17 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
   const submitIdentity = async () => {
     setError(null);
     if (!client) return setError('Client manquant.');
-    if (!documentNumber.trim()) return setError('Saisissez le numéro de la pièce.');
-    if (!recto || !verso) return setError('Ajoutez le recto et le verso de la pièce.');
-    if (!selfie || liveness !== 'done') return setError('Prenez le selfie du client (test de présence ou photo).');
-    if (!consent) return setError('Le consentement du client est obligatoire.');
+    const missing = (field: NonNullable<typeof missingField>, message: string, target: HTMLElement | null) => {
+      setMissingField(field);
+      setError(message);
+      target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (target instanceof HTMLInputElement) window.setTimeout(() => target.focus(), 300);
+    };
+    if (!documentNumber.trim()) return missing('number', 'Saisissez le numéro de la pièce (champ en rouge, en haut).', numberRef.current);
+    if (!recto || !verso) return missing('documents', 'Ajoutez le recto et le verso de la pièce.', documentsRef.current);
+    if (!selfie || liveness !== 'done') return missing('selfie', 'Prenez le selfie du client (test de présence ou photo).', selfieRef.current);
+    if (!consent) return missing('consent', 'Le consentement du client est obligatoire.', consentRef.current);
+    setMissingField(null);
     if (verification && verification.status !== 'REJETEE') {
       setStep(3);
       return;
@@ -656,11 +670,13 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
               </div>
               <div>
                 <label className={labelClass}>Numéro de la pièce</label>
-                <input className={inputClass} value={documentNumber} onChange={e => setDocumentNumber(e.target.value)} placeholder="Ex. 112345678" />
+                <input ref={numberRef} className={`${inputClass} ${missingField === 'number' ? 'border-red-500 ring-2 ring-red-500/60' : ''}`}
+                  value={documentNumber} placeholder="Ex. 112345678"
+                  onChange={e => { setDocumentNumber(e.target.value); if (missingField === 'number') { setMissingField(null); setError(null); } }} />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div ref={documentsRef} className={`grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-xl ${missingField === 'documents' || missingField === 'selfie' ? 'ring-2 ring-red-500/60 p-2' : ''}`}>
               {([['recto', 'Recto de la pièce', recto, setRecto], ['verso', 'Verso de la pièce', verso, setVerso]] as const).map(([key, label, value, setter]) => (
                 <div key={key}>
                   <p className={labelClass}>1. {label}</p>
@@ -674,7 +690,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
                 </div>
               ))}
               <div>
-                <p className={labelClass}>2. Selfie en direct</p>
+                <p className={labelClass} ref={selfieRef}>2. Selfie en direct</p>
                 <div className="relative rounded-xl border border-white/20 bg-black h-40 overflow-hidden">
                   {selfie && liveness === 'done'
                     ? <img src={selfie} alt="Selfie" className="w-full h-full object-cover" />
@@ -706,8 +722,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
             )}
 
             <div className="space-y-2 text-sm">
-              <label className="flex items-start gap-2 text-gray-300">
-                <input type="checkbox" className="mt-1" checked={consent} onChange={e => setConsent(e.target.checked)} />
+              <label ref={consentRef} className={`flex items-start gap-2 text-gray-300 rounded-lg ${missingField === 'consent' ? 'ring-2 ring-red-500/60 p-2' : ''}`}>
+                <input type="checkbox" className="mt-1" checked={consent} onChange={e => { setConsent(e.target.checked); if (missingField === 'consent') { setMissingField(null); setError(null); } }} />
                 Le client a été informé et accepte : ses documents servent uniquement à vérifier son identité pour cette réservation,
                 sont conservés chiffrés et supprimés 30 jours après la fin du séjour.
               </label>
