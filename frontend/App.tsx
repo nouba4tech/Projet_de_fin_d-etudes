@@ -3,7 +3,8 @@ import { HashRouter as Router, Routes, Route, Link, useLocation, Navigate, useNa
 import { Room, RoomStatus, DashboardStats, User } from './types';
 import { INITIAL_ROOMS, ICONS } from './constants';
 import api from './services/api';
-import { FeatureKey, canAccessFeature, readCurrentUser } from './utils/accessControl';
+import { FeatureKey, canAccessFeature, normalizeRole, readCurrentUser } from './utils/accessControl';
+import { startPendingIdentityChecks } from './utils/pendingIdentityChecks';
 import { AppSettingsProvider } from './contexts/AppSettingsContext';
 import { LanguageProvider, LanguageSwitcher } from './i18n/LanguageContext';
 import { mapBackendRoomsToFrontend, mapBackendRoomToFrontend } from './utils/roomMapper';
@@ -657,6 +658,13 @@ const App: React.FC = () => {
     fetchData();
     window.addEventListener('mirador:auth-changed', fetchData);
     return () => window.removeEventListener('mirador:auth-changed', fetchData);
+  }, []);
+
+  // identity checks left running when a booking window was closed: finished by this session if it may
+  useEffect(() => {
+    const role = normalizeRole(readCurrentUser()?.role);
+    if (role !== 'Admin' && role !== 'Reception') return;
+    return startPendingIdentityChecks();
   }, []);
 
   useEffect(() => {

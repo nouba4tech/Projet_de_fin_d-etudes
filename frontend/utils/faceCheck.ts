@@ -129,14 +129,19 @@ export const captureFrame = (video: HTMLVideoElement): string => {
   return canvas.toDataURL('image/jpeg', 0.9);
 };
 
-/** The server fails a check without result after 5 minutes; the browser gives up a little before. */
-const BACKGROUND_LIMIT_MS = 4.5 * 60 * 1000;
+/**
+ * One attempt stops after this delay without failing the check: it stays "EN_COURS" and another open session
+ * retries it (see pendingIdentityChecks). The server fails it only after 10 hours without result.
+ */
+const ATTEMPT_LIMIT_MS = 10 * 60 * 1000;
 const running = new Set<number>();
 
 /**
  * Compares the ID photo with the selfie in the background and sends the result to the server, which settles the
  * check and e-mails the client. Not tied to any screen: it keeps going when the booking window is closed.
  */
+export const isCheckRunning = (verificationId: number) => running.has(verificationId);
+
 export const runBackgroundCheck = (
   verificationId: number,
   documentImage: string,
@@ -146,15 +151,15 @@ export const runBackgroundCheck = (
 ) => {
   if (running.has(verificationId)) return;
   running.add(verificationId);
-  const timeout = new Promise<null>(resolve => window.setTimeout(() => resolve(null), BACKGROUND_LIMIT_MS));
+  const timeout = new Promise<null>(resolve => window.setTimeout(() => resolve(null), ATTEMPT_LIMIT_MS));
   void Promise.race([faceDistance(documentImage, selfieImage), timeout])
     .then(result => {
-      if (!result) return send({ faceDistance: null, livenessPassed, note: 'comparaison trop longue' });
+      // too slow or models not loaded: no result sent, the check is retried later
+      if (!result) return undefined;
       const note = result.distance !== null ? null
         : !result.documentFace ? 'aucun visage sur la piece' : 'aucun visage sur le selfie';
       return send({ faceDistance: result.distance, livenessPassed, note });
     })
-    .catch(() => send({ faceDistance: null, livenessPassed, note: 'reconnaissance faciale indisponible' }))
     .catch(() => undefined)
     .finally(() => running.delete(verificationId));
 };

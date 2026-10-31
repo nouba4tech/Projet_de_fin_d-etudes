@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  * before being stored, can only be read by Admin and Reception (each view is audited) and are erased once the
  * retention period is over. The check is saved "EN_COURS" as soon as the documents are there, so that the booking can
  * go on; the browser sends the face comparison when it is done. It becomes "VERIFIEE" when the faces match, "REJETEE"
- * otherwise or after 5 minutes without result, and the client is told by e-mail (or SMS) either way.
+ * otherwise or after 10 hours without result, and the client is told by e-mail (or SMS) either way.
  */
 @Service
 public class IdentityVerificationService {
@@ -52,7 +52,7 @@ public class IdentityVerificationService {
     public IdentityVerificationService(IdentityVerificationRepository repository, SecurityAuditRepository audit,
                                        DocumentCipher cipher, NotificationService notificationService,
                                        @Value("${identity.retention-days-after-stay:30}") int retentionDaysAfterStay,
-                                       @Value("${identity.result-delay-minutes:5}") int resultDelayMinutes) {
+                                       @Value("${identity.result-delay-minutes:600}") int resultDelayMinutes) {
         this.repository = repository;
         this.audit = audit;
         this.cipher = cipher;
@@ -121,11 +121,15 @@ public class IdentityVerificationService {
         try {
             for (Long id : repository.findPendingOlderThan(resultDelayMinutes)) {
                 settle(get(id), null, false, IdentityVerificationRepository.REJECTED,
-                        "verification non terminee en " + resultDelayMinutes + " minutes");
+                        "verification non terminee en " + delayLabel());
             }
         } catch (RuntimeException e) {
             log.warn("Expiration des verifications d'identite impossible : {}", e.getMessage());
         }
+    }
+
+    private String delayLabel() {
+        return resultDelayMinutes % 60 == 0 ? (resultDelayMinutes / 60) + " heures" : resultDelayMinutes + " minutes";
     }
 
     private void settle(IdentityDtos.VerificationResponse verification, BigDecimal distance, boolean liveness,

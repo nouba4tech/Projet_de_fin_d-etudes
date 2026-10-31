@@ -356,7 +356,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
 
   /**
    * Saves the documents and goes on to payment right away. The face comparison carries on in the background
-   * (5 minutes at most); the client gets an e-mail with the result.
+   * (10 hours at most); the client gets an e-mail with the result.
    */
   const submitIdentity = async () => {
     setError(null);
@@ -730,7 +730,7 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
             </div>
 
             <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-3 text-sm text-sky-100">
-              Dès que tout est rempli, cliquez sur Continuer : la vérification se poursuit en arrière-plan (5 minutes au plus)
+              Dès que tout est rempli, cliquez sur Continuer : la vérification se poursuit en arrière-plan (jusqu'à 10 heures)
               pendant que vous terminez la réservation. Le client reçoit un e-mail indiquant si sa vérification a réussi ou non.
             </div>
             {verification?.status === 'REJETEE' && (

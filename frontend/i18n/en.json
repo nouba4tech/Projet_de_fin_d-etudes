@@ -1939,6 +1939,7 @@
 "Vérification en cours : le client recevra le résultat par e-mail": "Check in progress: the client will receive the result by e-mail",
 "Vérifiée": "Verified",
 "Pas de contact": "No contact",
-"Saisissez le numéro de la pièce (champ en rouge, en haut).": "Enter the document number (field in red, at the top)."
+"Saisissez le numéro de la pièce (champ en rouge, en haut).": "Enter the document number (field in red, at the top).",
+"Dès que tout est rempli, cliquez sur Continuer : la vérification se poursuit en arrière-plan (jusqu'à 10 heures) pendant que vous terminez la réservation. Le client reçoit un e-mail indiquant si sa vérification a réussi ou non.": "Once everything is filled in, click Continue: the check goes on in the background (up to 10 hours) while you finish the booking. The client receives an e-mail saying whether the check succeeded or not."
 }
 }
