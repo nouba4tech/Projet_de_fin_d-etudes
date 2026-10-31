@@ -1901,6 +1901,9 @@
 "Aucun contact pour la confirmation": "No contact for the confirmation",
 "Pas de téléphone": "No phone",
 "Pas d'e-mail": "No e-mail",
-"Aucun client ne correspond à la recherche.": "No client matches the search."
+"Aucun client ne correspond à la recherche.": "No client matches the search.",
+"Choisissez la date de départ (après la date d'arrivée).": "Choose the departure date (after the arrival date).",
+"Recherche des chambres libres en cours…": "Searching free rooms…",
+"Choisissez un type de chambre.": "Choose a room type."
 }
 }

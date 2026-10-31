@@ -568,6 +568,15 @@ const DEFAULT_STATS: DashboardStats = {
 // French and English words: in English the button labels are translated (i18n/domTranslator)
 const BUTTON_ICON_RULES: Array<{ icon: string; keywords: string[] }> = [
   { icon: 'booking', keywords: ['nouvelle reservation', 'new booking'] },
+  // booking wizard
+  { icon: 'identity', keywords: ["valider l'identite", 'validate identity'] },
+  { icon: 'camera', keywords: ['test de presence', 'selfie', 'liveness'] },
+  { icon: 'refresh', keywords: ['refaire', 'redo'] },
+  { icon: 'pay', keywords: ['payer ', 'pay '] },
+  { icon: 'previous', keywords: ['retour', 'back'] },
+  { icon: 'next', keywords: ['continuer', 'continue'] },
+  { icon: 'validate', keywords: ['terminer', 'finish'] },
+  { icon: 'close', keywords: ['rejeter', 'reject'] },
   { icon: 'add', keywords: ['enregistrer une visite', 'record a visit'] },
   { icon: 'refresh', keywords: ['rafraichir', 'actualiser', 'recharger', 'reessayer', 'refresh', 'reload', 'try again'] },
   { icon: 'delete', keywords: ['supprimer', 'effacer', 'delete', 'remove'] },

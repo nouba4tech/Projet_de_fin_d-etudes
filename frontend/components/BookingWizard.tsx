@@ -210,8 +210,10 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
       });
       const list = (response.data ?? []).map(r => ({ ...r, price: Number(r.price) || 0, type: r.type || 'Standard' }));
       setFreeRooms(list);
-      setRoomType('');
-      setRoomId('');
+      // pre-select the cheapest type (the receptionist can pick another one)
+      const cheapest = [...list].sort((a, b) => a.price - b.price)[0];
+      setRoomType(cheapest?.type ?? '');
+      setRoomId(cheapest?.id ?? '');
       if (list.length === 0) setError('Aucune chambre libre sur cette période pour ce nombre de personnes.');
     } catch (e) {
       setError(apiMessage(e, 'Impossible de rechercher les chambres libres.'));
@@ -220,6 +222,15 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
     }
   };
 
+  // the free rooms are searched as soon as the dates are valid: no need to press the button first
+  useEffect(() => {
+    if (step !== 1 || freeRooms !== null || busy) return;
+    if (!stay.checkIn || !stay.checkOut || nightsBetween(stay.checkIn, stay.checkOut) < 1 || stay.checkIn < todayIso()) return;
+    const timer = window.setTimeout(() => void searchRooms(), 400);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, stay.checkIn, stay.checkOut, stay.guests, freeRooms]);
+
   const chooseType = (type: string) => {
     setRoomType(type);
     setRoomId(roomTypes.find(t => t.type === type)?.rooms[0]?.id ?? '');
@@ -227,7 +238,8 @@ const BookingWizard: React.FC<BookingWizardProps> = ({ clients: givenClients, on
 
   const submitStep2 = () => {
     setError(null);
-    if (!room) return setError('Recherchez les chambres libres puis choisissez un type de chambre.');
+    if (!stay.checkOut || nights < 1) return setError("Choisissez la date de départ (après la date d'arrivée).");
+    if (!room) return setError(freeRooms === null ? 'Recherche des chambres libres en cours…' : 'Choisissez un type de chambre.');
     setStep(2);
   };
 
