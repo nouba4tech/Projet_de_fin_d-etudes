@@ -186,6 +186,7 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
   const openBookingForRoom = (roomId: string, checkIn: string, checkOut: string) => {
     setEditingReservation(null);
     setFormData({ ...emptyFormData, roomId, checkIn, checkOut });
+    setFlash(null);
     setShowAddModal(true);
   };
 
@@ -277,6 +278,7 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
       occupantIdDocument: reservation.occupantIdDocument || '',
       occupantPhone: reservation.occupantPhone || ''
     });
+    setFlash(null);
     setShowAddModal(true);
   };
 
@@ -320,7 +322,7 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
         </div>
 
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={() => { setFlash(null); setShowAddModal(true); }}
           className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -599,7 +601,6 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
                       <label className="block text-sm font-medium text-gray-400 mb-2">Document d'identité</label>
                       <input
                         type="text"
-                        required
                         value={formData.occupantIdDocument}
                         onChange={(e) => setFormData({ ...formData, occupantIdDocument: e.target.value })}
                         className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -610,7 +611,6 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
                       <label className="block text-sm font-medium text-gray-400 mb-2">Téléphone</label>
                       <input
                         type="text"
-                        required
                         value={formData.occupantPhone}
                         onChange={(e) => setFormData({ ...formData, occupantPhone: e.target.value })}
                         className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -644,6 +644,10 @@ const Bookings: React.FC<BookingsProps> = ({ rooms = [], onUpdateRoomStatus }) =
                   />
                 </div>
               </div>
+
+              {flash?.tone === 'error' && (
+                <div className="rounded-xl px-4 py-3 text-sm border bg-red-500/10 border-red-500/30 text-red-200">{flash.text}</div>
+              )}
 
               {/* Aperçu du calcul */}
               {formData.roomId && formData.checkIn && formData.checkOut && (

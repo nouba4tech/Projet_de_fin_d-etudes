@@ -17,8 +17,10 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class ReservationRepository {
@@ -52,6 +54,21 @@ public class ReservationRepository {
                 baseSelect() + " WHERE o.code_client = ? ORDER BY o.code DESC",
                 (rs, rowNum) -> mapReservation(rs),
                 clientId);
+    }
+
+    /** Rooms with a booking (not cancelled) overlapping the period. */
+    public Set<String> occupiedRoomsBetween(LocalDate from, LocalDate to) {
+        return new HashSet<>(jdbcTemplate.queryForList("""
+                SELECT DISTINCT o.code_chambre
+                FROM occupation o
+                LEFT JOIN app_reservation_state ars ON ars.occupation_code = o.code
+                WHERE COALESCE(ars.status_label, 'Confirmée') NOT IN ('Annulée', 'Annulee', 'Cancelled')
+                  AND DATE(o.date_debut) < ?
+                  AND DATE(o.date_fin) > ?
+                """,
+                String.class,
+                java.sql.Date.valueOf(to),
+                java.sql.Date.valueOf(from)));
     }
 
     public boolean isRoomAvailable(String roomId, LocalDate checkIn, LocalDate checkOut, Long excludeReservationId) {
